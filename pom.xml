@@ -1,20 +1,122 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2018-2019 Linagora
+ 
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+ 
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.ow2.petals</groupId>
-	<artifactId>petals-esb-deployer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+   <parent>
+      <groupId>org.ow2.petals</groupId>
+      <artifactId>petals-client-tools-parent</artifactId>
+      <version>1.1.1-SNAPSHOT</version>
+   </parent>
 
-	<name>petals-esb-deployer</name>
-	<url>https://doc.petalslink.com/display/petalscomponents/Petals+ESB+Deployer+1.0.0</url>
+   <groupId>org.ow2.petals</groupId>
+   <artifactId>petals-esb-deployer</artifactId>
+   <version>0.0.1-SNAPSHOT</version>
+   <packaging>jar</packaging>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
+   <name>petals-esb-deployer</name>
+   <url>https://doc.petalslink.com/display/petalscomponents/Petals+ESB+Deployer+1.0.0</url>
 
-	<dependencies>
-	</dependencies>
+   <dependencies>
+      <dependency>
+         <groupId>org.ow2.petals</groupId>
+         <artifactId>petals-admin-api</artifactId>
+         <version>2.1.1-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.ow2.petals</groupId>
+         <artifactId>petals-admin-mock</artifactId>
+         <version>2.1.1-SNAPSHOT</version>
+         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.ow2.petals</groupId>
+         <artifactId>petals-jbi-descriptor</artifactId>
+         <version>2.4.0</version>
+      </dependency>
+
+<!--       <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-all</artifactId>
+         <version>1.10.19</version>
+         <scope>test</scope>
+      </dependency> -->
+
+<!--       <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <version>2.8.5</version>
+      </dependency> -->
+
+<!--       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <version>2.9.7</version>
+      </dependency> -->
+
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>2.6</version>
+      </dependency>
+
+<!--       <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         <version>2.9.0</version>
+      </dependency> -->
+
+      <dependency>
+         <groupId>org.jvnet.jaxb2_commons</groupId>
+         <artifactId>jaxb2-basics-runtime</artifactId>
+         <version>0.11.1</version>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.jvnet.jaxb2.maven2</groupId>
+            <artifactId>maven-jaxb2-plugin</artifactId>
+            <configuration>
+               <schemaDirectory>${basedir}/src/main/resources/</schemaDirectory>
+               <schemaIncludes>
+                  <include>topology-model.xsd</include>
+                  <include>component-repository.xsd</include>
+                  <include>service-unit-model.xsd</include>
+                  <include>bus-model.xsd</include>
+                  <include>model.xsd</include>
+               </schemaIncludes>
+               <bindingIncludes>
+                  <include>binding.xjb</include>
+               </bindingIncludes>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 </project>

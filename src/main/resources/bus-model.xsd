@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2018-2019 Linagora
+ 
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+ 
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<schema targetNamespace="http://petals.ow2.org/deployer/model/bus/xml/1.0" version="1.0"
+   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0"
+   xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" elementFormDefault="qualified">
+
+   <import namespace="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
+      schemaLocation="component-repository.xsd" />
+
+   <element name="bus-model" type="bm:busModel" />
+
+   <complexType name="busModel">
+      <sequence>
+         <element name="machine" type="bm:machine" maxOccurs="unbounded" />
+         <element name="bus" type="bm:bus" maxOccurs="unbounded" />
+      </sequence>
+   </complexType>
+
+   <complexType name="bus">
+      <sequence>
+         <element name="container-instance" type="bm:containerInstance" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="topology-ref" type="string" use="required" />
+   </complexType>
+
+   <complexType name="containerInstance">
+      <sequence>
+         <element name="component-instance" type="bm:componentInstance" maxOccurs="unbounded" />
+         <element name="service-unit-instance" type="bm:serviceUnitInstance" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="ref" type="string" use="optional" />
+      <attribute name="jmx-port" type="int" />
+      <attribute name="jmx-user" type="string" />
+      <attribute name="jmx-password" type="string" />
+      <attribute name="machine-ref" type="string" use="required" />
+   </complexType>
+
+   <complexType name="componentInstance">
+      <attribute name="ref" type="string" use="required" />
+   </complexType>
+
+   <complexType name="serviceUnitInstance">
+      <attribute name="ref" type="string" use="required" />
+   </complexType>
+
+   <complexType name="provisionedMachine">
+      <complexContent>
+         <extension base="bm:machine">
+            <sequence>
+               <element name="hostname" type="string" />
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+
+   <complexType name="machine" abstract="true">
+      <sequence />
+      <attribute name="id" type="string" use="required" />
+   </complexType>
+</schema>
