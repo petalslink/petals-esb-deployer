@@ -106,7 +106,8 @@ public class RuntimeModelDeployer {
             ArtifactNotFoundException, ArtifactAdministrationException, RuntimeModelDeployerException {
         String suId = serviceUnit.getId();
         File suFile = Files.createTempFile(suId, ".zip").toFile();
-        FileUtils.copyURLToFile(serviceUnit.getUrl(), suFile);
+        FileUtils.copyURLToFile(serviceUnit.getUrl(), suFile, ModelDeployer.CONNECTION_TIMEOUT,
+                ModelDeployer.READ_TIMEOUT);
         Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(suFile);
         ServiceAssembly jbiSa = jbi.getServiceAssembly();
 
@@ -144,7 +145,8 @@ public class RuntimeModelDeployer {
             throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
         String compId = component.getId();
         File compFile = Files.createTempFile(compId, "zip").toFile();
-        FileUtils.copyURLToFile(component.getUrl(), compFile);
+        FileUtils.copyURLToFile(component.getUrl(), compFile, ModelDeployer.CONNECTION_TIMEOUT,
+                ModelDeployer.READ_TIMEOUT);
         Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compFile);
 
         LOG.fine("Deploying component " + component.getId());
