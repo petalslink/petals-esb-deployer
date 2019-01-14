@@ -83,7 +83,6 @@ public class ModelConverter {
         }
 
         ServiceUnitModel suModel = model.getServiceUnitModel();
-
         Map<String, ServiceUnit> suById = new HashMap<String, ServiceUnit>();
         for (ServiceUnit su : suModel.getServiceUnit()) {
             suById.put(su.getId(), su);

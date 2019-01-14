@@ -92,7 +92,7 @@ public class ParseModelTest {
 
         assertEquals(marshalledModelWriter.toString(), unmarshalledModelWriter.toString());
     }
-    
+
     public static Model generateTestModel() throws MalformedURLException, IOException, URISyntaxException {
         Model model = new Model();
 
@@ -103,8 +103,7 @@ public class ParseModelTest {
 
         Component bcSoap = new Component();
         bcSoap.setId("petals-bc-soap");
-        bcSoap.setUrl(
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL().toString());
+        bcSoap.setUrl("file:/artifacts/petals-bc-soap-5.0.0");
         compRepo.getComponent().add(bcSoap);
 
         /* Service Unit Model */
@@ -116,20 +115,17 @@ public class ParseModelTest {
 
         ServiceUnit suProv1 = new ServiceUnit();
         suProv1.setId("su-SOAP-Hello_Service1-provide");
-        suProv1.setUrl(ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service1-provide").toURI()
-                .toURL().toString());
+        suProv1.setUrl("file:/artifacts/sa-SOAP-Hello_Service1-provide");
         serviceUnits.add(suProv1);
 
         ServiceUnit suProv2 = new ServiceUnit();
         suProv2.setId("su-SOAP-Hello_Service2-provide");
-        suProv2.setUrl(ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service2-provide").toURI()
-                .toURL().toString());
+        suProv2.setUrl("file:/artifacts/sa-SOAP-Hello_Service2-provide");
         serviceUnits.add(suProv2);
 
         ServiceUnit suCons = new ServiceUnit();
         suCons.setId("su-SOAP-Hello_PortType-consume");
-        suCons.setUrl(ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI()
-                .toURL().toString());
+        suCons.setUrl("file:/artifacts/sa-SOAP-Hello_PortType-consume");
         serviceUnits.add(suCons);
 
         /* Topology Model */

@@ -77,7 +77,6 @@ public class RuntimeModelExporter {
                 case "SU":
                     cont.addServiceUnit(new RuntimeServiceUnit(
                             ((org.ow2.petals.admin.api.artifact.ServiceUnit) artifact).getName()));
-                    // TODO what about targetComponent
                     break;
                 case "SA":
                     // already get service units in "SU" case
