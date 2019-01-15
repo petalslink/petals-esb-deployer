@@ -39,6 +39,9 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
+/**
+ * @author alagane
+ */
 public class ModelDeployer {
 
     /**

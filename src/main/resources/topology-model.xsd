@@ -17,26 +17,71 @@
  for the GNU Lesser General Public License version 2.1.
 -->
 <schema targetNamespace="http://petals.ow2.org/deployer/model/topology/xml/1.0" version="1.0"
-   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://petals.ow2.org/deployer/model/topology/xml/1.0" elementFormDefault="qualified">
+   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://petals.ow2.org/deployer/model/topology/xml/1.0"
+   elementFormDefault="qualified">
 
    <complexType name="topologyModel">
       <sequence>
-         <element name="topology" type="tm:topology" maxOccurs="unbounded" />
+         <element name="topology" type="tm:topology" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of topologies in the model. Their id must be unique in the model. There must be
+                  at least one topology in the model.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
    </complexType>
 
    <complexType name="topology">
       <sequence>
-         <element name="container" type="tm:container" maxOccurs="unbounded" />
+         <element name="container" type="tm:container" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  Petals ESB containers of the topology. Their id must be unique in the topology. There must
+                  be at least one container in the topology.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
-      <attribute name="id" type="string" use="required" />
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               Identifier of the topology.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
    <complexType name="container">
-      <attribute name="id" type="string" use="required" />
-      <attribute name="default-jmx-user" type="string" />
-      <attribute name="default-jmx-port" type="int" />
-      <attribute name="default-jmx-password" type="string" />
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               Identifier of the Petals ESB container as used as name in the file topology.xml.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="default-jmx-port" type="int" default="7700">
+         <annotation>
+            <documentation>
+               Default JMX port value. A deployment property can be used.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="default-jmx-user" type="string" default="petals">
+         <annotation>
+            <documentation>
+               Default JMX username value. A deployment property can be used.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="default-jmx-password" type="string" default="petals">
+         <annotation>
+            <documentation>
+               Default JMX password value. A deployment property can be used.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
 </schema>

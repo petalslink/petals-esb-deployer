@@ -50,6 +50,9 @@ import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 import org.ow2.petals.jbi.descriptor.original.generated.ServiceAssembly;
 
+/**
+ * @author alagane
+ */
 public class RuntimeModelDeployer {
 
     private static final Logger LOG = Logger.getLogger(RuntimeModelDeployer.class.getName());

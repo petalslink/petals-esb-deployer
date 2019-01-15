@@ -27,6 +27,9 @@ import java.nio.file.Files;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+/**
+ * @author alagane
+ */
 public class ZipUtils {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 

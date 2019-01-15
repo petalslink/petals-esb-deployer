@@ -41,8 +41,12 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 
+/**
+ * @author alagane
+ */
 public class ModelConverter {
-    public RuntimeModel convertModelToRuntimeModel(Model model) throws MalformedURLException, RuntimeModelException {
+    public static RuntimeModel convertModelToRuntimeModel(Model model)
+            throws MalformedURLException, RuntimeModelException {
         RuntimeModel runtimeModel = new RuntimeModel();
 
         TopologyModel topoModel = model.getTopologyModel();

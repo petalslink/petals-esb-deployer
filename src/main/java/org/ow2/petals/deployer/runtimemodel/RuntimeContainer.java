@@ -24,6 +24,9 @@ import java.util.Map;
 
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 
+/**
+ * @author alagane
+ */
 public class RuntimeContainer {
 
     private final String id;

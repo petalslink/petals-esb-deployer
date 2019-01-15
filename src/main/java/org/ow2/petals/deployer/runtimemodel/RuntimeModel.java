@@ -22,6 +22,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author alagane
+ */
 public class RuntimeModel {
 
     private Map<String, RuntimeContainer> containers = new HashMap<String, RuntimeContainer>();

@@ -18,6 +18,9 @@
 
 package org.ow2.petals.deployer.utils;
 
+/**
+ * @author alagane
+ */
 public class ModelDeployerException extends Exception {
 
     private static final long serialVersionUID = 7599724111843987402L;

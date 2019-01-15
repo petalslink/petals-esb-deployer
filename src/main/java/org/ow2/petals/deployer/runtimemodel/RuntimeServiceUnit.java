@@ -20,6 +20,9 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
 
+/**
+ * @author alagane
+ */
 public class RuntimeServiceUnit {
 
     private final String id;

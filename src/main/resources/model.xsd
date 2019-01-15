@@ -18,24 +18,65 @@
 -->
 <schema targetNamespace="http://petals.ow2.org/deployer/model/xml/1.0" version="1.0"
    xmlns="http://www.w3.org/2001/XMLSchema" xmlns:m="http://petals.ow2.org/deployer/model/xml/1.0"
-   xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0" xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
+   xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0"
+   xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
    xmlns:sum="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
    xmlns:tm="http://petals.ow2.org/deployer/model/topology/xml/1.0" elementFormDefault="qualified">
 
    <import namespace="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
       schemaLocation="component-repository.xsd" />
    <import namespace="http://petals.ow2.org/deployer/model/bus/xml/1.0" schemaLocation="bus-model.xsd" />
-   <import namespace="http://petals.ow2.org/deployer/model/service-unit/xml/1.0" schemaLocation="service-unit-model.xsd" />
+   <import namespace="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
+      schemaLocation="service-unit-model.xsd" />
    <import namespace="http://petals.ow2.org/deployer/model/topology/xml/1.0" schemaLocation="topology-model.xsd" />
 
    <element name="model" type="m:model" />
 
    <complexType name="model">
+      <annotation>
+         <documentation>
+            Model defining Petals ESB buses to deploy. Documentation can be found here
+            https://doc.petalslink.com/display/petalscomponents/Petals+ESB+Deployer+1.0.0
+         </documentation>
+      </annotation>
       <sequence>
-         <element name="service-unit-model" type="sum:serviceUnitModel" />
-         <element name="component-repository" type="cr:componentRepository" />
-         <element name="topology-model" type="tm:topologyModel" />
-         <element name="bus-model" type="bm:busModel" />
+         <element name="service-unit-model" type="sum:serviceUnitModel">
+            <annotation>
+               <documentation>
+                  This model defines a set of service units to deploy on your Petals ESB bus. This model
+                  will be mainly written by development teams because they have the knowledge of service units to
+                  deploy.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="component-repository" type="cr:componentRepository">
+            <annotation>
+               <documentation>
+                  This model defines a set of binding components, service engines and shared libraries that
+                  can be used to perform the deployment of a Petals ESB bus. Such models are included in Petals ESB
+                  distribution packs, and you can write your own.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="topology-model" type="tm:topologyModel">
+            <annotation>
+               <documentation>
+                  This model defines a set of topologies, used by Petals ESB buses. This model will be
+                  mainly written by the Petals ESB bus architect.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="bus-model" type="bm:busModel">
+            <annotation>
+               <documentation>
+                  This model defines your Petals ESB bus placing Petals ESB components on their containers:
+                  - service unit on its Petals ESB container
+                  - Petals ESB container on its machine
+                  This model will be
+                  mainly written by the Petals ESB bus architect in agreement with operators.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
    </complexType>
 

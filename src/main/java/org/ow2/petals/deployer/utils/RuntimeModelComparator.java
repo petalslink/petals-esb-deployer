@@ -25,12 +25,15 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 
+/**
+ * @author alagane
+ */
 public class RuntimeModelComparator {
-    public boolean compareRuntimeModels(final RuntimeModel m1, final RuntimeModel m2) {
+    public static boolean compareRuntimeModels(final RuntimeModel m1, final RuntimeModel m2) {
         return compareRuntimeContainerMaps(m1, m2);
     }
 
-    private boolean compareRuntimeComponentMaps(RuntimeContainer cont1, RuntimeContainer cont2) {
+    private static boolean compareRuntimeComponentMaps(RuntimeContainer cont1, RuntimeContainer cont2) {
         Collection<RuntimeComponent> compList1 = cont1.getComponents();
         Collection<RuntimeComponent> compList2 = cont2.getComponents();
 
@@ -50,7 +53,7 @@ public class RuntimeModelComparator {
         return true;
     }
 
-    private boolean compareRuntimeContainerMaps(RuntimeModel m1, RuntimeModel m2) {
+    private static boolean compareRuntimeContainerMaps(RuntimeModel m1, RuntimeModel m2) {
         Collection<RuntimeContainer> contList1 = m1.getContainers();
         Collection<RuntimeContainer> contList2 = m2.getContainers();
 
@@ -70,14 +73,14 @@ public class RuntimeModelComparator {
         return true;
     }
 
-    private boolean compareRuntimeContainers(RuntimeContainer cont1, RuntimeContainer cont2) {
+    private static boolean compareRuntimeContainers(RuntimeContainer cont1, RuntimeContainer cont2) {
         return cont1.getId().equals(cont2.getId()) && cont1.getPort() == cont2.getPort()
                 && cont1.getUser().equals(cont2.getUser()) && cont1.getPassword().equals(cont2.getPassword())
                 && cont1.getHostname().equals(cont2.getHostname()) && compareRuntimeServiceUnitMaps(cont1, cont2)
                 && compareRuntimeComponentMaps(cont1, cont2);
     }
 
-    private boolean compareRuntimeServiceUnitMaps(RuntimeContainer cont1, RuntimeContainer cont2) {
+    private static boolean compareRuntimeServiceUnitMaps(RuntimeContainer cont1, RuntimeContainer cont2) {
         Collection<RuntimeServiceUnit> suList1 = cont1.getServiceUnits();
         Collection<RuntimeServiceUnit> suList2 = cont2.getServiceUnits();
 
@@ -97,11 +100,11 @@ public class RuntimeModelComparator {
         return true;
     }
 
-    private boolean compareRuntimeServiceUnits(RuntimeServiceUnit su1, RuntimeServiceUnit su2) {
+    private static boolean compareRuntimeServiceUnits(RuntimeServiceUnit su1, RuntimeServiceUnit su2) {
         return su1.getId().equals(su2.getId());
     }
 
-    private boolean compareRuntimeComponents(RuntimeComponent comp1, RuntimeComponent comp2) {
+    private static boolean compareRuntimeComponents(RuntimeComponent comp1, RuntimeComponent comp2) {
         return comp1.getId().equals(comp2.getId());
     }
 }

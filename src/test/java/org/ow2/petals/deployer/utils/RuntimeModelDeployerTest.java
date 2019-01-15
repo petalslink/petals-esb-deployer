@@ -42,6 +42,9 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 
+/**
+ * @author alagane
+ */
 public class RuntimeModelDeployerTest {
     final public static String CONTAINER_NAME = "sample-0";
 
@@ -86,8 +89,8 @@ public class RuntimeModelDeployerTest {
         org.ow2.petals.admin.topology.Container cont = createContainerSample();
         petalsAdminApiRule.registerContainer(cont);
         ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(), artifactLifecycleFactoryMock,
-                JBIDescriptorBuilder.getInstance());
+        RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
+                artifactLifecycleFactoryMock, JBIDescriptorBuilder.getInstance());
         modelDeployer.deployRuntimeModel(model);
 
         RuntimeModelExporter modelExporter = new RuntimeModelExporter();

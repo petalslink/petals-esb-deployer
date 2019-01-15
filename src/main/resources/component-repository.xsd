@@ -17,19 +17,39 @@
  for the GNU Lesser General Public License version 2.1.
 -->
 <schema targetNamespace="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" version="1.0"
-   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" elementFormDefault="qualified">
+   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
+   elementFormDefault="qualified">
 
    <complexType name="componentRepository">
       <sequence>
-         <element name="component" type="cr:component" maxOccurs="unbounded" />
+         <element name="component" type="cr:component" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of components of this repository.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
    </complexType>
 
    <complexType name="component">
       <sequence>
-         <element name="url" type="string" />
+         <element name="url" type="string">
+            <annotation>
+               <documentation>
+                  The URL of the associated archive.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
-      <attribute name="id" type="string" use="required" />
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               The identifier of this component in the model. It must be the same than the one defined in
+               the JBI descriptor of the component and must be unique in the model.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
 </schema>

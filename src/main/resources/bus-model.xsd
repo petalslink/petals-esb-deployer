@@ -27,43 +27,130 @@
 
    <complexType name="busModel">
       <sequence>
-         <element name="machine" type="bm:machine" maxOccurs="unbounded" />
-         <element name="bus" type="bm:bus" maxOccurs="unbounded" />
+         <element name="machine" type="bm:machine" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The machines on which parts of a Petals ESB bus will be running.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="bus" type="bm:bus" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of Petals ESB busses to deploy.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
    </complexType>
 
    <complexType name="bus">
       <sequence>
-         <element name="container-instance" type="bm:containerInstance" maxOccurs="unbounded" />
+         <element name="container-instance" type="bm:containerInstance" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The instances of Petals ESB containers forming the Petals ESB bus.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
-      <attribute name="topology-ref" type="string" use="required" />
+      <attribute name="topology-ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               The reference topology from the topology model.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
    <complexType name="containerInstance">
       <sequence>
-         <element name="component-instance" type="bm:componentInstance" maxOccurs="unbounded" />
-         <element name="service-unit-instance" type="bm:serviceUnitInstance" maxOccurs="unbounded" />
+         <element name="component-instance" type="bm:componentInstance" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The component instances required by service units.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="service-unit-instance" type="bm:serviceUnitInstance" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The service unit instances to deploy on the container.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
-      <attribute name="ref" type="string" use="optional" />
-      <attribute name="jmx-port" type="int" />
-      <attribute name="jmx-user" type="string" />
-      <attribute name="jmx-password" type="string" />
-      <attribute name="machine-ref" type="string" use="required" />
+      <attribute name="ref" type="string" use="optional">
+         <annotation>
+            <documentation>
+               Reference to a container from the topology model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-port" type="int">
+         <annotation>
+            <documentation>
+               JMX port of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX port must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-user" type="string">
+         <annotation>
+            <documentation>
+               JMX username of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX username must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-password" type="string">
+         <annotation>
+            <documentation>
+               JMX password of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX password must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="machine-ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               The reference of the machine on which the container is running.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
    <complexType name="componentInstance">
-      <attribute name="ref" type="string" use="required" />
+      <attribute name="ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               Reference to a component from a component repository.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
    <complexType name="serviceUnitInstance">
-      <attribute name="ref" type="string" use="required" />
+      <attribute name="ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               Reference to a service unit from a service unit model.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 
    <complexType name="provisionedMachine">
       <complexContent>
          <extension base="bm:machine">
             <sequence>
-               <element name="hostname" type="string" />
+               <element name="hostname" type="string">
+                  <annotation>
+                     <documentation>
+                        Hostname, IP address or deployment property name of the provisioned machine.
+                     </documentation>
+                  </annotation>
+               </element>
             </sequence>
          </extension>
       </complexContent>
@@ -71,6 +158,12 @@
 
    <complexType name="machine" abstract="true">
       <sequence />
-      <attribute name="id" type="string" use="required" />
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               Identifier of the machine. It must be unique in the model.
+            </documentation>
+         </annotation>
+      </attribute>
    </complexType>
 </schema>

@@ -51,6 +51,9 @@ import org.ow2.petals.deployer.model.topology.xml._1.TopologyModel;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 
+/**
+ * @author alagane
+ */
 public class ParseModelTest {
 
     final public static String CONTAINER_NAME = "sample-0";

@@ -60,36 +60,11 @@
          <version>2.4.0</version>
       </dependency>
 
-<!--       <dependency>
-         <groupId>org.mockito</groupId>
-         <artifactId>mockito-all</artifactId>
-         <version>1.10.19</version>
-         <scope>test</scope>
-      </dependency> -->
-
-<!--       <dependency>
-         <groupId>com.google.code.gson</groupId>
-         <artifactId>gson</artifactId>
-         <version>2.8.5</version>
-      </dependency> -->
-
-<!--       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-databind</artifactId>
-         <version>2.9.7</version>
-      </dependency> -->
-
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
          <version>2.6</version>
       </dependency>
-
-<!--       <dependency>
-         <groupId>com.fasterxml.jackson.core</groupId>
-         <artifactId>jackson-annotations</artifactId>
-         <version>2.9.0</version>
-      </dependency> -->
 
       <dependency>
          <groupId>org.jvnet.jaxb2_commons</groupId>

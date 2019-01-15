@@ -29,6 +29,9 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 
+/**
+ * @author alagane
+ */
 public class ModelConverterTest {
 
     @Test

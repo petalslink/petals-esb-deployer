@@ -36,6 +36,9 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
+/**
+ * @author alagane
+ */
 public class RuntimeModelExporter {
 
     private static final Logger LOG = Logger.getLogger(RuntimeModelExporter.class.getName());
