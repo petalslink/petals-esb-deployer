@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
@@ -63,9 +64,9 @@ public class RuntimeModelDeployer {
 
     private JBIDescriptorBuilder jdb;
 
-    private HashSet<String> deployedComponents = new HashSet<String>();
+    private Set<String> deployedComponents = new HashSet<String>();
 
-    private HashSet<String> deployedServiceUnits = new HashSet<String>();
+    private Set<String> deployedServiceUnits = new HashSet<String>();
 
     public RuntimeModelDeployer() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
         this(PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI(), null,
@@ -155,22 +156,22 @@ public class RuntimeModelDeployer {
         LOG.fine("Deploying component " + component.getId());
         ComponentLifecycle compLifecycle = artifactLifecycleFactory
                 .createComponentLifecycle(new org.ow2.petals.admin.api.artifact.Component(compId,
-                        convertComponentType(jbi.getComponent().getType())));
+                        convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType())));
 
         compLifecycle.deploy(compFile.toURI().toURL());
         compLifecycle.start();
         LOG.fine("Component " + compId + " deployed and started");
     }
 
-    public ComponentType convertComponentType(
+    public ComponentType convertComponentTypeFromJbiToPetalsAdmin(
             final org.ow2.petals.jbi.descriptor.original.generated.ComponentType jbiType) {
+        ComponentType compType = null;
         switch (jbiType) {
             case BINDING_COMPONENT:
-                return ComponentType.BC;
+                compType = ComponentType.BC;
             case SERVICE_ENGINE:
-                return ComponentType.SE;
-            default:
-                return null;
+                compType = ComponentType.SE;
         }
+        return compType;
     }
 }

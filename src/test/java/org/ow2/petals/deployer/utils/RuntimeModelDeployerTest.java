@@ -29,7 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.ow2.petals.admin.junit.ArtifactLifecycleFactoryMock;
@@ -61,8 +61,8 @@ public class RuntimeModelDeployerTest {
     @Rule
     public PetalsAdministrationApi petalsAdminApiRule = new PetalsAdministrationApi();
 
-    @Before
-    public void setupLogger() throws Exception {
+    @BeforeClass
+    public static void setupLogger() throws Exception {
         Logger deployerLogger = Logger.getLogger(RuntimeModelDeployer.class.getName());
         deployerLogger.setLevel(Level.FINER);
         Logger comparatorLogger = Logger.getLogger(RuntimeModelComparator.class.getName());
@@ -95,10 +95,9 @@ public class RuntimeModelDeployerTest {
 
         RuntimeModelExporter modelExporter = new RuntimeModelExporter();
         RuntimeModel exportedModel = modelExporter.exportRuntimeModel(CONTAINER_HOST, CONTAINER_JMX_PORT,
-                CONTAINER_USER, CONTAINER_PWD);
+                CONTAINER_USER, CONTAINER_PWD, null);
 
-        RuntimeModelComparator modelComparator = new RuntimeModelComparator();
-        assertTrue(modelComparator.compareRuntimeModels(model, exportedModel));
+        assertTrue(RuntimeModelComparator.compareRuntimeModels(model, exportedModel));
     }
 
     private org.ow2.petals.admin.topology.Container createContainerSample() {

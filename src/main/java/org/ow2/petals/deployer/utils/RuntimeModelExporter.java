@@ -21,7 +21,6 @@ package org.ow2.petals.deployer.utils;
 import java.util.logging.Logger;
 
 import org.ow2.petals.admin.api.ArtifactAdministration;
-import org.ow2.petals.admin.api.ContainerAdministration;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.artifact.Artifact;
@@ -45,8 +44,6 @@ public class RuntimeModelExporter {
 
     private PetalsAdministration petalsAdmin;
 
-    private ContainerAdministration containerAdmin;
-
     private ArtifactAdministration artifactAdmin;
 
     public RuntimeModelExporter() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
@@ -55,19 +52,32 @@ public class RuntimeModelExporter {
 
     public RuntimeModelExporter(PetalsAdministration petalsAdmin) {
         this.petalsAdmin = petalsAdmin;
-        containerAdmin = petalsAdmin.newContainerAdministration();
         artifactAdmin = petalsAdmin.newArtifactAdministration();
     }
 
+    /**
+     * If topologyPassphrase is null, the exported RuntimeModel will not contain JMX usernames and JMX passwords.
+     * 
+     * @param hostname
+     * @param port
+     * @param user
+     * @param password
+     * @param topologyPassphrase
+     * @return the RuntimeModel of the container corresponding to other parameters
+     * @throws RuntimeModelException
+     * @throws ArtifactAdministrationException
+     * @throws ContainerAdministrationException
+     */
     public RuntimeModel exportRuntimeModel(final String hostname, final int port, final String user,
-            final String password)
+            final String password, final String topologyPassphrase)
             throws RuntimeModelException, ArtifactAdministrationException, ContainerAdministrationException {
         petalsAdmin.connect(hostname, port, user, password);
 
         RuntimeModel model = new RuntimeModel();
 
-        RuntimeContainer cont = new RuntimeContainer(petalsAdmin.newContainerAdministration().getTopology(null, false)
-                .getContainers().get(0).getContainerName(), port, user, password, hostname);
+        RuntimeContainer cont = new RuntimeContainer(petalsAdmin.newContainerAdministration()
+                .getTopology(topologyPassphrase, false).getContainers().get(0).getContainerName(), port, user, password,
+                hostname);
         model.addContainer(cont);
 
         for (Artifact artifact : artifactAdmin.listArtifacts()) {

@@ -72,10 +72,8 @@ public class ModelDeployer {
 
             Model model = unmarshaller.unmarshal(new StreamSource(modelFile), Model.class).getValue();
 
-            ModelConverter converter = new ModelConverter();
-
             RuntimeModel runtimeModel;
-            runtimeModel = converter.convertModelToRuntimeModel(model);
+            runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
             RuntimeModelDeployer deployer;
             deployer = new RuntimeModelDeployer();

@@ -29,6 +29,13 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
  * @author alagane
  */
 public class RuntimeModelComparator {
+    /**
+     * Compare two runtimes models. The URL are not checked.
+     * 
+     * @param m1
+     * @param m2
+     * @return true if m1 and m2 are equivalents
+     */
     public static boolean compareRuntimeModels(final RuntimeModel m1, final RuntimeModel m2) {
         return compareRuntimeContainerMaps(m1, m2);
     }

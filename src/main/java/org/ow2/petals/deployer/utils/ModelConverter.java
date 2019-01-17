@@ -33,7 +33,6 @@ import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentReposi
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
-import org.ow2.petals.deployer.model.topology.xml._1.TopologyModel;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
@@ -49,9 +48,7 @@ public class ModelConverter {
             throws MalformedURLException, RuntimeModelException {
         RuntimeModel runtimeModel = new RuntimeModel();
 
-        TopologyModel topoModel = model.getTopologyModel();
-
-        Container cont = topoModel.getTopology().get(0).getContainer().get(0);
+        Container cont = model.getTopologyModel().getTopology().get(0).getContainer().get(0);
 
         BusModel busModel = model.getBusModel();
 

@@ -18,7 +18,7 @@
     </ns2:component-repository>
     <ns2:topology-model>
         <ns4:topology id="topo1">
-            <ns4:container id="sample-0" default-jmx-user="petals" default-jmx-port="7700" default-jmx-password="petals"/>
+            <ns4:container id="sample-0" default-jmx-port="7700" default-jmx-user="petals" default-jmx-password="petals"/>
         </ns4:topology>
     </ns2:topology-model>
     <ns2:bus-model>
