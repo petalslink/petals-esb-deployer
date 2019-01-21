@@ -165,13 +165,13 @@ public class RuntimeModelDeployer {
 
     public ComponentType convertComponentTypeFromJbiToPetalsAdmin(
             final org.ow2.petals.jbi.descriptor.original.generated.ComponentType jbiType) {
-        ComponentType compType = null;
         switch (jbiType) {
             case BINDING_COMPONENT:
-                compType = ComponentType.BC;
+                return ComponentType.BC;
             case SERVICE_ENGINE:
-                compType = ComponentType.SE;
+                return ComponentType.SE;
+            default:
+                return null;
         }
-        return compType;
     }
 }
