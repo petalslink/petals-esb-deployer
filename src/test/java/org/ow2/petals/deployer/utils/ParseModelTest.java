@@ -52,7 +52,7 @@ import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class ParseModelTest {
 

@@ -25,7 +25,7 @@ import java.util.Map;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeContainer {
 

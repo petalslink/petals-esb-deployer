@@ -21,7 +21,7 @@ package org.ow2.petals.deployer.runtimemodel;
 import java.net.URL;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeComponent {
     private final String id;

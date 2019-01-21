@@ -52,7 +52,7 @@ import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 import org.ow2.petals.jbi.descriptor.original.generated.ServiceAssembly;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModelDeployer {
 

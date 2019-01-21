@@ -36,7 +36,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModelExporter {
 

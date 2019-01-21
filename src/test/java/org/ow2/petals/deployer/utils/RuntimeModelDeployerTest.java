@@ -43,7 +43,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModelDeployerTest {
     final public static String CONTAINER_NAME = "sample-0";

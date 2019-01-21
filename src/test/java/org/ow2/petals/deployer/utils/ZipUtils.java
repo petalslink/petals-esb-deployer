@@ -28,7 +28,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class ZipUtils {
     private static final int DEFAULT_BUFFER_SIZE = 1024;

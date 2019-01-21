@@ -19,7 +19,7 @@
 package org.ow2.petals.deployer.utils;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModelDeployerException extends Exception {
 

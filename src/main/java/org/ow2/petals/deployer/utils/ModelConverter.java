@@ -41,7 +41,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class ModelConverter {
     public static RuntimeModel convertModelToRuntimeModel(Model model)

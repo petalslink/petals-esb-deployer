@@ -30,7 +30,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 
 /**
- * @author alagane
+ * @author Alexandre Lagane - Linagora
  */
 public class ModelConverterTest {
 
