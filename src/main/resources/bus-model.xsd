@@ -27,14 +27,14 @@
 
    <complexType name="busModel">
       <sequence>
-         <element name="machine" type="bm:machine" maxOccurs="unbounded">
+         <element name="machine" type="bm:machine" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The machines on which parts of a Petals ESB bus will be running.
                </documentation>
             </annotation>
          </element>
-         <element name="bus" type="bm:bus" maxOccurs="unbounded">
+         <element name="bus" type="bm:bus" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The list of Petals ESB busses to deploy.
@@ -46,7 +46,7 @@
 
    <complexType name="bus">
       <sequence>
-         <element name="container-instance" type="bm:containerInstance" maxOccurs="unbounded">
+         <element name="container-instance" type="bm:containerInstance" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The instances of Petals ESB containers forming the Petals ESB bus.
@@ -65,14 +65,14 @@
 
    <complexType name="containerInstance">
       <sequence>
-         <element name="component-instance" type="bm:componentInstance" maxOccurs="unbounded">
+         <element name="component-instance" type="bm:componentInstance" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The component instances required by service units.
                </documentation>
             </annotation>
          </element>
-         <element name="service-unit-instance" type="bm:serviceUnitInstance" maxOccurs="unbounded">
+         <element name="service-unit-instance" type="bm:serviceUnitInstance" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The service unit instances to deploy on the container.
@@ -144,7 +144,7 @@
       <complexContent>
          <extension base="bm:machine">
             <sequence>
-               <element name="hostname" type="string">
+               <element name="hostname" type="string" minOccurs="1" maxOccurs="1">
                   <annotation>
                      <documentation>
                         Hostname, IP address or deployment property name of the provisioned machine.

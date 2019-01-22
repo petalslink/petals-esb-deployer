@@ -22,7 +22,7 @@
 
    <complexType name="componentRepository">
       <sequence>
-         <element name="component" type="cr:component" maxOccurs="unbounded">
+         <element name="component" type="cr:component" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The list of components of this repository.
@@ -34,7 +34,7 @@
 
    <complexType name="component">
       <sequence>
-         <element name="url" type="string">
+         <element name="url" type="string" minOccurs="1" maxOccurs="1">
             <annotation>
                <documentation>
                   The URL of the associated archive.

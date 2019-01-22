@@ -22,7 +22,7 @@
 
    <complexType name="topologyModel">
       <sequence>
-         <element name="topology" type="tm:topology" maxOccurs="unbounded">
+         <element name="topology" type="tm:topology" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   The list of topologies in the model. Their id must be unique in the model. There must be
@@ -35,7 +35,7 @@
 
    <complexType name="topology">
       <sequence>
-         <element name="container" type="tm:container" maxOccurs="unbounded">
+         <element name="container" type="tm:container" minOccurs="1" maxOccurs="unbounded">
             <annotation>
                <documentation>
                   Petals ESB containers of the topology. Their id must be unique in the topology. There must
