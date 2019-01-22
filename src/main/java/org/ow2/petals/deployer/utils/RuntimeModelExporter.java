@@ -42,15 +42,15 @@ public class RuntimeModelExporter {
 
     private static final Logger LOG = Logger.getLogger(RuntimeModelExporter.class.getName());
 
-    private PetalsAdministration petalsAdmin;
+    private final PetalsAdministration petalsAdmin;
 
-    private ArtifactAdministration artifactAdmin;
+    private final ArtifactAdministration artifactAdmin;
 
     public RuntimeModelExporter() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
         this(PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI());
     }
 
-    public RuntimeModelExporter(PetalsAdministration petalsAdmin) {
+    public RuntimeModelExporter(final PetalsAdministration petalsAdmin) {
         this.petalsAdmin = petalsAdmin;
         artifactAdmin = petalsAdmin.newArtifactAdministration();
     }

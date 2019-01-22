@@ -44,7 +44,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
  * @author Alexandre Lagane - Linagora
  */
 public class ModelConverter {
-    public static RuntimeModel convertModelToRuntimeModel(Model model)
+    public static RuntimeModel convertModelToRuntimeModel(final Model model)
             throws MalformedURLException, RuntimeModelException {
         RuntimeModel runtimeModel = new RuntimeModel();
 
@@ -73,7 +73,7 @@ public class ModelConverter {
         runtimeModel.addContainer(runtimeCont);
 
         ComponentRepository compRepo = model.getComponentRepository();
-        Map<String, Component> compById = new HashMap<String, Component>();
+        Map<String, Component> compById = new HashMap<>();
         for (Component comp : compRepo.getComponent()) {
             compById.put(comp.getId(), comp);
         }
@@ -84,7 +84,7 @@ public class ModelConverter {
         }
 
         ServiceUnitModel suModel = model.getServiceUnitModel();
-        Map<String, ServiceUnit> suById = new HashMap<String, ServiceUnit>();
+        Map<String, ServiceUnit> suById = new HashMap<>();
         for (ServiceUnit su : suModel.getServiceUnit()) {
             suById.put(su.getId(), su);
         }

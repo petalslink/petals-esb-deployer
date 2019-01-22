@@ -58,15 +58,11 @@ public class RuntimeModelDeployer {
 
     private static final Logger LOG = Logger.getLogger(RuntimeModelDeployer.class.getName());
 
-    private PetalsAdministration petalsAdmin;
+    private final PetalsAdministration petalsAdmin;
 
-    private ArtifactLifecycleFactory artifactLifecycleFactory;
+    private final ArtifactLifecycleFactory artifactLifecycleFactory;
 
-    private JBIDescriptorBuilder jdb;
-
-    private Set<String> deployedComponents = new HashSet<String>();
-
-    private Set<String> deployedServiceUnits = new HashSet<String>();
+    private final JBIDescriptorBuilder jdb;
 
     public RuntimeModelDeployer() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
         this(PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI(), null,
@@ -74,15 +70,15 @@ public class RuntimeModelDeployer {
 
     }
 
-    public RuntimeModelDeployer(PetalsAdministration petalsAdmin, ArtifactLifecycleFactory artifactLifecycleFactory,
-            JBIDescriptorBuilder jdb) {
+    public RuntimeModelDeployer(final PetalsAdministration petalsAdmin,
+            final ArtifactLifecycleFactory artifactLifecycleFactory, final JBIDescriptorBuilder jdb) {
         this.petalsAdmin = petalsAdmin;
         this.artifactLifecycleFactory = artifactLifecycleFactory != null ? artifactLifecycleFactory
                 : petalsAdmin.newArtifactLifecycleFactory();
         this.jdb = jdb;
     }
 
-    public void deployRuntimeModel(RuntimeModel model)
+    public void deployRuntimeModel(final RuntimeModel model)
             throws ConnectionFailedException, ContainerAdministrationException, ArtifactStartedException,
             ArtifactNotDeployedException, ArtifactNotFoundException, IOException, JBIDescriptorException,
             ArtifactAdministrationException, RuntimeModelDeployerException {
@@ -98,14 +94,18 @@ public class RuntimeModelDeployer {
 
         petalsAdmin.connect(hostname, port, user, password);
 
+        Set<String> deployedComponents = new HashSet<String>();
+        Set<String> deployedServiceUnits = new HashSet<String>();
+
         for (RuntimeServiceUnit serviceUnit : serviceUnits) {
-            deployRuntimeServiceUnit(serviceUnit, model);
+            deployRuntimeServiceUnit(serviceUnit, model, deployedComponents, deployedServiceUnits);
         }
 
         LOG.fine("Model deployed");
     }
 
-    private void deployRuntimeServiceUnit(RuntimeServiceUnit serviceUnit, RuntimeModel model)
+    private void deployRuntimeServiceUnit(final RuntimeServiceUnit serviceUnit, final RuntimeModel model,
+            final Set<String> deployedComponents, final Set<String> deployedServiceUnits)
             throws IOException, JBIDescriptorException, ArtifactStartedException, ArtifactNotDeployedException,
             ArtifactNotFoundException, ArtifactAdministrationException, RuntimeModelDeployerException {
         String suId = serviceUnit.getId();
@@ -145,7 +145,7 @@ public class RuntimeModelDeployer {
         }
     }
 
-    private void deployRuntimeComponent(RuntimeComponent component)
+    private void deployRuntimeComponent(final RuntimeComponent component)
             throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
         String compId = component.getId();
         File compFile = Files.createTempFile(compId, "zip").toFile();

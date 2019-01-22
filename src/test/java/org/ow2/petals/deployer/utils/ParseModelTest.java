@@ -20,7 +20,6 @@ package org.ow2.petals.deployer.utils;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -69,7 +68,7 @@ public class ParseModelTest {
     final public static State CONTAINER_STATE = State.REACHABLE;
 
     @Test
-    public void read() throws Exception {
+    public void parseModel() throws Exception {
         ObjectFactory of = new ObjectFactory();
 
         Model model = generateTestModel();
@@ -85,7 +84,6 @@ public class ParseModelTest {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         marshaller.marshal(of.createModel(model), marshalledModelWriter);
-        marshaller.marshal(of.createModel(model), new File("model.xml"));
 
         Model unmarshalledModel = unmarshaller
                 .unmarshal(new StreamSource(new StringReader(marshalledModelWriter.toString())), Model.class)

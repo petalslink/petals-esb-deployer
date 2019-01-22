@@ -81,7 +81,7 @@ public class RuntimeModelDeployerTest {
     }
 
     @Test
-    public void demoSoap() throws Exception {
+    public void deployDemoSoap() throws Exception {
         RuntimeModel model = new RuntimeModel();
         initializeRuntimeModel(model);
 

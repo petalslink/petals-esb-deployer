@@ -24,15 +24,24 @@ import java.net.URL;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeServiceUnit {
-
     private final String id;
 
     private URL url;
 
+    /**
+     * 
+     * @param id
+     *            must not be null
+     */
     public RuntimeServiceUnit(final String id) {
         this.id = id;
     }
 
+    /**
+     * 
+     * @param id
+     *            must not be null
+     */
     public RuntimeServiceUnit(final String id, final URL url) {
         this(id);
         this.url = url;
@@ -51,12 +60,8 @@ public class RuntimeServiceUnit {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof RuntimeServiceUnit)) {
-            return false;
-        }
-
-        return id.equals(((RuntimeServiceUnit) obj).id);
+    public boolean equals(final Object obj) {
+        return obj instanceof RuntimeServiceUnit && id.equals(((RuntimeServiceUnit) obj).id);
     }
 
     @Override

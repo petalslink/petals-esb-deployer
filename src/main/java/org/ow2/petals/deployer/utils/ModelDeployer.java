@@ -19,27 +19,21 @@
 package org.ow2.petals.deployer.utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
-import org.ow2.petals.admin.api.exception.ArtifactAdministrationException;
-import org.ow2.petals.admin.api.exception.ContainerAdministrationException;
-import org.ow2.petals.admin.api.exception.DuplicatedServiceException;
-import org.ow2.petals.admin.api.exception.MissingServiceException;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
-import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
 /**
+ * The main class used for deploying XML models.
+ * 
  * @author Alexandre Lagane - Linagora
  */
 public class ModelDeployer {
@@ -50,13 +44,13 @@ public class ModelDeployer {
     public static final int CONNECTION_TIMEOUT = 5000;
 
     /**
-     * Read timeout in milliseconds to read model or artifacts from URL.
+     * Reading timeout in milliseconds to read model or artifacts from URL.
      */
     public static final int READ_TIMEOUT = 5000;
 
     private static final Logger LOG = Logger.getLogger(ModelDeployer.class.getName());
 
-    public static void deployModel(URL url) throws ModelDeployerException {
+    public static void deployModel(final URL url) throws ModelDeployerException {
         File modelFile;
         try {
             LOG.fine("Downloadind XML model");
@@ -80,9 +74,7 @@ public class ModelDeployer {
 
             deployer.deployRuntimeModel(runtimeModel);
 
-        } catch (JAXBException | IOException | RuntimeModelException | DuplicatedServiceException
-                | MissingServiceException | JBIDescriptorException | ContainerAdministrationException
-                | ArtifactAdministrationException | RuntimeModelDeployerException e) {
+        } catch (Exception e) {
             throw new ModelDeployerException(e);
         }
     }

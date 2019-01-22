@@ -28,10 +28,20 @@ public class RuntimeComponent {
 
     private URL url;
 
+    /**
+     * 
+     * @param id
+     *            must not be null
+     */
     public RuntimeComponent(final String id) {
         this.id = id;
     }
 
+    /**
+     * 
+     * @param id
+     *            must not be null
+     */
     public RuntimeComponent(final String id, final URL url) {
         this(id);
         this.url = url;
@@ -50,12 +60,8 @@ public class RuntimeComponent {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof RuntimeComponent)) {
-            return false;
-        }
-
-        return id.equals(((RuntimeComponent) obj).id);
+    public boolean equals(final Object obj) {
+        return obj instanceof RuntimeComponent && id.equals(((RuntimeComponent) obj).id);
     }
 
     @Override

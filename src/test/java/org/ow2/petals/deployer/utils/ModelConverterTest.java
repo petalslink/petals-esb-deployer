@@ -38,8 +38,7 @@ public class ModelConverterTest {
     public void convertModelToRuntimeModel() throws Exception {
         Model model = ParseModelTest.generateTestModel();
 
-        ModelConverter converter = new ModelConverter();
-        RuntimeModel runtimeModel = converter.convertModelToRuntimeModel(model);
+        RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
         Collection<RuntimeContainer> containers = runtimeModel.getContainers();
         assertEquals(1, containers.size());

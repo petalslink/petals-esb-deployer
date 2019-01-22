@@ -28,7 +28,6 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeContainer {
-
     private final String id;
 
     private int port;
@@ -39,12 +38,28 @@ public class RuntimeContainer {
 
     private String hostname;
 
-    private Map<String, RuntimeServiceUnit> serviceUnits = new HashMap<String, RuntimeServiceUnit>();
+    private final Map<String, RuntimeServiceUnit> serviceUnits = new HashMap<>();
 
-    private Map<String, RuntimeComponent> components = new HashMap<String, RuntimeComponent>();
+    private final Map<String, RuntimeComponent> components = new HashMap<>();
 
+    /**
+     * 
+     * @param id
+     *            must not be null
+     * @param port
+     * @param user
+     *            must not be null
+     * @param password
+     *            must not be null
+     * @param hostname
+     *            must not be null
+     */
     public RuntimeContainer(final String id, final int port, final String user, final String password,
             final String hostname) {
+        assert id != null;
+        assert user != null;
+        assert password != null;
+        assert hostname != null;
         this.id = id;
         this.port = port;
         this.user = user;
@@ -72,7 +87,13 @@ public class RuntimeContainer {
         return hostname;
     }
 
+    /**
+     * 
+     * @param hostname
+     *            must not be null
+     */
     public void setHostname(final String hostname) {
+        assert hostname != null;
         this.hostname = hostname;
     }
 
@@ -80,7 +101,15 @@ public class RuntimeContainer {
         return serviceUnits.get(id);
     }
 
+    /**
+     * 
+     * @param serviceUnit
+     *            must not be null
+     * @throws RuntimeModelException
+     *             Service unit is already in the list
+     */
     public void addServiceUnit(final RuntimeServiceUnit serviceUnit) throws RuntimeModelException {
+        assert serviceUnit != null;
         if (serviceUnits.put(serviceUnit.getId(), serviceUnit) != null) {
             throw new RuntimeModelException("Service unit " + serviceUnit.getId() + " is already in the list");
         }
@@ -90,7 +119,15 @@ public class RuntimeContainer {
         return serviceUnits.values();
     }
 
+    /**
+     * 
+     * @param component
+     *            must not be null
+     * @throws RuntimeModelException
+     *             Component is already in the list
+     */
     public void addComponent(final RuntimeComponent component) throws RuntimeModelException {
+        assert component != null;
         if (components.put(component.getId(), component) != null) {
             throw new RuntimeModelException("Component " + component.getId() + " is already in the list");
         }
@@ -105,12 +142,8 @@ public class RuntimeContainer {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof RuntimeContainer)) {
-            return false;
-        }
-
-        return id.equals(((RuntimeContainer) obj).id);
+    public boolean equals(final Object obj) {
+        return obj instanceof RuntimeContainer && id.equals(((RuntimeContainer) obj).id);
     }
 
     @Override

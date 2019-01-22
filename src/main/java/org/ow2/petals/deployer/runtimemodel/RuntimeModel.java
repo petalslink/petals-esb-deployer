@@ -26,8 +26,7 @@ import java.util.Map;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModel {
-
-    private Map<String, RuntimeContainer> containers = new HashMap<String, RuntimeContainer>();
+    private final Map<String, RuntimeContainer> containers = new HashMap<>();
 
     public void addContainer(final RuntimeContainer container) throws RuntimeModelException {
         if (containers.put(container.getId(), container) != null) {
@@ -46,7 +45,7 @@ public class RuntimeModel {
     public static class RuntimeModelException extends Exception {
         private static final long serialVersionUID = -4775138643228668670L;
 
-        public RuntimeModelException(String message) {
+        public RuntimeModelException(final String message) {
             super(message);
         }
     }
