@@ -121,12 +121,13 @@ public class RuntimeModelDeployer {
                 String compName = jbiSu.getTarget().getComponentName();
                 if (!deployedComponents.contains(compName)) {
                     RuntimeComponent component = model.getContainers().iterator().next().getComponent(compName);
-                    if (component == null) {
-                        throw new RuntimeModelDeployerException("Component " + compName + " (needed by service unit "
-                                + jbiSu.getIdentification().getName() + ") not found");
+                    if (component != null) {
+                        deployRuntimeComponent(component);
+                        deployedComponents.add(compName);
+                    } else {
+                        LOG.warning("Component " + compName + " (needed by service unit "
+                                + jbiSu.getIdentification().getName() + ") not found in the model");
                     }
-                    deployRuntimeComponent(component);
-                    deployedComponents.add(compName);
                 }
             }
             ServiceAssemblyLifecycle saLifecycle = artifactLifecycleFactory.createServiceAssemblyLifecycle(
