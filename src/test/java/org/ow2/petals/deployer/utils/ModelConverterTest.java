@@ -36,7 +36,7 @@ public class ModelConverterTest {
 
     @Test
     public void convertModelToRuntimeModel() throws Exception {
-        Model model = ParseModelTest.generateTestModel();
+        Model model = ModelUtils.generateTestModel();
 
         RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 

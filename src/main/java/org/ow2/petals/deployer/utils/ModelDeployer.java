@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
@@ -50,6 +51,18 @@ public class ModelDeployer {
 
     private static final Logger LOG = Logger.getLogger(ModelDeployer.class.getName());
 
+    private static final Unmarshaller UNMARSHALLER;
+    static {
+        Unmarshaller unmarshaller = null;
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
+            unmarshaller = jaxbContext.createUnmarshaller();
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+        UNMARSHALLER = unmarshaller;
+    }
+
     public static void deployModel(final URL url) throws ModelDeployerException {
         File modelFile;
         try {
@@ -60,11 +73,7 @@ public class ModelDeployer {
 
             LOG.fine("Parsing XML model");
 
-            JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Model model = unmarshaller.unmarshal(new StreamSource(modelFile), Model.class).getValue();
+            Model model = UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
 
             RuntimeModel runtimeModel;
             runtimeModel = ModelConverter.convertModelToRuntimeModel(model);

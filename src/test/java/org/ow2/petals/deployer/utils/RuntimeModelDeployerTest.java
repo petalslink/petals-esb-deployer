@@ -97,7 +97,7 @@ public class RuntimeModelDeployerTest {
         RuntimeModel exportedModel = modelExporter.exportRuntimeModel(CONTAINER_HOST, CONTAINER_JMX_PORT,
                 CONTAINER_USER, CONTAINER_PWD, null);
 
-        assertTrue(RuntimeModelComparator.compareRuntimeModels(model, exportedModel));
+        assertTrue(RuntimeModelComparator.compareRuntimeModelsWithoutUrls(model, exportedModel));
     }
 
     private org.ow2.petals.admin.topology.Container createContainerSample() {
