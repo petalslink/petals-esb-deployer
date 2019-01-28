@@ -46,14 +46,14 @@ public class RuntimeModelComparator {
         Collection<RuntimeComponent> compList2 = cont2.getComponents();
 
         for (RuntimeComponent comp1 : compList1) {
-            RuntimeComponent comp2 = cont1.getComponent(comp1.getId());
+            RuntimeComponent comp2 = cont2.getComponent(comp1.getId());
             if (comp2 == null || !compareRuntimeComponents(comp1, comp2)) {
                 return false;
             }
         }
 
         for (RuntimeComponent comp2 : compList2) {
-            if (cont2.getComponent(comp2.getId()) == null) {
+            if (cont1.getComponent(comp2.getId()) == null) {
                 return false;
             }
         }
@@ -66,14 +66,14 @@ public class RuntimeModelComparator {
         Collection<RuntimeContainer> contList2 = m2.getContainers();
 
         for (RuntimeContainer cont1 : contList1) {
-            RuntimeContainer cont2 = m1.getContainer(cont1.getId());
+            RuntimeContainer cont2 = m2.getContainer(cont1.getId());
             if (cont2 == null || !compareRuntimeContainers(cont1, cont2)) {
                 return false;
             }
         }
 
         for (RuntimeContainer cont2 : contList2) {
-            if (m2.getContainer(cont2.getId()) == null) {
+            if (m1.getContainer(cont2.getId()) == null) {
                 return false;
             }
         }

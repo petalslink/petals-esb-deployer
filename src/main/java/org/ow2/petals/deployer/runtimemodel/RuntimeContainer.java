@@ -45,14 +45,14 @@ public class RuntimeContainer {
     /**
      * 
      * @param id
-     *            must not be null
+     *            must not be {code null}
      * @param port
      * @param user
-     *            must not be null
+     *            must not be {code null}
      * @param password
-     *            must not be null
+     *            must not be {code null}
      * @param hostname
-     *            must not be null
+     *            must not be {code null}
      */
     public RuntimeContainer(final String id, final int port, final String user, final String password,
             final String hostname) {
@@ -90,7 +90,7 @@ public class RuntimeContainer {
     /**
      * 
      * @param hostname
-     *            must not be null
+     *            must not be {code null}
      */
     public void setHostname(final String hostname) {
         assert hostname != null;
@@ -104,7 +104,7 @@ public class RuntimeContainer {
     /**
      * 
      * @param serviceUnit
-     *            must not be null
+     *            must not be {code null}
      * @throws RuntimeModelException
      *             Service unit is already in the list
      */
@@ -122,7 +122,7 @@ public class RuntimeContainer {
     /**
      * 
      * @param component
-     *            must not be null
+     *            must not be {code null}
      * @throws RuntimeModelException
      *             Component is already in the list
      */

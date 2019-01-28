@@ -31,7 +31,7 @@ public class RuntimeServiceUnit {
     /**
      * 
      * @param id
-     *            must not be null
+     *            must not be {code null}
      */
     public RuntimeServiceUnit(final String id) {
         this.id = id;
@@ -40,7 +40,7 @@ public class RuntimeServiceUnit {
     /**
      * 
      * @param id
-     *            must not be null
+     *            must not be {code null}
      */
     public RuntimeServiceUnit(final String id, final URL url) {
         this(id);
