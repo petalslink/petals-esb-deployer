@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018-2019 Linagora
+ * Copyright (c) 2019 Linagora
  *
  * This program/library is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -16,16 +16,16 @@
  * for the GNU Lesser General Public License version 2.1.
  */
 
-package org.ow2.petals.deployer.utils;
+package org.ow2.petals.deployer.utils.exceptions;
 
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeModelDeployerException extends Exception {
+public class ComponentDeploymentException extends RuntimeModelDeployerException {
 
-    private static final long serialVersionUID = -3352449083809006549L;
+    private static final long serialVersionUID = 3893935147643008477L;
 
-    public RuntimeModelDeployerException(final String message) {
+    public ComponentDeploymentException(final String message) {
         super(message);
     }
 }

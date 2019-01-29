@@ -30,6 +30,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeployerException;
 
 /**
  * The main class used for deploying XML models.

@@ -46,6 +46,8 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.utils.exceptions.ComponentDeploymentException;
+import org.ow2.petals.deployer.utils.exceptions.RuntimeModelDeployerException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
@@ -125,7 +127,7 @@ public class RuntimeModelDeployer {
                         deployRuntimeComponent(component);
                         deployedComponents.add(compName);
                     } else {
-                        LOG.warning("Component " + compName + " (needed by service unit "
+                        throw new ComponentDeploymentException("Component " + compName + " (needed by service unit "
                                 + jbiSu.getIdentification().getName() + ") not found in the model");
                     }
                 }
