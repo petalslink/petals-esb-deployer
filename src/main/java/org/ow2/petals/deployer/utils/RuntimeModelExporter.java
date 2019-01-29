@@ -31,8 +31,8 @@ import org.ow2.petals.admin.api.exception.MissingServiceException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
 /**

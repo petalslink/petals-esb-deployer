@@ -22,15 +22,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerException;
+
 /**
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModel {
     private final Map<String, RuntimeContainer> containers = new HashMap<>();
 
-    public void addContainer(final RuntimeContainer container) throws RuntimeModelException {
+    /**
+     * @param container
+     *            must not be {code null}
+     * @throws DuplicatedContainerException
+     */
+    public void addContainer(final RuntimeContainer container) throws DuplicatedContainerException {
         if (containers.put(container.getId(), container) != null) {
-            throw new RuntimeModelException("Container " + container.getId() + " is already in the list");
+            throw new DuplicatedContainerException("Container " + container.getId() + " is already in the list");
         }
     }
 
@@ -40,13 +47,5 @@ public class RuntimeModel {
 
     public Collection<RuntimeContainer> getContainers() {
         return containers.values();
-    }
-
-    public static class RuntimeModelException extends Exception {
-        private static final long serialVersionUID = -4775138643228668670L;
-
-        public RuntimeModelException(final String message) {
-            super(message);
-        }
     }
 }

@@ -31,8 +31,6 @@ import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 
-import com.ebmwebsourcing.easycommons.lang.UncheckedException;
-
 /**
  * The main class used for deploying XML models.
  * 
@@ -58,7 +56,7 @@ public class ModelDeployer {
             JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
             UNMARSHALLER = jaxbContext.createUnmarshaller();
         } catch (Exception e) {
-            throw new UncheckedException(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -67,7 +65,7 @@ public class ModelDeployer {
         try {
             DEPLOYER = new RuntimeModelDeployer();
         } catch (Exception e) {
-            throw new UncheckedException(e);
+            throw new RuntimeException(e);
         }
     }
 

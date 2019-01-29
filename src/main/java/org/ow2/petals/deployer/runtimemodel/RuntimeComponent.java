@@ -41,6 +41,7 @@ public class RuntimeComponent {
      * 
      * @param id
      *            must not be {code null}
+     * @param url
      */
     public RuntimeComponent(final String id, final URL url) {
         this(id);

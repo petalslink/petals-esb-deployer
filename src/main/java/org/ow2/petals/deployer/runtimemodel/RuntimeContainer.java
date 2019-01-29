@@ -22,7 +22,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.ow2.petals.deployer.runtimemodel.RuntimeModel.RuntimeModelException;
+import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
+import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -105,13 +106,13 @@ public class RuntimeContainer {
      * 
      * @param serviceUnit
      *            must not be {code null}
-     * @throws RuntimeModelException
+     * @throws DuplicatedServiceUnitException
      *             Service unit is already in the list
      */
-    public void addServiceUnit(final RuntimeServiceUnit serviceUnit) throws RuntimeModelException {
+    public void addServiceUnit(final RuntimeServiceUnit serviceUnit) throws DuplicatedServiceUnitException {
         assert serviceUnit != null;
         if (serviceUnits.put(serviceUnit.getId(), serviceUnit) != null) {
-            throw new RuntimeModelException("Service unit " + serviceUnit.getId() + " is already in the list");
+            throw new DuplicatedServiceUnitException("Service unit " + serviceUnit.getId() + " is already in the list");
         }
     }
 
@@ -123,13 +124,13 @@ public class RuntimeContainer {
      * 
      * @param component
      *            must not be {code null}
-     * @throws RuntimeModelException
+     * @throws DuplicatedComponentException
      *             Component is already in the list
      */
-    public void addComponent(final RuntimeComponent component) throws RuntimeModelException {
+    public void addComponent(final RuntimeComponent component) throws DuplicatedComponentException {
         assert component != null;
         if (components.put(component.getId(), component) != null) {
-            throw new RuntimeModelException("Component " + component.getId() + " is already in the list");
+            throw new DuplicatedComponentException("Component " + component.getId() + " is already in the list");
         }
     }
 
