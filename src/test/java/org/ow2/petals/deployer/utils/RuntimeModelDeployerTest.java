@@ -35,7 +35,6 @@ import org.junit.Test;
 import org.ow2.petals.admin.junit.ArtifactLifecycleFactoryMock;
 import org.ow2.petals.admin.junit.PetalsAdministrationApi;
 import org.ow2.petals.admin.topology.Container.PortType;
-import org.ow2.petals.admin.topology.Container.State;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
@@ -46,17 +45,6 @@ import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModelDeployerTest {
-    final public static String CONTAINER_NAME = "sample-0";
-
-    final public static String CONTAINER_HOST = "localhost";
-
-    final public static int CONTAINER_JMX_PORT = 7700;
-
-    final public static String CONTAINER_USER = "petals";
-
-    final public static String CONTAINER_PWD = "petals";
-
-    final public static State CONTAINER_STATE = State.REACHABLE;
 
     @Rule
     public PetalsAdministrationApi petalsAdminApiRule = new PetalsAdministrationApi();
@@ -94,23 +82,23 @@ public class RuntimeModelDeployerTest {
         modelDeployer.deployRuntimeModel(model);
 
         RuntimeModelExporter modelExporter = new RuntimeModelExporter();
-        RuntimeModel exportedModel = modelExporter.exportRuntimeModel(CONTAINER_HOST, CONTAINER_JMX_PORT,
-                CONTAINER_USER, CONTAINER_PWD, null);
+        RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
 
-        assertTrue(RuntimeModelComparator.compareRuntimeModelsWithoutUrls(model, exportedModel));
+        assertTrue(RuntimeModelComparator.compareRuntimeModels(model, exportedModel));
     }
 
     private org.ow2.petals.admin.topology.Container createContainerSample() {
         final Map<PortType, Integer> ports = new HashMap<>();
-        ports.put(PortType.JMX, CONTAINER_JMX_PORT);
-        return new org.ow2.petals.admin.topology.Container(CONTAINER_NAME, CONTAINER_HOST, ports, CONTAINER_USER,
-                CONTAINER_PWD, CONTAINER_STATE);
+        ports.put(PortType.JMX, ModelUtils.CONTAINER_JMX_PORT);
+        return new org.ow2.petals.admin.topology.Container(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_HOST, ports,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, ModelUtils.CONTAINER_STATE);
     }
 
     private void initializeRuntimeModel(RuntimeModel model) throws Exception {
 
-        RuntimeContainer cont = new RuntimeContainer(CONTAINER_NAME, CONTAINER_JMX_PORT, CONTAINER_USER, CONTAINER_PWD,
-                "localhost");
+        RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
                 ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
         cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",

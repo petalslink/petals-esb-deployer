@@ -3,8 +3,10 @@ package org.ow2.petals.deployer.utils;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 
+import org.ow2.petals.admin.topology.Container.State;
 import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
@@ -19,8 +21,26 @@ import org.ow2.petals.deployer.model.topology.xml._1.Container;
 import org.ow2.petals.deployer.model.topology.xml._1.Topology;
 import org.ow2.petals.deployer.model.topology.xml._1.TopologyModel;
 import org.ow2.petals.deployer.model.xml._1.Model;
+import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
+import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
+import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
+import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+
+import com.ebmwebsourcing.easycommons.lang.UncheckedException;
 
 public class ModelUtils {
+
+    final public static String CONTAINER_NAME = "sample-0";
+
+    final public static String CONTAINER_HOST = "localhost";
+
+    final public static int CONTAINER_JMX_PORT = 7700;
+
+    final public static String CONTAINER_USER = "petals";
+
+    final public static String CONTAINER_PWD = "petals";
+
+    final public static State CONTAINER_STATE = State.REACHABLE;
 
     public static Model generateTestModel() throws MalformedURLException, IOException, URISyntaxException {
         Model model = new Model();
@@ -67,10 +87,10 @@ public class ModelUtils {
         topoModel.getTopology().add(topo);
 
         Container cont = new Container();
-        cont.setId(ParseModelTest.CONTAINER_NAME);
-        cont.setDefaultJmxPort(ParseModelTest.CONTAINER_JMX_PORT);
-        cont.setDefaultJmxUser(ParseModelTest.CONTAINER_USER);
-        cont.setDefaultJmxPassword(ParseModelTest.CONTAINER_PWD);
+        cont.setId(CONTAINER_NAME);
+        cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
+        cont.setDefaultJmxUser(CONTAINER_USER);
+        cont.setDefaultJmxPassword(CONTAINER_PWD);
         topo.getContainer().add(cont);
 
         /* Bus Model */
@@ -113,4 +133,26 @@ public class ModelUtils {
         return model;
     }
 
+    public static RuntimeModel generateTestRuntimeModel() {
+        try {
+            RuntimeModel model = new RuntimeModel();
+
+            RuntimeContainer cont = new RuntimeContainer(CONTAINER_NAME, CONTAINER_JMX_PORT, CONTAINER_USER,
+                    CONTAINER_PWD, CONTAINER_HOST);
+            model.addContainer(cont);
+
+            cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
+                    new URL("file:/artifacts/sa-SOAP-Hello_Service1-provide")));
+            cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
+                    new URL("file:/artifacts/sa-SOAP-Hello_Service2-provide")));
+            cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
+                    new URL("file:/artifacts/sa-SOAP-Hello_PortType-consume")));
+
+            cont.addComponent(new RuntimeComponent("petals-bc-soap", new URL("file:/artifacts/petals-bc-soap-5.0.0")));
+
+            return model;
+        } catch (Exception e) {
+            throw new UncheckedException(e);
+        }
+    }
 }

@@ -24,13 +24,14 @@ import java.nio.file.Files;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
+
+import com.ebmwebsourcing.easycommons.lang.UncheckedException;
 
 /**
  * The main class used for deploying XML models.
@@ -53,16 +54,30 @@ public class ModelDeployer {
 
     private static final Unmarshaller UNMARSHALLER;
     static {
-        Unmarshaller unmarshaller = null;
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
-            unmarshaller = jaxbContext.createUnmarshaller();
-        } catch (JAXBException e) {
-            e.printStackTrace();
+            UNMARSHALLER = jaxbContext.createUnmarshaller();
+        } catch (Exception e) {
+            throw new UncheckedException(e);
         }
-        UNMARSHALLER = unmarshaller;
     }
 
+    private static final RuntimeModelDeployer DEPLOYER;
+    static {
+        try {
+            DEPLOYER = new RuntimeModelDeployer();
+        } catch (Exception e) {
+            throw new UncheckedException(e);
+        }
+    }
+
+    /**
+     * Download and deploy the model at the url. The model must be an XML model with XSD {code model.xsd} in resources
+     * directory.
+     * 
+     * @param url
+     * @throws ModelDeployerException
+     */
     public static void deployModel(final URL url) throws ModelDeployerException {
         File modelFile;
         try {
@@ -75,13 +90,9 @@ public class ModelDeployer {
 
             Model model = UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
 
-            RuntimeModel runtimeModel;
-            runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+            RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
-            RuntimeModelDeployer deployer;
-            deployer = new RuntimeModelDeployer();
-
-            deployer.deployRuntimeModel(runtimeModel);
+            DEPLOYER.deployRuntimeModel(runtimeModel);
 
         } catch (Exception e) {
             throw new ModelDeployerException(e);

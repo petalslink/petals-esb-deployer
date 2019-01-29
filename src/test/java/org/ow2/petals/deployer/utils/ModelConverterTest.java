@@ -44,11 +44,11 @@ public class ModelConverterTest {
         assertEquals(1, containers.size());
 
         RuntimeContainer cont = containers.iterator().next();
-        assertEquals(ParseModelTest.CONTAINER_NAME, cont.getId());
-        assertEquals(ParseModelTest.CONTAINER_HOST, cont.getHostname());
-        assertEquals(ParseModelTest.CONTAINER_JMX_PORT, cont.getPort());
-        assertEquals(ParseModelTest.CONTAINER_USER, cont.getUser());
-        assertEquals(ParseModelTest.CONTAINER_PWD, cont.getPassword());
+        assertEquals(ModelUtils.CONTAINER_NAME, cont.getId());
+        assertEquals(ModelUtils.CONTAINER_HOST, cont.getHostname());
+        assertEquals(ModelUtils.CONTAINER_JMX_PORT, cont.getPort());
+        assertEquals(ModelUtils.CONTAINER_USER, cont.getUser());
+        assertEquals(ModelUtils.CONTAINER_PWD, cont.getPassword());
 
         Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
         assertEquals(3, serviceUnits.size());

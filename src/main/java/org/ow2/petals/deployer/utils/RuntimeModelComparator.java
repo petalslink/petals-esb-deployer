@@ -93,14 +93,14 @@ public class RuntimeModelComparator {
         Collection<RuntimeServiceUnit> suList2 = cont2.getServiceUnits();
 
         for (RuntimeServiceUnit su1 : suList1) {
-            RuntimeServiceUnit su2 = cont1.getServiceUnit(su1.getId());
+            RuntimeServiceUnit su2 = cont2.getServiceUnit(su1.getId());
             if (su2 == null || !compareRuntimeServiceUnits(su1, su2)) {
                 return false;
             }
         }
 
         for (RuntimeServiceUnit su2 : suList2) {
-            if (cont2.getServiceUnit(su2.getId()) == null) {
+            if (cont1.getServiceUnit(su2.getId()) == null) {
                 return false;
             }
         }

@@ -29,7 +29,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.junit.Test;
-import org.ow2.petals.admin.topology.Container.State;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 
@@ -37,18 +36,6 @@ import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
  * @author Alexandre Lagane - Linagora
  */
 public class ParseModelTest {
-
-    final public static String CONTAINER_NAME = "sample-0";
-
-    final public static String CONTAINER_HOST = "localhost";
-
-    final public static int CONTAINER_JMX_PORT = 7700;
-
-    final public static String CONTAINER_USER = "petals";
-
-    final public static String CONTAINER_PWD = "petals";
-
-    final public static State CONTAINER_STATE = State.REACHABLE;
 
     @Test
     public void parseModel() throws Exception {
