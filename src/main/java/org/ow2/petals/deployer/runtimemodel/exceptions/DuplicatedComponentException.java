@@ -25,7 +25,7 @@ public class DuplicatedComponentException extends RuntimeModelException {
 
     private static final long serialVersionUID = -5826228789271638203L;
 
-    public DuplicatedComponentException(String message) {
+    public DuplicatedComponentException(final String message) {
         super(message);
     }
 

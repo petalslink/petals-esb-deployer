@@ -43,6 +43,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
 
 public class ModelUtils {
 
@@ -59,50 +60,50 @@ public class ModelUtils {
     final public static State CONTAINER_STATE = State.REACHABLE;
 
     public static Model generateTestModel() throws MalformedURLException, IOException, URISyntaxException {
-        Model model = new Model();
+        final Model model = new Model();
 
         /* Component Repository */
 
-        ComponentRepository compRepo = new ComponentRepository();
+        final ComponentRepository compRepo = new ComponentRepository();
         model.setComponentRepository(compRepo);
 
-        Component bcSoap = new Component();
+        final Component bcSoap = new Component();
         bcSoap.setId("petals-bc-soap");
         bcSoap.setUrl("file:/artifacts/petals-bc-soap-5.0.0");
         compRepo.getComponent().add(bcSoap);
 
         /* Service Unit Model */
 
-        ServiceUnitModel suModel = new ServiceUnitModel();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
         model.setServiceUnitModel(suModel);
 
-        List<ServiceUnit> serviceUnits = suModel.getServiceUnit();
+        final List<ServiceUnit> serviceUnits = suModel.getServiceUnit();
 
-        ServiceUnit suProv1 = new ServiceUnit();
+        final ServiceUnit suProv1 = new ServiceUnit();
         suProv1.setId("su-SOAP-Hello_Service1-provide");
         suProv1.setUrl("file:/artifacts/sa-SOAP-Hello_Service1-provide");
         serviceUnits.add(suProv1);
 
-        ServiceUnit suProv2 = new ServiceUnit();
+        final ServiceUnit suProv2 = new ServiceUnit();
         suProv2.setId("su-SOAP-Hello_Service2-provide");
         suProv2.setUrl("file:/artifacts/sa-SOAP-Hello_Service2-provide");
         serviceUnits.add(suProv2);
 
-        ServiceUnit suCons = new ServiceUnit();
+        final ServiceUnit suCons = new ServiceUnit();
         suCons.setId("su-SOAP-Hello_PortType-consume");
         suCons.setUrl("file:/artifacts/sa-SOAP-Hello_PortType-consume");
         serviceUnits.add(suCons);
 
         /* Topology Model */
 
-        TopologyModel topoModel = new TopologyModel();
+        final TopologyModel topoModel = new TopologyModel();
         model.setTopologyModel(topoModel);
 
-        Topology topo = new Topology();
+        final Topology topo = new Topology();
         topo.setId("topo1");
         topoModel.getTopology().add(topo);
 
-        Container cont = new Container();
+        final Container cont = new Container();
         cont.setId(CONTAINER_NAME);
         cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
         cont.setDefaultJmxUser(CONTAINER_USER);
@@ -111,28 +112,28 @@ public class ModelUtils {
 
         /* Bus Model */
 
-        BusModel busModel = new BusModel();
+        final BusModel busModel = new BusModel();
         model.setBusModel(busModel);
 
-        ProvisionedMachine machine = new ProvisionedMachine();
+        final ProvisionedMachine machine = new ProvisionedMachine();
         machine.setId("main");
         machine.setHostname("localhost");
         busModel.getMachine().add(machine);
 
-        Bus bus = new Bus();
+        final Bus bus = new Bus();
         bus.setTopologyRef(topo.getId());
         busModel.getBus().add(bus);
 
-        ContainerInstance contInst = new ContainerInstance();
+        final ContainerInstance contInst = new ContainerInstance();
         contInst.setRef(cont.getId());
         contInst.setMachineRef(machine.getId());
         bus.getContainerInstance().add(contInst);
 
-        ComponentInstance bcSoapInst = new ComponentInstance();
+        final ComponentInstance bcSoapInst = new ComponentInstance();
         bcSoapInst.setRef(bcSoap.getId());
         contInst.getComponentInstance().add(bcSoapInst);
 
-        List<ServiceUnitInstance> suInstances = contInst.getServiceUnitInstance();
+        final List<ServiceUnitInstance> suInstances = contInst.getServiceUnitInstance();
 
         ServiceUnitInstance suInst = new ServiceUnitInstance();
         suInst.setRef(suProv1.getId());
@@ -151,9 +152,9 @@ public class ModelUtils {
 
     public static RuntimeModel generateTestRuntimeModel() {
         try {
-            RuntimeModel model = new RuntimeModel();
+            final RuntimeModel model = new RuntimeModel();
 
-            RuntimeContainer cont = new RuntimeContainer(CONTAINER_NAME, CONTAINER_JMX_PORT, CONTAINER_USER,
+            final RuntimeContainer cont = new RuntimeContainer(CONTAINER_NAME, CONTAINER_JMX_PORT, CONTAINER_USER,
                     CONTAINER_PWD, CONTAINER_HOST);
             model.addContainer(cont);
 
@@ -167,8 +168,8 @@ public class ModelUtils {
             cont.addComponent(new RuntimeComponent("petals-bc-soap", new URL("file:/artifacts/petals-bc-soap-5.0.0")));
 
             return model;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (final Exception e) {
+            throw new UncheckedException(e);
         }
     }
 }

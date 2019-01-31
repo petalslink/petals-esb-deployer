@@ -84,22 +84,22 @@ public class RuntimeModelDeployer {
             throws ConnectionFailedException, ContainerAdministrationException, ArtifactStartedException,
             ArtifactNotDeployedException, ArtifactNotFoundException, IOException, JBIDescriptorException,
             ArtifactAdministrationException, RuntimeModelDeployerException {
-        RuntimeContainer container = model.getContainers().iterator().next();
-        Collection<RuntimeServiceUnit> serviceUnits = container.getServiceUnits();
+        final RuntimeContainer container = model.getContainers().iterator().next();
+        final Collection<RuntimeServiceUnit> serviceUnits = container.getServiceUnits();
 
         LOG.fine("Deploying model (" + serviceUnits.size() + " service units)");
 
-        String hostname = container.getHostname();
-        int port = container.getPort();
-        String user = container.getUser();
-        String password = container.getPassword();
+        final String hostname = container.getHostname();
+        final int port = container.getPort();
+        final String user = container.getUser();
+        final String password = container.getPassword();
 
         petalsAdmin.connect(hostname, port, user, password);
 
-        Set<String> deployedComponents = new HashSet<String>();
-        Set<String> deployedServiceUnits = new HashSet<String>();
+        final Set<String> deployedComponents = new HashSet<String>();
+        final Set<String> deployedServiceUnits = new HashSet<String>();
 
-        for (RuntimeServiceUnit serviceUnit : serviceUnits) {
+        for (final RuntimeServiceUnit serviceUnit : serviceUnits) {
             deployRuntimeServiceUnit(serviceUnit, model, deployedComponents, deployedServiceUnits);
         }
 
@@ -110,19 +110,19 @@ public class RuntimeModelDeployer {
             final Set<String> deployedComponents, final Set<String> deployedServiceUnits)
             throws IOException, JBIDescriptorException, ArtifactStartedException, ArtifactNotDeployedException,
             ArtifactNotFoundException, ArtifactAdministrationException, RuntimeModelDeployerException {
-        String suId = serviceUnit.getId();
-        File suFile = Files.createTempFile(suId, ".zip").toFile();
+        final String suId = serviceUnit.getId();
+        final File suFile = Files.createTempFile(suId, ".zip").toFile();
         FileUtils.copyURLToFile(serviceUnit.getUrl(), suFile, ModelDeployer.CONNECTION_TIMEOUT,
                 ModelDeployer.READ_TIMEOUT);
-        Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(suFile);
-        ServiceAssembly jbiSa = jbi.getServiceAssembly();
+        final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(suFile);
+        final ServiceAssembly jbiSa = jbi.getServiceAssembly();
 
         if (!deployedServiceUnits.contains(suId)) {
             LOG.fine("Deploying service assembly");
-            for (org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
-                String compName = jbiSu.getTarget().getComponentName();
+            for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
+                final String compName = jbiSu.getTarget().getComponentName();
                 if (!deployedComponents.contains(compName)) {
-                    RuntimeComponent component = model.getContainers().iterator().next().getComponent(compName);
+                    final RuntimeComponent component = model.getContainers().iterator().next().getComponent(compName);
                     if (component != null) {
                         deployRuntimeComponent(component);
                         deployedComponents.add(compName);
@@ -132,12 +132,12 @@ public class RuntimeModelDeployer {
                     }
                 }
             }
-            ServiceAssemblyLifecycle saLifecycle = artifactLifecycleFactory.createServiceAssemblyLifecycle(
+            final ServiceAssemblyLifecycle saLifecycle = artifactLifecycleFactory.createServiceAssemblyLifecycle(
                     new org.ow2.petals.admin.api.artifact.ServiceAssembly(jbiSa.getIdentification().getName()));
             saLifecycle.deploy(suFile.toURI().toURL());
             saLifecycle.start();
-            for (org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
-                String suName = jbiSu.getIdentification().getName();
+            for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
+                final String suName = jbiSu.getIdentification().getName();
                 if (!deployedServiceUnits.contains(suName)) {
                     deployedServiceUnits.add(suName);
                     LOG.fine("Service unit " + suName + " deployed and started");
@@ -150,14 +150,14 @@ public class RuntimeModelDeployer {
 
     private void deployRuntimeComponent(final RuntimeComponent component)
             throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
-        String compId = component.getId();
-        File compFile = Files.createTempFile(compId, "zip").toFile();
+        final String compId = component.getId();
+        final File compFile = Files.createTempFile(compId, "zip").toFile();
         FileUtils.copyURLToFile(component.getUrl(), compFile, ModelDeployer.CONNECTION_TIMEOUT,
                 ModelDeployer.READ_TIMEOUT);
-        Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compFile);
+        final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compFile);
 
         LOG.fine("Deploying component " + component.getId());
-        ComponentLifecycle compLifecycle = artifactLifecycleFactory
+        final ComponentLifecycle compLifecycle = artifactLifecycleFactory
                 .createComponentLifecycle(new org.ow2.petals.admin.api.artifact.Component(compId,
                         convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType())));
 

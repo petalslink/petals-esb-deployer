@@ -16,17 +16,26 @@
  * for the GNU Lesser General Public License version 2.1.
  */
 
-package org.ow2.petals.deployer.runtimemodel.exceptions;
+package org.ow2.petals.deployer.utils.exceptions;
 
 /**
+ * 
  * @author Alexandre Lagane - Linagora
+ *
  */
-public class DuplicatedServiceUnitException extends RuntimeModelException {
+public class UncheckedException extends RuntimeException {
 
-    private static final long serialVersionUID = -8251466267062830623L;
+    private static final long serialVersionUID = 1339368144114468807L;
 
-    public DuplicatedServiceUnitException(final String message) {
-        super(message);
+    public UncheckedException(final Throwable cause) {
+        super(cause);
     }
 
+    public UncheckedException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
+    public UncheckedException(final String message) {
+        super(message);
+    }
 }

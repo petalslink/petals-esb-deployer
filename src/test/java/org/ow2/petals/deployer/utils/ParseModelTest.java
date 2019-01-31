@@ -39,23 +39,23 @@ public class ParseModelTest {
 
     @Test
     public void parseModel() throws Exception {
-        ObjectFactory of = new ObjectFactory();
+        final ObjectFactory of = new ObjectFactory();
 
-        Model model = ModelUtils.generateTestModel();
+        final Model model = ModelUtils.generateTestModel();
 
-        StringWriter marshalledModelWriter = new StringWriter();
-        StringWriter unmarshalledModelWriter = new StringWriter();
+        final StringWriter marshalledModelWriter = new StringWriter();
+        final StringWriter unmarshalledModelWriter = new StringWriter();
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
+        final JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
 
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+        final Marshaller marshaller = jaxbContext.createMarshaller();
+        final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
 
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         marshaller.marshal(of.createModel(model), marshalledModelWriter);
 
-        Model unmarshalledModel = unmarshaller
+        final Model unmarshalledModel = unmarshaller
                 .unmarshal(new StreamSource(new StringReader(marshalledModelWriter.toString())), Model.class)
                 .getValue();
 

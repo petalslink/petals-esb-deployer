@@ -44,25 +44,28 @@ public class ZipUtils {
      * @throws IOException
      * @throws URISyntaxException
      */
-    public static File createZipFromResourceDirectory(String resourcePath) throws IOException, URISyntaxException {
-        File zip = Files.createTempFile(null, null).toFile();
-        File resource = new File(Thread.currentThread().getContextClassLoader().getResource(resourcePath).toURI());
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
-        for (File file : resource.listFiles()) {
+    public static File createZipFromResourceDirectory(final String resourcePath)
+            throws IOException, URISyntaxException {
+        final File zip = Files.createTempFile(null, null).toFile();
+        final File resource = new File(
+                Thread.currentThread().getContextClassLoader().getResource(resourcePath).toURI());
+        final ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
+        for (final File file : resource.listFiles()) {
             addDirectoryToZip("", file, zos);
         }
         zos.close();
         return zip;
     }
 
-    private static void addDirectoryToZip(String prefix, File file, ZipOutputStream zos) throws IOException {
+    private static void addDirectoryToZip(final String prefix, final File file, final ZipOutputStream zos)
+            throws IOException {
         if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
+            for (final File child : file.listFiles()) {
                 addDirectoryToZip(prefix + file.getName() + "/", child, zos);
             }
         } else {
             zos.putNextEntry(new ZipEntry(prefix + file.getName()));
-            FileInputStream fis = new FileInputStream(file);
+            final FileInputStream fis = new FileInputStream(file);
             byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
             while (fis.available() > 0) {
                 int read = fis.read(buffer, 0, buffer.length);

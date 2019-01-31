@@ -46,16 +46,16 @@ import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 public class ModelConverter {
     public static RuntimeModel convertModelToRuntimeModel(final Model model)
             throws MalformedURLException, RuntimeModelException {
-        RuntimeModel runtimeModel = new RuntimeModel();
+        final RuntimeModel runtimeModel = new RuntimeModel();
 
-        Container cont = model.getTopologyModel().getTopology().get(0).getContainer().get(0);
+        final Container cont = model.getTopologyModel().getTopology().get(0).getContainer().get(0);
 
-        BusModel busModel = model.getBusModel();
+        final BusModel busModel = model.getBusModel();
 
-        ContainerInstance contInst = busModel.getBus().get(0).getContainerInstance().get(0);
+        final ContainerInstance contInst = busModel.getBus().get(0).getContainerInstance().get(0);
 
-        String contId = cont.getId();
-        String hostname = ((ProvisionedMachine) busModel.getMachine().get(0)).getHostname();
+        final String contId = cont.getId();
+        final String hostname = ((ProvisionedMachine) busModel.getMachine().get(0)).getHostname();
         Integer contPort = contInst.getJmxPort();
         if (contPort == null) {
             contPort = cont.getDefaultJmxPort();
@@ -69,28 +69,28 @@ public class ModelConverter {
             contPassword = cont.getDefaultJmxPassword();
         }
 
-        RuntimeContainer runtimeCont = new RuntimeContainer(contId, contPort, contUser, contPassword, hostname);
+        final RuntimeContainer runtimeCont = new RuntimeContainer(contId, contPort, contUser, contPassword, hostname);
         runtimeModel.addContainer(runtimeCont);
 
-        ComponentRepository compRepo = model.getComponentRepository();
-        Map<String, Component> compById = new HashMap<>();
-        for (Component comp : compRepo.getComponent()) {
+        final ComponentRepository compRepo = model.getComponentRepository();
+        final Map<String, Component> compById = new HashMap<>();
+        for (final Component comp : compRepo.getComponent()) {
             compById.put(comp.getId(), comp);
         }
-        for (ComponentInstance compInst : contInst.getComponentInstance()) {
-            String compId = compInst.getRef();
-            Component compRef = compById.get(compId);
+        for (final ComponentInstance compInst : contInst.getComponentInstance()) {
+            final String compId = compInst.getRef();
+            final Component compRef = compById.get(compId);
             runtimeCont.addComponent(new RuntimeComponent(compId, new URL(compRef.getUrl())));
         }
 
-        ServiceUnitModel suModel = model.getServiceUnitModel();
-        Map<String, ServiceUnit> suById = new HashMap<>();
-        for (ServiceUnit su : suModel.getServiceUnit()) {
+        final ServiceUnitModel suModel = model.getServiceUnitModel();
+        final Map<String, ServiceUnit> suById = new HashMap<>();
+        for (final ServiceUnit su : suModel.getServiceUnit()) {
             suById.put(su.getId(), su);
         }
-        for (ServiceUnitInstance suInst : contInst.getServiceUnitInstance()) {
-            String suId = suInst.getRef();
-            ServiceUnit suRef = suById.get(suId);
+        for (final ServiceUnitInstance suInst : contInst.getServiceUnitInstance()) {
+            final String suId = suInst.getRef();
+            final ServiceUnit suRef = suById.get(suId);
             runtimeCont.addServiceUnit(new RuntimeServiceUnit(suId, new URL(suRef.getUrl())));
         }
 

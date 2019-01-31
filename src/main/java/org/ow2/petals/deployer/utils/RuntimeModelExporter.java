@@ -73,14 +73,14 @@ public class RuntimeModelExporter {
             throws RuntimeModelException, ArtifactAdministrationException, ContainerAdministrationException {
         petalsAdmin.connect(hostname, port, user, password);
 
-        RuntimeModel model = new RuntimeModel();
+        final RuntimeModel model = new RuntimeModel();
 
-        RuntimeContainer cont = new RuntimeContainer(petalsAdmin.newContainerAdministration()
+        final RuntimeContainer cont = new RuntimeContainer(petalsAdmin.newContainerAdministration()
                 .getTopology(topologyPassphrase, false).getContainers().get(0).getContainerName(), port, user, password,
                 hostname);
         model.addContainer(cont);
 
-        for (Artifact artifact : artifactAdmin.listArtifacts()) {
+        for (final Artifact artifact : artifactAdmin.listArtifacts()) {
             switch (artifact.getType()) {
                 case "BC":
                 case "SE":

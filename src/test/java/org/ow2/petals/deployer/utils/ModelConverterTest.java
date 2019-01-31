@@ -36,21 +36,21 @@ public class ModelConverterTest {
 
     @Test
     public void convertModelToRuntimeModel() throws Exception {
-        Model model = ModelUtils.generateTestModel();
+        final Model model = ModelUtils.generateTestModel();
 
-        RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+        final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
-        Collection<RuntimeContainer> containers = runtimeModel.getContainers();
+        final Collection<RuntimeContainer> containers = runtimeModel.getContainers();
         assertEquals(1, containers.size());
 
-        RuntimeContainer cont = containers.iterator().next();
+        final RuntimeContainer cont = containers.iterator().next();
         assertEquals(ModelUtils.CONTAINER_NAME, cont.getId());
         assertEquals(ModelUtils.CONTAINER_HOST, cont.getHostname());
         assertEquals(ModelUtils.CONTAINER_JMX_PORT, cont.getPort());
         assertEquals(ModelUtils.CONTAINER_USER, cont.getUser());
         assertEquals(ModelUtils.CONTAINER_PWD, cont.getPassword());
 
-        Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
+        final Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
         assertEquals(3, serviceUnits.size());
 
         RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service1-provide");
@@ -65,10 +65,10 @@ public class ModelConverterTest {
         assertEquals("su-SOAP-Hello_PortType-consume", su.getId());
         assertEquals("file:/artifacts/sa-SOAP-Hello_PortType-consume", su.getUrl().toString());
 
-        Collection<RuntimeComponent> components = cont.getComponents();
+        final Collection<RuntimeComponent> components = cont.getComponents();
         assertEquals(1, components.size());
 
-        RuntimeComponent comp = cont.getComponent("petals-bc-soap");
+        final RuntimeComponent comp = cont.getComponent("petals-bc-soap");
         assertEquals("petals-bc-soap", comp.getId());
         assertEquals("file:/artifacts/petals-bc-soap-5.0.0", comp.getUrl().toString());
     }

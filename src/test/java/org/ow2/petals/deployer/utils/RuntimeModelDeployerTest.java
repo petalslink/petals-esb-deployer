@@ -51,15 +51,15 @@ public class RuntimeModelDeployerTest {
 
     @BeforeClass
     public static void setupLogger() throws Exception {
-        Logger deployerLogger = Logger.getLogger(RuntimeModelDeployer.class.getName());
+        final Logger deployerLogger = Logger.getLogger(RuntimeModelDeployer.class.getName());
         deployerLogger.setLevel(Level.FINER);
-        Logger comparatorLogger = Logger.getLogger(RuntimeModelComparator.class.getName());
+        final Logger comparatorLogger = Logger.getLogger(RuntimeModelComparator.class.getName());
         comparatorLogger.setLevel(Level.FINER);
-        Handler consoleHandler = new ConsoleHandler();
+        final Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.FINER);
-        Formatter formatter = new Formatter() {
+        final Formatter formatter = new Formatter() {
             @Override
-            public String format(LogRecord record) {
+            public String format(final LogRecord record) {
                 return record.getMessage() + "\n";
             }
         };

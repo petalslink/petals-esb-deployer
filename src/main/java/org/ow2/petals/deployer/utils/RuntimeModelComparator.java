@@ -30,8 +30,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
  */
 public class RuntimeModelComparator {
     /**
-     * Compares two runtimes models.
-     * URLs are not checked.
+     * Compares two runtimes models. URLs are not checked.
      * 
      * @param m1
      * @param m2
@@ -42,17 +41,17 @@ public class RuntimeModelComparator {
     }
 
     private static boolean compareRuntimeComponentMaps(final RuntimeContainer cont1, final RuntimeContainer cont2) {
-        Collection<RuntimeComponent> compList1 = cont1.getComponents();
-        Collection<RuntimeComponent> compList2 = cont2.getComponents();
+        final Collection<RuntimeComponent> compList1 = cont1.getComponents();
+        final Collection<RuntimeComponent> compList2 = cont2.getComponents();
 
-        for (RuntimeComponent comp1 : compList1) {
-            RuntimeComponent comp2 = cont2.getComponent(comp1.getId());
+        for (final RuntimeComponent comp1 : compList1) {
+            final RuntimeComponent comp2 = cont2.getComponent(comp1.getId());
             if (comp2 == null || !compareRuntimeComponents(comp1, comp2)) {
                 return false;
             }
         }
 
-        for (RuntimeComponent comp2 : compList2) {
+        for (final RuntimeComponent comp2 : compList2) {
             if (cont1.getComponent(comp2.getId()) == null) {
                 return false;
             }
@@ -62,17 +61,17 @@ public class RuntimeModelComparator {
     }
 
     private static boolean compareRuntimeContainerMaps(final RuntimeModel m1, final RuntimeModel m2) {
-        Collection<RuntimeContainer> contList1 = m1.getContainers();
-        Collection<RuntimeContainer> contList2 = m2.getContainers();
+        final Collection<RuntimeContainer> contList1 = m1.getContainers();
+        final Collection<RuntimeContainer> contList2 = m2.getContainers();
 
-        for (RuntimeContainer cont1 : contList1) {
-            RuntimeContainer cont2 = m2.getContainer(cont1.getId());
+        for (final RuntimeContainer cont1 : contList1) {
+            final RuntimeContainer cont2 = m2.getContainer(cont1.getId());
             if (cont2 == null || !compareRuntimeContainers(cont1, cont2)) {
                 return false;
             }
         }
 
-        for (RuntimeContainer cont2 : contList2) {
+        for (final RuntimeContainer cont2 : contList2) {
             if (m1.getContainer(cont2.getId()) == null) {
                 return false;
             }
@@ -89,17 +88,17 @@ public class RuntimeModelComparator {
     }
 
     private static boolean compareRuntimeServiceUnitMaps(final RuntimeContainer cont1, final RuntimeContainer cont2) {
-        Collection<RuntimeServiceUnit> suList1 = cont1.getServiceUnits();
-        Collection<RuntimeServiceUnit> suList2 = cont2.getServiceUnits();
+        final Collection<RuntimeServiceUnit> suList1 = cont1.getServiceUnits();
+        final Collection<RuntimeServiceUnit> suList2 = cont2.getServiceUnits();
 
-        for (RuntimeServiceUnit su1 : suList1) {
-            RuntimeServiceUnit su2 = cont2.getServiceUnit(su1.getId());
+        for (final RuntimeServiceUnit su1 : suList1) {
+            final RuntimeServiceUnit su2 = cont2.getServiceUnit(su1.getId());
             if (su2 == null || !compareRuntimeServiceUnits(su1, su2)) {
                 return false;
             }
         }
 
-        for (RuntimeServiceUnit su2 : suList2) {
+        for (final RuntimeServiceUnit su2 : suList2) {
             if (cont1.getServiceUnit(su2.getId()) == null) {
                 return false;
             }

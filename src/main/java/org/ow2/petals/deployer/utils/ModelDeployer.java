@@ -31,6 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeployerException;
+import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
 
 /**
  * The main class used for deploying XML models.
@@ -54,10 +55,10 @@ public class ModelDeployer {
     private static final Unmarshaller UNMARSHALLER;
     static {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
+            final JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
             UNMARSHALLER = jaxbContext.createUnmarshaller();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (final Exception e) {
+            throw new UncheckedException(e);
         }
     }
 
@@ -65,8 +66,8 @@ public class ModelDeployer {
     static {
         try {
             DEPLOYER = new RuntimeModelDeployer();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (final Exception e) {
+            throw new UncheckedException(e);
         }
     }
 
@@ -78,7 +79,7 @@ public class ModelDeployer {
      * @throws ModelDeployerException
      */
     public static void deployModel(final URL url) throws ModelDeployerException {
-        File modelFile;
+        final File modelFile;
         try {
             LOG.fine("Downloadind XML model");
 
@@ -87,13 +88,13 @@ public class ModelDeployer {
 
             LOG.fine("Parsing XML model");
 
-            Model model = UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
+            final Model model = UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
 
-            RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+            final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
             DEPLOYER.deployRuntimeModel(runtimeModel);
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new ModelDeployerException(e);
         }
     }
