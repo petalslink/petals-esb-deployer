@@ -53,8 +53,6 @@ public class RuntimeModelDeployerTest {
     public static void setupLogger() throws Exception {
         final Logger deployerLogger = Logger.getLogger(RuntimeModelDeployer.class.getName());
         deployerLogger.setLevel(Level.FINER);
-        final Logger comparatorLogger = Logger.getLogger(RuntimeModelComparator.class.getName());
-        comparatorLogger.setLevel(Level.FINER);
         final Handler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.FINER);
         final Formatter formatter = new Formatter() {
@@ -65,27 +63,26 @@ public class RuntimeModelDeployerTest {
         };
         consoleHandler.setFormatter(formatter);
         deployerLogger.addHandler(consoleHandler);
-        comparatorLogger.addHandler(consoleHandler);
     }
 
     @Test
     public void deployDemoSoap() throws Exception {
-        RuntimeModel model = new RuntimeModel();
+        final RuntimeModel model = new RuntimeModel();
         initializeRuntimeModel(model);
 
         petalsAdminApiRule.registerDomain();
         org.ow2.petals.admin.topology.Container cont = createContainerSample();
         petalsAdminApiRule.registerContainer(cont);
-        ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
+        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
                 artifactLifecycleFactoryMock, JBIDescriptorBuilder.getInstance());
         modelDeployer.deployRuntimeModel(model);
 
-        RuntimeModelExporter modelExporter = new RuntimeModelExporter();
-        RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter();
+        final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
                 ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
 
-        assertTrue(RuntimeModelComparator.compareRuntimeModels(model, exportedModel));
+        assertTrue(model.isSimilarTo(exportedModel));
     }
 
     private org.ow2.petals.admin.topology.Container createContainerSample() {
@@ -95,9 +92,9 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, ModelUtils.CONTAINER_STATE);
     }
 
-    private void initializeRuntimeModel(RuntimeModel model) throws Exception {
+    private void initializeRuntimeModel(final RuntimeModel model) throws Exception {
 
-        RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+        final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
                 ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));

@@ -20,10 +20,12 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
 
+import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
+
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeServiceUnit {
+public class RuntimeServiceUnit implements Similar {
     private final String id;
 
     private URL url;
@@ -67,5 +69,10 @@ public class RuntimeServiceUnit {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public boolean isSimilarTo(Object o) {
+        return o instanceof RuntimeServiceUnit && this.getId().equals(((RuntimeServiceUnit) o).getId());
     }
 }

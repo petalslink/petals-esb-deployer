@@ -24,11 +24,12 @@ import java.util.Map;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
+import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeContainer {
+public class RuntimeContainer implements Similar {
     private final String id;
 
     private int port;
@@ -150,5 +151,53 @@ public class RuntimeContainer {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+    @Override
+    public boolean isSimilarTo(Object o) {
+        if (!(o instanceof RuntimeContainer)) {
+            return false;
+        }
+        RuntimeContainer otherContainer = (RuntimeContainer) o;
+
+        return this.getId().equals(otherContainer.getId()) && this.getPort() == otherContainer.getPort()
+                && this.getUser().equals(otherContainer.getUser())
+                && this.getPassword().equals(otherContainer.getPassword())
+                && this.getHostname().equals(otherContainer.getHostname())
+                && compareRuntimeServiceUnitMaps(otherContainer) && compareRuntimeComponentMaps(otherContainer);
+    }
+
+    private boolean compareRuntimeServiceUnitMaps(final RuntimeContainer otherCont) {
+        for (final RuntimeServiceUnit thisContSu : this.getServiceUnits()) {
+            final RuntimeServiceUnit otherContSu = otherCont.getServiceUnit(thisContSu.getId());
+            if (thisContSu == null || !thisContSu.isSimilarTo(otherContSu)) {
+                return false;
+            }
+        }
+
+        for (final RuntimeServiceUnit otherContSu : otherCont.getServiceUnits()) {
+            if (this.getServiceUnit(otherContSu.getId()) == null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean compareRuntimeComponentMaps(final RuntimeContainer otherCont) {
+        for (final RuntimeComponent thisContComp : this.getComponents()) {
+            final RuntimeComponent otherContComp = otherCont.getComponent(thisContComp.getId());
+            if (otherContComp == null || !thisContComp.isSimilarTo(otherContComp)) {
+                return false;
+            }
+        }
+
+        for (final RuntimeComponent otherContComp : otherCont.getComponents()) {
+            if (this.getComponent(otherContComp.getId()) == null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

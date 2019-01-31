@@ -35,10 +35,10 @@ public class RuntimeModelComparatorTest {
     public void equivalentRuntimeModels() throws Exception {
         final RuntimeModel model = ModelUtils.generateTestRuntimeModel();
 
-        final RuntimeModel equivalentModel = ModelUtils.generateTestRuntimeModel();
+        final RuntimeModel similarModel = ModelUtils.generateTestRuntimeModel();
 
-        assertTrue(RuntimeModelComparator.compareRuntimeModels(model, equivalentModel));
-        assertTrue(RuntimeModelComparator.compareRuntimeModels(equivalentModel, model));
+        assertTrue(model.isSimilarTo(similarModel));
+        assertTrue(similarModel.isSimilarTo(model));
     }
 
     @Test
@@ -49,8 +49,8 @@ public class RuntimeModelComparatorTest {
         modelWithDifferentServiceUnitList.getContainers().iterator().next()
                 .addServiceUnit(new RuntimeServiceUnit("my-test-su", new URL("file:/artifact/my-test-su.zip")));
 
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(model, modelWithDifferentServiceUnitList));
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(modelWithDifferentServiceUnitList, model));
+        assertFalse(model.isSimilarTo(modelWithDifferentServiceUnitList));
+        assertFalse(modelWithDifferentServiceUnitList.isSimilarTo(model));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class RuntimeModelComparatorTest {
         modelWithDifferentComponentList.getContainers().iterator().next()
                 .addComponent(new RuntimeComponent("my-test-comp", new URL("file:/artifact/my-test-comp.zip")));
 
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(model, modelWithDifferentComponentList));
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(modelWithDifferentComponentList, model));
+        assertFalse(model.isSimilarTo(modelWithDifferentComponentList));
+        assertFalse(modelWithDifferentComponentList.isSimilarTo(model));
     }
 
     @Test
@@ -75,7 +75,7 @@ public class RuntimeModelComparatorTest {
                 "localhost");
         modelWithDifferentContainer.addContainer(differentCont);
 
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(model, modelWithDifferentContainer));
-        assertFalse(RuntimeModelComparator.compareRuntimeModels(modelWithDifferentContainer, model));
+        assertFalse(model.isSimilarTo(modelWithDifferentContainer));
+        assertFalse(modelWithDifferentContainer.isSimilarTo(model));
     }
 }

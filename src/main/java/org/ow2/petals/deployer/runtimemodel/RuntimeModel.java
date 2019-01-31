@@ -23,11 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerException;
+import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeModel {
+public class RuntimeModel implements Similar {
     private final Map<String, RuntimeContainer> containers = new HashMap<>();
 
     /**
@@ -47,5 +48,31 @@ public class RuntimeModel {
 
     public Collection<RuntimeContainer> getContainers() {
         return containers.values();
+    }
+
+    @Override
+    public boolean isSimilarTo(Object o) {
+        if (!(o instanceof RuntimeModel)) {
+            return false;
+        }
+        RuntimeModel otherModel = (RuntimeModel) o;
+
+        final Collection<RuntimeContainer> thisModelContainers = this.getContainers();
+        final Collection<RuntimeContainer> otherModelContainers = otherModel.getContainers();
+
+        for (final RuntimeContainer thisModelCont : thisModelContainers) {
+            final RuntimeContainer otherModelCont = otherModel.getContainer(thisModelCont.getId());
+            if (otherModelCont == null || !thisModelCont.isSimilarTo(otherModelCont)) {
+                return false;
+            }
+        }
+
+        for (final RuntimeContainer otherModelCont : otherModelContainers) {
+            if (this.getContainer(otherModelCont.getId()) == null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
