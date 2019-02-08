@@ -41,9 +41,15 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 
 /**
+ * This is an utility class and should not be instanciated.
+ * 
  * @author Alexandre Lagane - Linagora
  */
 public class ModelConverter {
+
+    private ModelConverter() {
+    }
+
     public static RuntimeModel convertModelToRuntimeModel(final Model model)
             throws MalformedURLException, RuntimeModelException {
         final RuntimeModel runtimeModel = new RuntimeModel();

@@ -40,14 +40,13 @@ import org.ow2.petals.admin.api.exception.ArtifactNotFoundException;
 import org.ow2.petals.admin.api.exception.ArtifactStartedException;
 import org.ow2.petals.admin.api.exception.ConnectionFailedException;
 import org.ow2.petals.admin.api.exception.ContainerAdministrationException;
-import org.ow2.petals.admin.api.exception.DuplicatedServiceException;
-import org.ow2.petals.admin.api.exception.MissingServiceException;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.deployer.utils.exceptions.ComponentDeploymentException;
 import org.ow2.petals.deployer.utils.exceptions.RuntimeModelDeployerException;
+import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
@@ -58,7 +57,7 @@ import org.ow2.petals.jbi.descriptor.original.generated.ServiceAssembly;
  */
 public class RuntimeModelDeployer {
 
-    private static final Logger LOG = Logger.getLogger(RuntimeModelDeployer.class.getName());
+    private final static Logger LOG = Logger.getLogger(RuntimeModelDeployer.class.getName());
 
     private final PetalsAdministration petalsAdmin;
 
@@ -66,18 +65,27 @@ public class RuntimeModelDeployer {
 
     private final JBIDescriptorBuilder jdb;
 
-    public RuntimeModelDeployer() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
-        this(PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI(), null,
-                JBIDescriptorBuilder.getInstance());
-
+    public RuntimeModelDeployer() {
+        this(null, null);
     }
 
-    public RuntimeModelDeployer(final PetalsAdministration petalsAdmin,
-            final ArtifactLifecycleFactory artifactLifecycleFactory, final JBIDescriptorBuilder jdb) {
-        this.petalsAdmin = petalsAdmin;
-        this.artifactLifecycleFactory = artifactLifecycleFactory != null ? artifactLifecycleFactory
-                : petalsAdmin.newArtifactLifecycleFactory();
-        this.jdb = jdb;
+    /**
+     * Used only for testing purposes, to mock petalsAdmin and artifactLifecycleFactory.
+     * 
+     * @param petalsAdmin
+     * @param artifactLifecycleFactory
+     */
+    protected RuntimeModelDeployer(final PetalsAdministration petalsAdmin,
+            final ArtifactLifecycleFactory artifactLifecycleFactory) {
+        try {
+            this.petalsAdmin = petalsAdmin != null ? petalsAdmin
+                    : PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI();
+            this.artifactLifecycleFactory = artifactLifecycleFactory != null ? artifactLifecycleFactory
+                    : this.petalsAdmin.newArtifactLifecycleFactory();
+            this.jdb = JBIDescriptorBuilder.getInstance();
+        } catch (JBIDescriptorException e) {
+            throw new UncheckedException(e);
+        }
     }
 
     public void deployRuntimeModel(final RuntimeModel model)

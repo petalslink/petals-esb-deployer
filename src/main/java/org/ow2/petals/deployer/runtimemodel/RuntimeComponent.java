@@ -26,6 +26,7 @@ import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeComponent implements Similar {
+
     private final String id;
 
     private URL url;
@@ -60,16 +61,6 @@ public class RuntimeComponent implements Similar {
 
     public void setUrl(final URL url) {
         this.url = url;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof RuntimeComponent && id.equals(((RuntimeComponent) obj).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 
     @Override

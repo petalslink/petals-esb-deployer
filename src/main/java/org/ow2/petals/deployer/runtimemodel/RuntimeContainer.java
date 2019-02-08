@@ -30,6 +30,7 @@ import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeContainer implements Similar {
+
     private final String id;
 
     private int port;
@@ -141,16 +142,6 @@ public class RuntimeContainer implements Similar {
 
     public Collection<RuntimeComponent> getComponents() {
         return components.values();
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        return obj instanceof RuntimeContainer && id.equals(((RuntimeContainer) obj).id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id.hashCode();
     }
 
     @Override

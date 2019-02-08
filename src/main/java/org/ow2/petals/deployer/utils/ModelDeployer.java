@@ -18,20 +18,12 @@
 
 package org.ow2.petals.deployer.utils;
 
-import java.io.File;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.utils.exceptions.ModelDeployerException;
-import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
 
 /**
  * The main class used for deploying XML models.
@@ -50,25 +42,24 @@ public class ModelDeployer {
      */
     public static final int READ_TIMEOUT = 5000;
 
-    private static final Logger LOG = Logger.getLogger(ModelDeployer.class.getName());
+    private final static Logger LOG = Logger.getLogger(ModelDeployer.class.getName());
 
-    private static final Unmarshaller UNMARSHALLER;
-    static {
-        try {
-            final JAXBContext jaxbContext = JAXBContext.newInstance(Model.class);
-            UNMARSHALLER = jaxbContext.createUnmarshaller();
-        } catch (final Exception e) {
-            throw new UncheckedException(e);
-        }
+    private final RuntimeModelDeployer runtimeModelDeployer;
+
+    private static ModelDeployer instance;
+
+    public ModelDeployer() {
+        this(null);
     }
 
-    private static final RuntimeModelDeployer DEPLOYER;
-    static {
-        try {
-            DEPLOYER = new RuntimeModelDeployer();
-        } catch (final Exception e) {
-            throw new UncheckedException(e);
-        }
+    /**
+     * Used only for testing purposes, to mock runtimeModelDeployer.
+     * 
+     * @param runtimeModelDeployer
+     */
+    protected ModelDeployer(RuntimeModelDeployer runtimeModelDeployer) {
+        this.runtimeModelDeployer = runtimeModelDeployer != null ? runtimeModelDeployer : new RuntimeModelDeployer();
+        instance = this;
     }
 
     /**
@@ -76,26 +67,27 @@ public class ModelDeployer {
      * directory.
      * 
      * @param url
-     * @throws ModelDeployerException
+     * @throws ModelDeploymentException
      */
-    public static void deployModel(final URL url) throws ModelDeployerException {
-        final File modelFile;
+    public void deployModel(final URL url) throws ModelDeploymentException {
+        final Model model = XmlModelBuilder.readModelFromUrl(url);
+
+        deployModel(model);
+    }
+
+    public void deployModel(Model model) throws ModelDeploymentException {
+        RuntimeModel runtimeModel;
         try {
-            LOG.fine("Downloadind XML model");
+            runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
 
-            modelFile = Files.createTempFile("model", ".xml").toFile();
-            FileUtils.copyURLToFile(url, modelFile, CONNECTION_TIMEOUT, READ_TIMEOUT);
-
-            LOG.fine("Parsing XML model");
-
-            final Model model = UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
-
-            final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
-
-            DEPLOYER.deployRuntimeModel(runtimeModel);
-
-        } catch (final Exception e) {
-            throw new ModelDeployerException(e);
+            runtimeModelDeployer.deployRuntimeModel(runtimeModel);
+        } catch (Exception e) {
+            throw new ModelDeploymentException(e);
         }
+
+    }
+
+    public static ModelDeployer getInstance() {
+        return instance != null ? instance : new ModelDeployer();
     }
 }

@@ -22,11 +22,16 @@ package org.ow2.petals.deployer.runtimemodel.interfaces;
  * @author Alexandre Lagane - Linagora
  */
 public interface Similar {
+
     /**
      * Return true if current object and o are similar.
      * 
+     * RuntimeModel deployed to Petals, and RuntimeModel exported from the deployed Petals will return {code true} when
+     * compared using isSimilarTo method. {code o1.isSimilarTo(o2)} will always yield the same result as {code
+     * o2.isSimilarTo(o1)}.
+     * 
      * @param o
-     *            object compared with current object
+     *            object compared to current object
      * @return true if similar
      */
     public boolean isSimilarTo(Object o);

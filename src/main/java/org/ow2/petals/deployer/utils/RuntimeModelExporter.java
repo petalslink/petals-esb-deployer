@@ -47,12 +47,13 @@ public class RuntimeModelExporter {
     private final ArtifactAdministration artifactAdmin;
 
     public RuntimeModelExporter() throws DuplicatedServiceException, MissingServiceException, JBIDescriptorException {
-        this(PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI());
+        this(null);
     }
 
     public RuntimeModelExporter(final PetalsAdministration petalsAdmin) {
-        this.petalsAdmin = petalsAdmin;
-        artifactAdmin = petalsAdmin.newArtifactAdministration();
+        this.petalsAdmin = petalsAdmin != null ? petalsAdmin
+                : PetalsAdministrationFactory.getInstance().newPetalsAdministrationAPI();
+        artifactAdmin = this.petalsAdmin.newArtifactAdministration();
     }
 
     /**
@@ -95,10 +96,9 @@ public class RuntimeModelExporter {
                     // already get service units in "SU" case
                     break;
                 case "SL":
-                    throw new UnsupportedOperationException(
-                            "Export model with shared libraries is not implemented yet");
                 default:
-                    LOG.warning("Unknown artifact type " + artifact.getType());
+                    throw new UnsupportedOperationException(
+                            "Export model with artifact of type " + artifact.getType() + " is not implemented yet");
             }
         }
 

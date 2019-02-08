@@ -21,15 +21,11 @@ package org.ow2.petals.deployer.utils.exceptions;
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class ModelDeployerException extends Exception {
+public class ModelParsingException extends ModelDeploymentException {
 
-    private static final long serialVersionUID = 7599724111843987402L;
+    private static final long serialVersionUID = 6061886715747572320L;
 
-    public ModelDeployerException(final Throwable cause) {
+    public ModelParsingException(final Throwable cause) {
         super(cause);
-    }
-
-    public ModelDeployerException(final String message) {
-        super(message);
     }
 }

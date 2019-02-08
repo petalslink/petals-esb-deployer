@@ -29,6 +29,7 @@ import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModel implements Similar {
+
     private final Map<String, RuntimeContainer> containers = new HashMap<>();
 
     /**
@@ -42,6 +43,12 @@ public class RuntimeModel implements Similar {
         }
     }
 
+    /**
+     * Return the RuntimeContainer with identifier id, or {code null} if not in the model.
+     * 
+     * @param id
+     * @return RuntimeContainer or null
+     */
     public RuntimeContainer getContainer(final String id) {
         return containers.get(id);
     }

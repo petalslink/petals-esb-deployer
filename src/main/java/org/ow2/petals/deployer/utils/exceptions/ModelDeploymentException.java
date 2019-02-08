@@ -21,11 +21,15 @@ package org.ow2.petals.deployer.utils.exceptions;
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class UncheckedException extends RuntimeException {
+public class ModelDeploymentException extends Exception {
 
-    private static final long serialVersionUID = 1339368144114468807L;
+    private static final long serialVersionUID = 7599724111843987402L;
 
-    public UncheckedException(final Throwable cause) {
+    public ModelDeploymentException(final Throwable cause) {
         super(cause);
+    }
+
+    public ModelDeploymentException(final String message) {
+        super(message);
     }
 }
