@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2018-2019 Linagora
+ 
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+ 
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<schema targetNamespace="http://petals.ow2.org/deployer/model/bus/xml/1.0" version="1.0"
+   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0"
+   xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" elementFormDefault="qualified">
+
+   <import namespace="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
+      schemaLocation="component-repository.xsd" />
+
+   <element name="bus-model" type="bm:busModel" />
+
+   <complexType name="busModel">
+      <sequence>
+         <element name="machine" type="bm:machine" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The machines on which parts of a Petals ESB bus will be running.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="bus" type="bm:bus" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of Petals ESB busses to deploy.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+   </complexType>
+
+   <complexType name="bus">
+      <sequence>
+         <element name="container-instance" type="bm:containerInstance" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The instances of Petals ESB containers forming the Petals ESB bus.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+      <attribute name="topology-ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               The reference topology from the topology model.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+
+   <complexType name="containerInstance">
+      <sequence>
+         <element name="component-instance" type="bm:componentInstance" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The component instances required by service units.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="service-unit-instance" type="bm:serviceUnitInstance" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The service unit instances to deploy on the container.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+      <attribute name="ref" type="string" use="optional">
+         <annotation>
+            <documentation>
+               Reference to a container from the topology model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-port" type="int">
+         <annotation>
+            <documentation>
+               JMX port of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX port must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-user" type="string">
+         <annotation>
+            <documentation>
+               JMX username of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX username must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="jmx-password" type="string">
+         <annotation>
+            <documentation>
+               JMX password of the current Petals ESB container. A deployment property can be used. Each
+               container (from topology model) without a default JMX password must have one defined in this model.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="machine-ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               The reference of the machine on which the container is running.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+
+   <complexType name="componentInstance">
+      <attribute name="ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               Reference to a component from a component repository.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+
+   <complexType name="serviceUnitInstance">
+      <attribute name="ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               Reference to a service unit from a service unit model.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+
+   <complexType name="provisionedMachine">
+      <complexContent>
+         <extension base="bm:machine">
+            <sequence>
+               <element name="hostname" type="string" minOccurs="1" maxOccurs="1">
+                  <annotation>
+                     <documentation>
+                        Hostname, IP address or deployment property name of the provisioned machine.
+                     </documentation>
+                  </annotation>
+               </element>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+
+   <complexType name="machine" abstract="true">
+      <sequence />
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               Identifier of the machine. It must be unique in the model.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+</schema>

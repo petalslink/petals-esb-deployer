@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2018-2019 Linagora
+ 
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+ 
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<jbi xmlns="http://java.sun.com/xml/ns/jbi" version="1.0">
+    <component type="binding-component">
+        <identification>
+            <name>petals-bc-soap</name>
+            <description>The PEtALS SOAP JBI binding component based on Axis2 and Jetty.</description>
+        </identification>
+        <component-class-name>org.ow2.petals.binding.soap.SoapComponent</component-class-name>
+        <component-class-path>
+            <path-element>velocity-1.5.jar</path-element>
+            <path-element>axis2-mtompolicy-1.7.7.jar</path-element>
+            <path-element>xml-resolver-1.2.jar</path-element>
+            <path-element>easycommons-stream-1.4.0.jar</path-element>
+            <path-element>serializer-2.7.1.jar</path-element>
+            <path-element>jcip-annotations-1.0.jar</path-element>
+            <path-element>jetty-servlet-9.4.11.v20180605.jar</path-element>
+            <path-element>commons-httpclient-3.1.jar</path-element>
+            <path-element>petals-cdk-steplog-1.1.1.jar</path-element>
+            <path-element>esapi-2.0GA.jar</path-element>
+            <path-element>petals-bc-soap-5.0.0.jar</path-element>
+            <path-element>woodstox-core-asl-4.2.0.jar</path-element>
+            <path-element>httpclient-4.5.2.jar</path-element>
+            <path-element>petals-cdk-api-2.6.1.jar</path-element>
+            <path-element>commons-lang-2.1.jar</path-element>
+            <path-element>rampart-core-1.7.1.jar</path-element>
+            <path-element>xalan-2.7.1.jar</path-element>
+            <path-element>petals-probes-api-1.3.0.jar</path-element>
+            <path-element>wsdl4j-1.6.2.jar</path-element>
+            <path-element>jaxb2-basics-runtime-0.11.1.jar</path-element>
+            <path-element>axis2-transport-jms-1.7.7.jar</path-element>
+            <path-element>easycommons-util-2.5.0.jar</path-element>
+            <path-element>bcprov-jdk15on-1.59.jar</path-element>
+            <path-element>javax.servlet-api-3.1.0.jar</path-element>
+            <path-element>jetty-security-9.4.11.v20180605.jar</path-element>
+            <path-element>mex-1.7.6-impl.jar</path-element>
+            <path-element>wss4j-1.6.16.jar</path-element>
+            <path-element>axiom-impl-1.2.20.jar</path-element>
+            <path-element>geronimo-jms_1.1_spec-1.1.jar</path-element>
+            <path-element>petals-probes-1.3.0.jar</path-element>
+            <path-element>easywsdl-ext-wsdl4complexwsdl-2.7.0.jar</path-element>
+            <path-element>easywsdl-wsdl-2.7.0.jar</path-element>
+            <path-element>jetty-server-9.4.11.v20180605.jar</path-element>
+            <path-element>rampart-trust-1.7.1.jar</path-element>
+            <path-element>petals-cdk-core-5.7.1.jar</path-element>
+            <path-element>jetty-io-9.4.11.v20180605.jar</path-element>
+            <path-element>addressing-1.7.7.mar</path-element>
+            <path-element>commons-codec-1.9.jar</path-element>
+            <path-element>stax2-api-3.1.1.jar</path-element>
+            <path-element>commons-fileupload-1.3.3.jar</path-element>
+            <path-element>xmltooling-1.3.2-1.jar</path-element>
+            <path-element>rampart-1.7.1.mar</path-element>
+            <path-element>petals-cdk-jbidescriptor-2.6.1.jar</path-element>
+            <path-element>axiom-dom-1.2.20.jar</path-element>
+            <path-element>opensaml-2.5.1-1.jar</path-element>
+            <path-element>xmlschema-core-2.2.1.jar</path-element>
+            <path-element>woden-core-1.0M10.jar</path-element>
+            <path-element>commons-collections-3.1.jar</path-element>
+            <path-element>rampart-policy-1.7.1.jar</path-element>
+            <path-element>jaxb-impl-2.2.11.jar</path-element>
+            <path-element>easywsdl-schema-2.7.0.jar</path-element>
+            <path-element>openws-1.4.2-1.jar</path-element>
+            <path-element>petals-cdk-clientserver-api-1.2.1.jar</path-element>
+            <path-element>axiom-api-1.2.20.jar</path-element>
+            <path-element>geronimo-jta_1.1_spec-1.1.jar</path-element>
+            <path-element>petals-bc-soap-clientserver-api-1.2.0.jar</path-element>
+            <path-element>jetty-http-9.4.11.v20180605.jar</path-element>
+            <path-element>axis2-transport-base-1.7.7.jar</path-element>
+            <path-element>petals-jbi-descriptor-2.4.0.jar</path-element>
+            <path-element>axis2-kernel-1.7.7.jar</path-element>
+            <path-element>apache-mime4j-core-0.7.2.jar</path-element>
+            <path-element>neethi-3.0.3.jar</path-element>
+            <path-element>jaxen-1.1.6.jar</path-element>
+            <path-element>petals-basis-api-1.1.0.jar</path-element>
+            <path-element>axis2-transport-http-1.7.7.jar</path-element>
+            <path-element>joda-time-1.6.2.jar</path-element>
+            <path-element>jaxb-core-2.2.11.jar</path-element>
+            <path-element>xmlunit-1.6.jar</path-element>
+            <path-element>jsr311-api-1.1.1.jar</path-element>
+            <path-element>xmlsec-1.5.8.jar</path-element>
+            <path-element>commons-io-2.6.jar</path-element>
+            <path-element>jetty-util-9.4.11.v20180605.jar</path-element>
+            <path-element>javax.mail-1.5.6.jar</path-element>
+            <path-element>commons-httpclient-contrib-3.1.jar</path-element>
+            <path-element>httpcore-4.4.4.jar</path-element>
+        </component-class-path>
+        <bootstrap-class-name>org.ow2.petals.binding.soap.SoapBootstrap</bootstrap-class-name>
+        <bootstrap-class-path>
+            <path-element>velocity-1.5.jar</path-element>
+            <path-element>axis2-mtompolicy-1.7.7.jar</path-element>
+            <path-element>xml-resolver-1.2.jar</path-element>
+            <path-element>easycommons-stream-1.4.0.jar</path-element>
+            <path-element>serializer-2.7.1.jar</path-element>
+            <path-element>jcip-annotations-1.0.jar</path-element>
+            <path-element>jetty-servlet-9.4.11.v20180605.jar</path-element>
+            <path-element>commons-httpclient-3.1.jar</path-element>
+            <path-element>petals-cdk-steplog-1.1.1.jar</path-element>
+            <path-element>esapi-2.0GA.jar</path-element>
+            <path-element>petals-bc-soap-5.0.0.jar</path-element>
+            <path-element>woodstox-core-asl-4.2.0.jar</path-element>
+            <path-element>httpclient-4.5.2.jar</path-element>
+            <path-element>petals-cdk-api-2.6.1.jar</path-element>
+            <path-element>commons-lang-2.1.jar</path-element>
+            <path-element>rampart-core-1.7.1.jar</path-element>
+            <path-element>xalan-2.7.1.jar</path-element>
+            <path-element>petals-probes-api-1.3.0.jar</path-element>
+            <path-element>wsdl4j-1.6.2.jar</path-element>
+            <path-element>jaxb2-basics-runtime-0.11.1.jar</path-element>
+            <path-element>axis2-transport-jms-1.7.7.jar</path-element>
+            <path-element>easycommons-util-2.5.0.jar</path-element>
+            <path-element>bcprov-jdk15on-1.59.jar</path-element>
+            <path-element>javax.servlet-api-3.1.0.jar</path-element>
+            <path-element>jetty-security-9.4.11.v20180605.jar</path-element>
+            <path-element>mex-1.7.6-impl.jar</path-element>
+            <path-element>wss4j-1.6.16.jar</path-element>
+            <path-element>axiom-impl-1.2.20.jar</path-element>
+            <path-element>geronimo-jms_1.1_spec-1.1.jar</path-element>
+            <path-element>petals-probes-1.3.0.jar</path-element>
+            <path-element>easywsdl-ext-wsdl4complexwsdl-2.7.0.jar</path-element>
+            <path-element>easywsdl-wsdl-2.7.0.jar</path-element>
+            <path-element>jetty-server-9.4.11.v20180605.jar</path-element>
+            <path-element>rampart-trust-1.7.1.jar</path-element>
+            <path-element>petals-cdk-core-5.7.1.jar</path-element>
+            <path-element>jetty-io-9.4.11.v20180605.jar</path-element>
+            <path-element>addressing-1.7.7.mar</path-element>
+            <path-element>commons-codec-1.9.jar</path-element>
+            <path-element>stax2-api-3.1.1.jar</path-element>
+            <path-element>commons-fileupload-1.3.3.jar</path-element>
+            <path-element>xmltooling-1.3.2-1.jar</path-element>
+            <path-element>rampart-1.7.1.mar</path-element>
+            <path-element>petals-cdk-jbidescriptor-2.6.1.jar</path-element>
+            <path-element>axiom-dom-1.2.20.jar</path-element>
+            <path-element>opensaml-2.5.1-1.jar</path-element>
+            <path-element>xmlschema-core-2.2.1.jar</path-element>
+            <path-element>woden-core-1.0M10.jar</path-element>
+            <path-element>commons-collections-3.1.jar</path-element>
+            <path-element>rampart-policy-1.7.1.jar</path-element>
+            <path-element>jaxb-impl-2.2.11.jar</path-element>
+            <path-element>easywsdl-schema-2.7.0.jar</path-element>
+            <path-element>openws-1.4.2-1.jar</path-element>
+            <path-element>petals-cdk-clientserver-api-1.2.1.jar</path-element>
+            <path-element>axiom-api-1.2.20.jar</path-element>
+            <path-element>geronimo-jta_1.1_spec-1.1.jar</path-element>
+            <path-element>petals-bc-soap-clientserver-api-1.2.0.jar</path-element>
+            <path-element>jetty-http-9.4.11.v20180605.jar</path-element>
+            <path-element>axis2-transport-base-1.7.7.jar</path-element>
+            <path-element>petals-jbi-descriptor-2.4.0.jar</path-element>
+            <path-element>axis2-kernel-1.7.7.jar</path-element>
+            <path-element>apache-mime4j-core-0.7.2.jar</path-element>
+            <path-element>neethi-3.0.3.jar</path-element>
+            <path-element>jaxen-1.1.6.jar</path-element>
+            <path-element>petals-basis-api-1.1.0.jar</path-element>
+            <path-element>axis2-transport-http-1.7.7.jar</path-element>
+            <path-element>joda-time-1.6.2.jar</path-element>
+            <path-element>jaxb-core-2.2.11.jar</path-element>
+            <path-element>xmlunit-1.6.jar</path-element>
+            <path-element>jsr311-api-1.1.1.jar</path-element>
+            <path-element>xmlsec-1.5.8.jar</path-element>
+            <path-element>commons-io-2.6.jar</path-element>
+            <path-element>jetty-util-9.4.11.v20180605.jar</path-element>
+            <path-element>javax.mail-1.5.6.jar</path-element>
+            <path-element>commons-httpclient-contrib-3.1.jar</path-element>
+            <path-element>httpcore-4.4.4.jar</path-element>
+        </bootstrap-class-path>
+        <petalsCDK:acceptor-pool-size xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:acceptor-retry-number xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:acceptor-retry-wait xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:acceptor-stop-max-wait xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:processor-pool-size xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:processor-max-pool-size xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:processor-keep-alive-time xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:processor-stop-max-wait xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:time-beetween-async-cleaner-runs xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:properties-file xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:monitoring-sampling-period xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <petalsCDK:jbi-listener-class-name xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">org.ow2.petals.binding.soap.listener.outgoing.JBIListener</petalsCDK:jbi-listener-class-name>
+        <soap:http-port xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">8084</soap:http-port>
+        <soap:http-host xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:http-services-list xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">true</soap:http-services-list>
+        <soap:http-services-context xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">petals</soap:http-services-context>
+        <soap:http-services-mapping xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">services</soap:http-services-mapping>
+        <soap:http-thread-pool-size-min xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">2</soap:http-thread-pool-size-min>
+        <soap:http-thread-pool-size-max xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">50</soap:http-thread-pool-size-max>
+        <soap:http-acceptors xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">4</soap:http-acceptors>
+        <soap:http-backlog-size xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">50</soap:http-backlog-size>
+        <soap:max-http-connections-per-host xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-enabled xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">false</soap:https-enabled>
+        <soap:https-port xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">8083</soap:https-port>
+        <soap:https-keystore-type xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-keystore-file xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-keystore-password xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-key-password xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-truststore-type xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-truststore-file xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-truststore-password xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-client-authentication-enabled xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <soap:https-acceptors xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">4</soap:https-acceptors>
+        <soap:https-backlog-size xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">50</soap:https-backlog-size>
+        <soap:public-stacktraces-enabled xmlns:soap="http://petals.ow2.org/components/soap/version-4" xmlns:jbi="http://java.sun.com/xml/ns/jbi" xmlns:petalsCDK="http://petals.ow2.org/components/extensions/version-5" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">true</soap:public-stacktraces-enabled>
+    </component>
+</jbi>

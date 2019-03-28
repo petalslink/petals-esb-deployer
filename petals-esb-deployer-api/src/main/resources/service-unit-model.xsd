@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2018-2019 Linagora
+ 
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+ 
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<schema targetNamespace="http://petals.ow2.org/deployer/model/service-unit/xml/1.0" version="1.0"
+   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sum="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
+   elementFormDefault="qualified">
+
+   <complexType name="serviceUnitModel">
+      <annotation>
+         <documentation>Model defining Petals ESB buses to deploy. Documentation can be found here
+            https://doc.petalslink.com/display/petalscomponents/Petals+ESB+Deployer+1.0.0
+         </documentation>
+      </annotation>
+      <sequence>
+         <element name="service-unit" type="sum:serviceUnit" minOccurs="1" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of service units to deploy. There must be at least one service unit in the model.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+   </complexType>
+
+   <complexType name="serviceUnit">
+      <sequence>
+         <element name="url" type="string" minOccurs="1" maxOccurs="1">
+            <annotation>
+               <documentation>
+                  The map of placeholder required by the service unit. The key of the map is the key of the
+                  placeholder, and the value of the map is the default value of the placeholder. If there is no default
+                  value, the value must be null.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+      <attribute name="id" type="string" use="required">
+         <annotation>
+            <documentation>
+               Identifier of the service unit. It must be the same than the one defined in the JBI
+               descriptor on the archive and must be
+               unique in the model.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
+</schema>
