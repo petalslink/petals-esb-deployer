@@ -64,4 +64,10 @@
          <version>2.6</version>
       </dependency>
    </dependencies>
+
+   <scm>
+      <connection>scm:git:https://github.com/petalslink/petals-esb-deployer/</connection>
+      <developerConnection>scm:git:https://github.com/petalslink/petals-esb-deployer/</developerConnection>
+      <url>https://github.com/petalslink/petals-esb-deployer</url>
+   </scm>
 </project>
