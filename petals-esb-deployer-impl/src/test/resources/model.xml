@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ Copyright (c) 2019 Linagora
+
+ This program/library is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2.1 of the License, or (at your
+ option) any later version.
+
+ This program/library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ for more details.
+
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program/library; If not, see http://www.gnu.org/licenses/
+ for the GNU Lesser General Public License version 2.1.
+-->
+<ns2:model xmlns="http://petals.ow2.org/deployer/model/service-unit/xml/1.0" xmlns:ns2="http://petals.ow2.org/deployer/model/xml/1.0" xmlns:ns3="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" xmlns:ns4="http://petals.ow2.org/deployer/model/topology/xml/1.0" xmlns:ns5="http://petals.ow2.org/deployer/model/bus/xml/1.0">
+    <ns2:service-unit-model>
+        <service-unit id="su-SOAP-Hello_Service1-provide">
+            <url>file:/artifacts/sa-SOAP-Hello_Service1-provide</url>
+        </service-unit>
+        <service-unit id="su-SOAP-Hello_Service2-provide">
+            <url>file:/artifacts/sa-SOAP-Hello_Service2-provide</url>
+        </service-unit>
+        <service-unit id="su-SOAP-Hello_PortType-consume">
+            <url>file:/artifacts/sa-SOAP-Hello_PortType-consume</url>
+        </service-unit>
+    </ns2:service-unit-model>
+    <ns2:component-repository>
+        <ns3:component id="petals-bc-soap">
+            <ns3:url>file:/artifacts/petals-bc-soap-5.0.0</ns3:url>
+        </ns3:component>
+    </ns2:component-repository>
+    <ns2:topology-model>
+        <ns4:topology id="topo1">
+            <ns4:container id="sample-0" default-jmx-port="7700" default-jmx-user="petals" default-jmx-password="petals"/>
+        </ns4:topology>
+    </ns2:topology-model>
+    <ns2:bus-model>
+        <ns5:machine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns5:provisionedMachine" id="main">
+            <ns5:hostname>localhost</ns5:hostname>
+        </ns5:machine>
+        <ns5:bus topology-ref="topo1">
+            <ns5:container-instance ref="sample-0" machine-ref="main">
+                <ns5:component-instance ref="petals-bc-soap"/>
+                <ns5:service-unit-instance ref="su-SOAP-Hello_Service1-provide"/>
+                <ns5:service-unit-instance ref="su-SOAP-Hello_Service2-provide"/>
+                <ns5:service-unit-instance ref="su-SOAP-Hello_PortType-consume"/>
+            </ns5:container-instance>
+        </ns5:bus>
+    </ns2:bus-model>
+</ns2:model>
