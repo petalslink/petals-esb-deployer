@@ -38,7 +38,7 @@ public class XmlModelBuilderTest {
     @Test
     public void testReadAndWrite() throws Exception {
         URL initialModelUrl = Thread.currentThread().getContextClassLoader().getResource("model.xml");
-        File initialModelFile = new File(initialModelUrl.getFile());
+        File initialModelFile = new File(initialModelUrl.toURI());
         Model model = XmlModelBuilder.readModelFromUrl(initialModelUrl);
         File marshalledModelFile = Files.createTempFile("marshalled-model", ".xml").toFile();
         XmlModelBuilder.writeModelToFile(model, marshalledModelFile);
