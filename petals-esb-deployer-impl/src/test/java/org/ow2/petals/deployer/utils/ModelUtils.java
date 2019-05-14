@@ -31,6 +31,8 @@ import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
+import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -137,6 +139,31 @@ public class ModelUtils {
         suInst = new ServiceUnitInstance();
         suInst.setRef(suCons.getId());
         suInstances.add(suInst);
+
+        return model;
+    }
+
+    public static Model generateTestModelWithSharedLibrary()
+            throws MalformedURLException, IOException, URISyntaxException {
+        final Model model = generateTestModel();
+        
+        SharedLibrary sl = new SharedLibrary();
+        sl.setId("id-shared-library");
+        sl.setVersion("1.0");
+        sl.setUrl("file:dummy-sl-file");
+        model.getComponentRepository().getSharedLibrary().add(sl);
+
+        Component comp = new Component();
+        comp.setId("id-comp-with-shared-library");
+        comp.setUrl("file:dummy-comp-with-sl-file");
+        SharedLibraryReference slRef = new SharedLibraryReference();
+        slRef.setRef(sl.getId() + ":" + sl.getVersion());
+        comp.getSharedLibraryReference().add(slRef);
+        model.getComponentRepository().getComponent().add(comp);
+
+        ComponentInstance compInst = new ComponentInstance();
+        compInst.setRef(comp.getId());
+        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance().add(compInst);
 
         return model;
     }

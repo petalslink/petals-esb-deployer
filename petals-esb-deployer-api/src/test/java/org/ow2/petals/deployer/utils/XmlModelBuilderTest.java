@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.ow2.petals.deployer.model.xml._1.Model;
+import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
 import org.xml.sax.InputSource;
 
 /**
@@ -47,4 +48,15 @@ public class XmlModelBuilderTest {
                 new InputSource(new FileReader(marshalledModelFile))).similar());
     }
 
+    @Test(expected = ModelParsingException.class)
+    public void testReadUknownElement() throws Exception {
+        URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model-with-unknown-element.xml");
+        XmlModelBuilder.readModelFromUrl(modelUrl);
+    }
+
+    @Test(expected = ModelParsingException.class)
+    public void testReadIncorrectSharedLibraryId() throws Exception {
+        URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model-with-incorrect-sl-id.xml");
+        XmlModelBuilder.readModelFromUrl(modelUrl);
+    }
 }

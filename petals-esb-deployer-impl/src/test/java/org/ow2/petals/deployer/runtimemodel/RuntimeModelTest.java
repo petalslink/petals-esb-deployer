@@ -51,6 +51,8 @@ public class RuntimeModelTest {
         when(mockCont1.getId()).thenReturn("cont1");
         model.addContainer(mockCont1);
 
+        containers = model.getContainers();
+
         assertEquals(1, containers.size());
         assertSame(mockCont1, model.getContainer("cont1"));
         assertNull(model.getContainer("cont2"));
@@ -58,6 +60,8 @@ public class RuntimeModelTest {
         RuntimeContainer mockCont2 = mock(RuntimeContainer.class);
         when(mockCont2.getId()).thenReturn("cont2");
         model.addContainer(mockCont2);
+
+        containers = model.getContainers();
 
         assertEquals(2, containers.size());
         assertSame(mockCont1, model.getContainer("cont1"));

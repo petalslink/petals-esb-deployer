@@ -29,6 +29,13 @@
                </documentation>
             </annotation>
          </element>
+         <element name="shared-library" type="cr:sharedLibrary" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The list of shared libraries of this repository.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
    </complexType>
 
@@ -38,6 +45,14 @@
             <annotation>
                <documentation>
                   The URL of the associated archive.
+               </documentation>
+            </annotation>
+         </element>
+         <element name="shared-library-reference" type="cr:sharedLibraryReference" minOccurs="0"
+            maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  The optional list of references to shared libraries required by the component.
                </documentation>
             </annotation>
          </element>
@@ -52,4 +67,51 @@
       </attribute>
    </complexType>
 
+   <complexType name="sharedLibrary">
+      <sequence>
+         <element name="url" type="string" minOccurs="1" maxOccurs="1">
+            <annotation>
+               <documentation>
+                  The URL of the associated archive.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
+      <attribute name="id" use="required">
+         <annotation>
+            <documentation>
+               The identifier of this shared library in the model. It must be the same than the one defined
+               in the JBI descriptor of the shared library and the couple id and version must be unique in the model.
+            </documentation>
+         </annotation>
+         <simpleType>
+            <restriction base="string">
+               <pattern value="[^:]*" />
+            </restriction>
+         </simpleType>
+      </attribute>
+      <attribute name="version" use="required">
+         <annotation>
+            <documentation>
+               The version of this component in the model. It must be the same than the one defined in the
+               JBI descriptor of the component and the couple id and version must be unique in the model.
+            </documentation>
+         </annotation>
+         <simpleType>
+            <restriction base="string">
+               <pattern value="[^:]*" />
+            </restriction>
+         </simpleType>
+      </attribute>
+   </complexType>
+
+   <complexType name="sharedLibraryReference">
+      <attribute name="ref" type="string" use="required">
+         <annotation>
+            <documentation>
+               The couple id:version of the referenced shared library.
+            </documentation>
+         </annotation>
+      </attribute>
+   </complexType>
 </schema>

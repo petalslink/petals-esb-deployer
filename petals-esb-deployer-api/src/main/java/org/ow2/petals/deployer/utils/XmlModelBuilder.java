@@ -24,17 +24,20 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
 import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
+import org.xml.sax.SAXException;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -56,7 +59,10 @@ public class XmlModelBuilder {
             MARSHALLER = jaxbContext.createMarshaller();
             MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             UNMARSHALLER = jaxbContext.createUnmarshaller();
-        } catch (JAXBException e) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            URL modelSchemaUrl = Thread.currentThread().getContextClassLoader().getResource("model.xsd");
+            UNMARSHALLER.setSchema(schemaFactory.newSchema(modelSchemaUrl));
+        } catch (JAXBException | SAXException e) {
             throw new UncheckedException(e);
         }
     }

@@ -62,6 +62,8 @@ public class RuntimeContainerTest {
         when(mockComp1.getId()).thenReturn("comp1");
         cont.addComponent(mockComp1);
 
+        components = cont.getComponents();
+
         assertEquals(1, components.size());
         assertSame(mockComp1, cont.getComponent("comp1"));
         assertNull(cont.getComponent("comp2"));
@@ -69,6 +71,8 @@ public class RuntimeContainerTest {
         RuntimeComponent mockComp2 = mock(RuntimeComponent.class);
         when(mockComp2.getId()).thenReturn("comp2");
         cont.addComponent(mockComp2);
+
+        components = cont.getComponents();
 
         assertEquals(2, components.size());
         assertSame(mockComp1, cont.getComponent("comp1"));
@@ -84,6 +88,8 @@ public class RuntimeContainerTest {
         when(mockSu1.getId()).thenReturn("su1");
         cont.addServiceUnit(mockSu1);
 
+        serviceUnits = cont.getServiceUnits();
+
         assertEquals(1, serviceUnits.size());
         assertSame(mockSu1, cont.getServiceUnit("su1"));
         assertNull(cont.getServiceUnit("su2"));
@@ -91,6 +97,8 @@ public class RuntimeContainerTest {
         RuntimeServiceUnit mockSu2 = mock(RuntimeServiceUnit.class);
         when(mockSu2.getId()).thenReturn("su2");
         cont.addServiceUnit(mockSu2);
+
+        serviceUnits = cont.getServiceUnits();
 
         assertEquals(2, serviceUnits.size());
         assertSame(mockSu1, cont.getServiceUnit("su1"));

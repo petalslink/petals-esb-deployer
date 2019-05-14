@@ -30,6 +30,8 @@ import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
+import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -38,6 +40,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 
 /**
@@ -79,14 +82,33 @@ public class ModelConverter {
         runtimeModel.addContainer(runtimeCont);
 
         final ComponentRepository compRepo = model.getComponentRepository();
+
         final Map<String, Component> compById = new HashMap<>();
         for (final Component comp : compRepo.getComponent()) {
             compById.put(comp.getId(), comp);
         }
+
+        final Map<String, SharedLibrary> slByIdAndVersion = new HashMap<>();
+        for (final SharedLibrary sl : compRepo.getSharedLibrary()) {
+            slByIdAndVersion.put(sl.getId() + ":" + sl.getVersion(), sl);
+        }
+
         for (final ComponentInstance compInst : contInst.getComponentInstance()) {
             final String compId = compInst.getRef();
             final Component compRef = compById.get(compId);
-            runtimeCont.addComponent(new RuntimeComponent(compId, new URL(compRef.getUrl())));
+            RuntimeComponent runtimeComp = new RuntimeComponent(compId, new URL(compRef.getUrl()));
+            for (final SharedLibraryReference slRef : compRef.getSharedLibraryReference()) {
+                String idAndVersion = slRef.getRef();
+                RuntimeSharedLibrary runtimeSl = runtimeCont.getSharedLibrary(idAndVersion);
+                if (runtimeSl == null) {
+                    SharedLibrary sl = slByIdAndVersion.get(idAndVersion);
+                    runtimeSl = new RuntimeSharedLibrary(sl.getId(), sl.getVersion(), new URL(sl.getUrl()));
+                    runtimeCont.addSharedLibrary(runtimeSl);
+                }
+                runtimeComp.addSharedLibrary(runtimeSl);
+            }
+            runtimeCont.addComponent(runtimeComp);
+
         }
 
         final ServiceUnitModel suModel = model.getServiceUnitModel();

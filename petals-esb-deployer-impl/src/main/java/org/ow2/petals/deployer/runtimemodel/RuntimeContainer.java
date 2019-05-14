@@ -20,10 +20,12 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
+import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 
 /**
@@ -44,6 +46,8 @@ public class RuntimeContainer implements Similar {
     private final Map<String, RuntimeServiceUnit> serviceUnits = new HashMap<>();
 
     private final Map<String, RuntimeComponent> components = new HashMap<>();
+
+    private final Map<String, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
 
     /**
      * 
@@ -109,17 +113,22 @@ public class RuntimeContainer implements Similar {
      * @param serviceUnit
      *            must not be {code null}
      * @throws DuplicatedServiceUnitException
-     *             Service unit is already in the list
+     *             Service unit is already in the list and was not added
      */
     public void addServiceUnit(final RuntimeServiceUnit serviceUnit) throws DuplicatedServiceUnitException {
         assert serviceUnit != null;
-        if (serviceUnits.put(serviceUnit.getId(), serviceUnit) != null) {
+        String id = serviceUnit.getId();
+        if (serviceUnits.containsKey(id)) {
             throw new DuplicatedServiceUnitException("Service unit " + serviceUnit.getId() + " is already in the list");
         }
+        serviceUnits.put(id, serviceUnit);
     }
 
+    /**
+     * Adding or removing from the returned collection does not affect the container.
+     */
     public Collection<RuntimeServiceUnit> getServiceUnits() {
-        return serviceUnits.values();
+        return new HashSet<>(serviceUnits.values());
     }
 
     /**
@@ -140,8 +149,46 @@ public class RuntimeContainer implements Similar {
         return components.get(id);
     }
 
+    /**
+     * Adding or removing from the returned collection does not affect component.
+     */
     public Collection<RuntimeComponent> getComponents() {
-        return components.values();
+        return new HashSet<>(components.values());
+    }
+
+    /**
+     * Return the RuntimeSharedLibrary with id and version from idAndVersion as <code>id:version</code>, or {code null}
+     * if not in the container.
+     * 
+     * @param idAndVersion
+     *            id:version
+     * @return the shared library if found, else null
+     */
+    public RuntimeSharedLibrary getSharedLibrary(final String idAndVersion) {
+        return sharedLibraries.get(idAndVersion);
+    }
+
+    /**
+     * 
+     * @param sharedLibrary
+     *            must not be {code null}
+     * @throws DuplicatedSharedLibraryException
+     *             shared library is already in the list and was not added
+     */
+    public void addSharedLibrary(final RuntimeSharedLibrary sharedLibrary) throws DuplicatedSharedLibraryException {
+        assert sharedLibrary != null;
+        String idAndVersion = sharedLibrary.getId() + ":" + sharedLibrary.getVersion();
+        if (sharedLibraries.containsKey(idAndVersion)) {
+            throw new DuplicatedSharedLibraryException("Shared library " + idAndVersion + " is already in the list");
+        }
+        sharedLibraries.put(idAndVersion, sharedLibrary);
+    }
+
+    /**
+     * Adding or removing from the returned collection does not affect container.
+     */
+    public Collection<RuntimeSharedLibrary> getSharedLibraries() {
+        return new HashSet<>(sharedLibraries.values());
     }
 
     @Override
@@ -155,7 +202,8 @@ public class RuntimeContainer implements Similar {
                 && this.getUser().equals(otherContainer.getUser())
                 && this.getPassword().equals(otherContainer.getPassword())
                 && this.getHostname().equals(otherContainer.getHostname())
-                && compareRuntimeServiceUnitMaps(otherContainer) && compareRuntimeComponentMaps(otherContainer);
+                && compareRuntimeServiceUnitMaps(otherContainer) && compareRuntimeComponentMaps(otherContainer)
+                && compareRuntimeSharedLibraryMaps(otherContainer);
     }
 
     private boolean compareRuntimeServiceUnitMaps(final RuntimeContainer otherCont) {
@@ -185,6 +233,24 @@ public class RuntimeContainer implements Similar {
 
         for (final RuntimeComponent otherContComp : otherCont.getComponents()) {
             if (this.getComponent(otherContComp.getId()) == null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean compareRuntimeSharedLibraryMaps(final RuntimeContainer otherCont) {
+        for (final RuntimeSharedLibrary thisContSl : this.getSharedLibraries()) {
+            final RuntimeSharedLibrary otherContSl = otherCont
+                    .getSharedLibrary(thisContSl.getId() + ":" + thisContSl.getVersion());
+            if (otherContSl == null || !otherContSl.isSimilarTo(otherContSl)) {
+                return false;
+            }
+        }
+
+        for (final RuntimeSharedLibrary otherContSl : otherCont.getSharedLibraries()) {
+            if (this.getSharedLibrary(otherContSl.getId() + ":" + otherContSl.getVersion()) == null) {
                 return false;
             }
         }

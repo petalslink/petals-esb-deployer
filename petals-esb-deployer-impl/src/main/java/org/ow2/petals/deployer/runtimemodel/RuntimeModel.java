@@ -20,6 +20,7 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerException;
@@ -36,11 +37,15 @@ public class RuntimeModel implements Similar {
      * @param container
      *            must not be {code null}
      * @throws DuplicatedContainerException
+     *             container is already in the list and was not added
      */
     public void addContainer(final RuntimeContainer container) throws DuplicatedContainerException {
-        if (containers.put(container.getId(), container) != null) {
-            throw new DuplicatedContainerException("Container " + container.getId() + " is already in the list");
+        assert container != null;
+        String id = container.getId();
+        if (containers.containsKey(id)) {
+            throw new DuplicatedContainerException("Container " + id + " is already in the list");
         }
+        containers.put(id, container);
     }
 
     /**
@@ -53,8 +58,11 @@ public class RuntimeModel implements Similar {
         return containers.get(id);
     }
 
+    /**
+     * Adding or removing from the returned collection does not affect the model.
+     */
     public Collection<RuntimeContainer> getContainers() {
-        return containers.values();
+        return new HashSet<>(containers.values());
     }
 
     @Override

@@ -37,16 +37,14 @@
          <ns3:url>file:/artifacts/petals-bc-soap-5.0.0</ns3:url>
       </ns3:component>
       <ns3:component id="petals-bc-sql">
-         <ns3:url>file:/artifacts/petals-bc-sql-with-shared-libraries.zip</ns3:url>
-         <ns3:shared-library-reference ref="petals-sl-hsql:1.8.0.10" />
-         <ns3:shared-library-reference
-            ref="petals-sl-sqlserver-6.1.0.jre7:1.0.0-20171018.161403-8" />
+         <ns3:url>file:/dummy-petals-bc-sql-with-sl.zip</ns3:url>
+         <ns3:shared-library-reference ref="petals-sl-h2-1.4.178:1.0.1-SNAPSHOT" />
       </ns3:component>
-      <ns3:shared-library id="petals-sl-hsql" version="1.8.0.10">
-         <ns3:url>file:/artifacts/petals-sl-hsql-1.8.0.10</ns3:url>
+      <ns3:shared-library id="petals-sl-h2-1.4.178" version="1.0.1-SNAPSHOT">
+         <ns3:url>file:/dummy-sl.zip</ns3:url>
       </ns3:shared-library>
-      <ns3:shared-library id="petals-sl-sqlserver-6.1.0.jre7" version="1.0.0-20171018.161403-8">
-         <ns3:url>file:/artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-20171018.161403-8</ns3:url>
+      <ns3:shared-library id="there-is-:-in-my-id" version="1.0">
+         <ns3:url>file:/dummy-sl-incorrect-id.zip</ns3:url>
       </ns3:shared-library>
    </ns2:component-repository>
    <ns2:topology-model>
