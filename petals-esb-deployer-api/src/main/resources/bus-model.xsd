@@ -121,7 +121,7 @@
    </complexType>
 
    <complexType name="componentInstance">
-      <attribute name="ref" type="string" use="required">
+      <attribute name="ref" type="NCName" use="required">
          <annotation>
             <documentation>
                Reference to a component from a component repository.
@@ -131,7 +131,7 @@
    </complexType>
 
    <complexType name="serviceUnitInstance">
-      <attribute name="ref" type="string" use="required">
+      <attribute name="ref" type="NCName" use="required">
          <annotation>
             <documentation>
                Reference to a service unit from a service unit model.

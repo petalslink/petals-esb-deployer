@@ -19,9 +19,11 @@
 package org.ow2.petals.deployer.runtimemodel;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
@@ -47,22 +49,10 @@ public class RuntimeContainer implements Similar {
 
     private final Map<String, RuntimeComponent> components = new HashMap<>();
 
-    private final Map<String, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
+    private final Map<RuntimeSharedLibrary.IdAndVersion, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
 
-    /**
-     * 
-     * @param id
-     *            must not be {code null}
-     * @param port
-     * @param user
-     *            must not be {code null}
-     * @param password
-     *            must not be {code null}
-     * @param hostname
-     *            must not be {code null}
-     */
-    public RuntimeContainer(final String id, final int port, final String user, final String password,
-            final String hostname) {
+    public RuntimeContainer(@NotNull final String id, @NotNull final int port, @NotNull final String user,
+            @NotNull final String password, @NotNull final String hostname) {
         assert id != null;
         assert user != null;
         assert password != null;
@@ -74,6 +64,7 @@ public class RuntimeContainer implements Similar {
         this.hostname = hostname;
     }
 
+    @NotNull
     public String getId() {
         return id;
     }
@@ -82,40 +73,35 @@ public class RuntimeContainer implements Similar {
         return port;
     }
 
+    @NotNull
     public String getUser() {
         return user;
     }
 
+    @NotNull
     public String getPassword() {
         return password;
     }
 
+    @NotNull
     public String getHostname() {
         return hostname;
     }
 
-    /**
-     * 
-     * @param hostname
-     *            must not be {code null}
-     */
-    public void setHostname(final String hostname) {
+    public void setHostname(@NotNull final String hostname) {
         assert hostname != null;
         this.hostname = hostname;
     }
 
-    public RuntimeServiceUnit getServiceUnit(final String id) {
+    public RuntimeServiceUnit getServiceUnit(@NotNull final String id) {
         return serviceUnits.get(id);
     }
 
     /**
-     * 
-     * @param serviceUnit
-     *            must not be {code null}
      * @throws DuplicatedServiceUnitException
      *             Service unit is already in the list and was not added
      */
-    public void addServiceUnit(final RuntimeServiceUnit serviceUnit) throws DuplicatedServiceUnitException {
+    public void addServiceUnit(@NotNull final RuntimeServiceUnit serviceUnit) throws DuplicatedServiceUnitException {
         assert serviceUnit != null;
         String id = serviceUnit.getId();
         if (serviceUnits.containsKey(id)) {
@@ -127,59 +113,54 @@ public class RuntimeContainer implements Similar {
     /**
      * Adding or removing from the returned collection does not affect the container.
      */
+    @NotNull
     public Collection<RuntimeServiceUnit> getServiceUnits() {
-        return new HashSet<>(serviceUnits.values());
+        return Collections.unmodifiableCollection(serviceUnits.values());
     }
 
     /**
-     * 
-     * @param component
-     *            must not be {code null}
      * @throws DuplicatedComponentException
      *             Component is already in the list
      */
-    public void addComponent(final RuntimeComponent component) throws DuplicatedComponentException {
+    public void addComponent(@NotNull final RuntimeComponent component) throws DuplicatedComponentException {
         assert component != null;
         if (components.put(component.getId(), component) != null) {
             throw new DuplicatedComponentException("Component " + component.getId() + " is already in the list");
         }
     }
 
-    public RuntimeComponent getComponent(final String id) {
+    public RuntimeComponent getComponent(@NotNull final String id) {
         return components.get(id);
     }
 
     /**
      * Adding or removing from the returned collection does not affect component.
      */
+    @NotNull
     public Collection<RuntimeComponent> getComponents() {
-        return new HashSet<>(components.values());
+        return Collections.unmodifiableCollection(components.values());
     }
 
     /**
-     * Return the RuntimeSharedLibrary with id and version from idAndVersion as <code>id:version</code>, or {code null}
-     * if not in the container.
-     * 
-     * @param idAndVersion
-     *            id:version
      * @return the shared library if found, else null
      */
-    public RuntimeSharedLibrary getSharedLibrary(final String idAndVersion) {
-        return sharedLibraries.get(idAndVersion);
+    public RuntimeSharedLibrary getSharedLibrary(@NotNull final String id, @NotNull final String version) {
+        return sharedLibraries.get(new RuntimeSharedLibrary.IdAndVersion(id, version));
     }
 
     /**
-     * 
-     * @param sharedLibrary
-     *            must not be {code null}
      * @throws DuplicatedSharedLibraryException
      *             shared library is already in the list and was not added
      */
-    public void addSharedLibrary(final RuntimeSharedLibrary sharedLibrary) throws DuplicatedSharedLibraryException {
+    public void addSharedLibrary(@NotNull final RuntimeSharedLibrary sharedLibrary)
+            throws DuplicatedSharedLibraryException {
         assert sharedLibrary != null;
-        String idAndVersion = sharedLibrary.getId() + ":" + sharedLibrary.getVersion();
+        String id = sharedLibrary.getId();
+        String version = sharedLibrary.getVersion();
+        RuntimeSharedLibrary.IdAndVersion idAndVersion = new RuntimeSharedLibrary.IdAndVersion(id, version);
         if (sharedLibraries.containsKey(idAndVersion)) {
-            throw new DuplicatedSharedLibraryException("Shared library " + idAndVersion + " is already in the list");
+            throw new DuplicatedSharedLibraryException(
+                    "Shared library with id " + id + " and version " + version + " is already in the list");
         }
         sharedLibraries.put(idAndVersion, sharedLibrary);
     }
@@ -187,8 +168,9 @@ public class RuntimeContainer implements Similar {
     /**
      * Adding or removing from the returned collection does not affect container.
      */
+    @NotNull
     public Collection<RuntimeSharedLibrary> getSharedLibraries() {
-        return new HashSet<>(sharedLibraries.values());
+        return Collections.unmodifiableCollection(sharedLibraries.values());
     }
 
     @Override
@@ -242,15 +224,15 @@ public class RuntimeContainer implements Similar {
 
     private boolean compareRuntimeSharedLibraryMaps(final RuntimeContainer otherCont) {
         for (final RuntimeSharedLibrary thisContSl : this.getSharedLibraries()) {
-            final RuntimeSharedLibrary otherContSl = otherCont
-                    .getSharedLibrary(thisContSl.getId() + ":" + thisContSl.getVersion());
+            final RuntimeSharedLibrary otherContSl = otherCont.getSharedLibrary(thisContSl.getId(),
+                    thisContSl.getVersion());
             if (otherContSl == null || !otherContSl.isSimilarTo(otherContSl)) {
                 return false;
             }
         }
 
         for (final RuntimeSharedLibrary otherContSl : otherCont.getSharedLibraries()) {
-            if (this.getSharedLibrary(otherContSl.getId() + ":" + otherContSl.getVersion()) == null) {
+            if (this.getSharedLibrary(otherContSl.getId(), otherContSl.getVersion()) == null) {
                 return false;
             }
         }

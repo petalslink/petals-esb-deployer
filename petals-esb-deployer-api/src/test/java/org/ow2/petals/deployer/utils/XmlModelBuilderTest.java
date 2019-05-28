@@ -32,7 +32,6 @@ import org.xml.sax.InputSource;
 
 /**
  * @author Alexandre Lagane - Linagora
- *
  */
 public class XmlModelBuilderTest {
 
@@ -44,19 +43,19 @@ public class XmlModelBuilderTest {
         File marshalledModelFile = Files.createTempFile("marshalled-model", ".xml").toFile();
         XmlModelBuilder.writeModelToFile(model, marshalledModelFile);
 
+        XMLUnit.setIgnoreWhitespace(true);
         assertTrue(XMLUnit.compareXML(new InputSource(new FileReader(initialModelFile)),
                 new InputSource(new FileReader(marshalledModelFile))).similar());
     }
 
+    /**
+     * Check that schema validation is enabled.
+     * 
+     * @throws Exception
+     */
     @Test(expected = ModelParsingException.class)
-    public void testReadUknownElement() throws Exception {
+    public void testReadUnknownElement() throws Exception {
         URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model-with-unknown-element.xml");
-        XmlModelBuilder.readModelFromUrl(modelUrl);
-    }
-
-    @Test(expected = ModelParsingException.class)
-    public void testReadIncorrectSharedLibraryId() throws Exception {
-        URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model-with-incorrect-sl-id.xml");
         XmlModelBuilder.readModelFromUrl(modelUrl);
     }
 }

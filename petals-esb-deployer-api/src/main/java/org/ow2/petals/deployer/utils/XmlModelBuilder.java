@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -40,8 +41,9 @@ import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
 import org.xml.sax.SAXException;
 
 /**
+ * Utility class for parsing models.
+ * 
  * @author Alexandre Lagane - Linagora
- *
  */
 public class XmlModelBuilder {
 
@@ -67,6 +69,9 @@ public class XmlModelBuilder {
         }
     }
 
+    private XmlModelBuilder() {
+    }
+
     /**
      * Read the model at the url. The model must be an XML model (with schema defined in {code model.xsd} in resources
      * directory)
@@ -75,7 +80,8 @@ public class XmlModelBuilder {
      * @return the read model
      * @throws ModelParsingException
      */
-    public static Model readModelFromUrl(final URL url) throws ModelParsingException {
+    @NotNull
+    public static Model readModelFromUrl(@NotNull final URL url) throws ModelParsingException {
         LOG.fine("Downloadind XML model");
         File modelFile;
         try {
@@ -102,7 +108,8 @@ public class XmlModelBuilder {
      * @return file if successfully written else null
      * @throws ModelParsingException
      */
-    public static File writeModelToFile(Model model, File file) throws ModelParsingException {
+    @NotNull
+    public static File writeModelToFile(@NotNull Model model, @NotNull File file) throws ModelParsingException {
         try {
             MARSHALLER.marshal(OF.createModel(model), file);
             return file;

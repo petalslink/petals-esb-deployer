@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
@@ -92,7 +94,7 @@ public class RuntimeModelDeployer {
         }
     }
 
-    public void deployRuntimeModel(final RuntimeModel model)
+    public void deployRuntimeModel(@NotNull final RuntimeModel model)
             throws ConnectionFailedException, ContainerAdministrationException, ArtifactStartedException,
             ArtifactNotDeployedException, ArtifactNotFoundException, IOException, JBIDescriptorException,
             ArtifactAdministrationException, RuntimeModelDeployerException {
@@ -206,7 +208,7 @@ public class RuntimeModelDeployer {
         LOG.fine("Shared library " + slId + ":" + slVersion + " deployed and started");
     }
 
-    public ComponentType convertComponentTypeFromJbiToPetalsAdmin(
+    public static ComponentType convertComponentTypeFromJbiToPetalsAdmin(
             final org.ow2.petals.jbi.descriptor.original.generated.ComponentType jbiType) {
         switch (jbiType) {
             case BINDING_COMPONENT:

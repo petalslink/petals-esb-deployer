@@ -20,6 +20,8 @@ package org.ow2.petals.deployer.utils;
 
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.admin.api.ArtifactAdministration;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
@@ -73,8 +75,9 @@ public class RuntimeModelExporter {
      * @throws ArtifactAdministrationException
      * @throws ContainerAdministrationException
      */
-    public RuntimeModel exportRuntimeModel(final String hostname, final int port, final String user,
-            final String password, final String topologyPassphrase)
+    @NotNull
+    public RuntimeModel exportRuntimeModel(@NotNull final String hostname, @NotNull final int port,
+            @NotNull final String user, @NotNull final String password, final String topologyPassphrase)
             throws RuntimeModelException, ArtifactAdministrationException, ContainerAdministrationException {
         petalsAdmin.connect(hostname, port, user, password);
 
@@ -96,7 +99,7 @@ public class RuntimeModelExporter {
                     for (final SharedLibrary sl : comp.getSharedLibraries()) {
                         String slId = sl.getName();
                         String slVersion = sl.getVersion();
-                        RuntimeSharedLibrary runtimeSl = cont.getSharedLibrary(slId + ":" + slVersion);
+                        RuntimeSharedLibrary runtimeSl = cont.getSharedLibrary(slId, slVersion);
                         if (runtimeSl == null) {
                             runtimeSl = new RuntimeSharedLibrary(slId, slVersion);
                             cont.addSharedLibrary(runtimeSl);
@@ -113,7 +116,7 @@ public class RuntimeModelExporter {
                     // already get service units in "SU" case
                     break;
                 case "SL":
-                    // shared libraries are added in the SE case
+                    // shared libraries are added in the "BC" and "SE" case
                     break;
                 default:
                     throw new UnsupportedOperationException(

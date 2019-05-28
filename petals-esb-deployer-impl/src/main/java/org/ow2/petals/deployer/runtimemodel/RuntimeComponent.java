@@ -20,9 +20,11 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
@@ -36,24 +38,14 @@ public class RuntimeComponent implements Similar {
 
     private URL url;
 
-    private Map<String, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
+    private final Map<RuntimeSharedLibrary.IdAndVersion, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
 
-    /**
-     * 
-     * @param id
-     *            must not be {code null}
-     */
-    public RuntimeComponent(final String id) {
+    public RuntimeComponent(@NotNull final String id) {
+        assert id != null;
         this.id = id;
     }
 
-    /**
-     * 
-     * @param id
-     *            must not be {code null}
-     * @param url
-     */
-    public RuntimeComponent(final String id, final URL url) {
+    public RuntimeComponent(@NotNull final String id, @NotNull final URL url) {
         this(id);
         this.url = url;
     }
@@ -71,28 +63,25 @@ public class RuntimeComponent implements Similar {
     }
 
     /**
-     * Return the RuntimeSharedLibrary with id and version from idAndVersion as <code>id:version</code>, or {code null}
-     * if not in the container.
-     * 
-     * @param idAndVersion
-     *            id:version
      * @return the shared library if found, else null
      */
-    public RuntimeSharedLibrary getSharedLibrary(final String idAndVersion) {
-        return sharedLibraries.get(idAndVersion);
+    public RuntimeSharedLibrary getSharedLibrary(@NotNull final String id, @NotNull final String version) {
+        return sharedLibraries.get(new RuntimeSharedLibrary.IdAndVersion(id, version));
     }
 
     /**
-     * @param sharedLibrary
-     *            must not be {code null}
      * @throws DuplicatedSharedLibraryException
      *             shared library is already in the list and was not added
      */
-    public void addSharedLibrary(final RuntimeSharedLibrary sharedLibrary) throws DuplicatedSharedLibraryException {
+    public void addSharedLibrary(@NotNull final RuntimeSharedLibrary sharedLibrary)
+            throws DuplicatedSharedLibraryException {
         assert sharedLibrary != null;
-        String idAndVersion = sharedLibrary.getId() + ":" + sharedLibrary.getVersion();
+        String id = sharedLibrary.getId();
+        String version = sharedLibrary.getVersion();
+        RuntimeSharedLibrary.IdAndVersion idAndVersion = new RuntimeSharedLibrary.IdAndVersion(id, version);
         if (sharedLibraries.containsKey(idAndVersion)) {
-            throw new DuplicatedSharedLibraryException("Shared library " + idAndVersion + " is already in the list");
+            throw new DuplicatedSharedLibraryException(
+                    "Shared library with id " + id + " and version " + version + " is already in the list");
         }
         sharedLibraries.put(idAndVersion, sharedLibrary);
     }
@@ -100,8 +89,9 @@ public class RuntimeComponent implements Similar {
     /**
      * Adding or removing from the returned collection does not affect component.
      */
+    @NotNull
     public Collection<RuntimeSharedLibrary> getSharedLibraries() {
-        return new HashSet<>(sharedLibraries.values());
+        return Collections.unmodifiableCollection(sharedLibraries.values());
     }
 
     @Override
@@ -116,15 +106,15 @@ public class RuntimeComponent implements Similar {
 
     private boolean compareRuntimeSharedLibraryMaps(final RuntimeComponent otherComp) {
         for (final RuntimeSharedLibrary thisCompSl : this.getSharedLibraries()) {
-            final RuntimeSharedLibrary otherCompSl = otherComp
-                    .getSharedLibrary(thisCompSl.getId() + ":" + thisCompSl.getVersion());
+            final RuntimeSharedLibrary otherCompSl = otherComp.getSharedLibrary(thisCompSl.getId(),
+                    thisCompSl.getVersion());
             if (otherCompSl == null || !thisCompSl.isSimilarTo(otherCompSl)) {
                 return false;
             }
         }
 
         for (final RuntimeSharedLibrary otherCompSl : otherComp.getSharedLibraries()) {
-            if (this.getSharedLibrary(otherCompSl.getId() + ":" + otherCompSl.getVersion()) == null) {
+            if (this.getSharedLibrary(otherCompSl.getId(), otherCompSl.getVersion()) == null) {
                 return false;
             }
         }

@@ -63,7 +63,7 @@ public class ModelUtils {
         final Component bcSoap = new Component();
         bcSoap.setId("petals-bc-soap");
         bcSoap.setUrl("file:/artifacts/petals-bc-soap-5.0.0");
-        compRepo.getComponent().add(bcSoap);
+        compRepo.getComponentOrSharedLibrary().add(bcSoap);
 
         /* Service Unit Model */
 
@@ -151,15 +151,16 @@ public class ModelUtils {
         sl.setId("id-shared-library");
         sl.setVersion("1.0");
         sl.setUrl("file:dummy-sl-file");
-        model.getComponentRepository().getSharedLibrary().add(sl);
+        model.getComponentRepository().getComponentOrSharedLibrary().add(sl);
 
         Component comp = new Component();
         comp.setId("id-comp-with-shared-library");
         comp.setUrl("file:dummy-comp-with-sl-file");
         SharedLibraryReference slRef = new SharedLibraryReference();
-        slRef.setRef(sl.getId() + ":" + sl.getVersion());
+        slRef.setRefId(sl.getId());
+        slRef.setRefVersion(sl.getVersion());
         comp.getSharedLibraryReference().add(slRef);
-        model.getComponentRepository().getComponent().add(comp);
+        model.getComponentRepository().getComponentOrSharedLibrary().add(comp);
 
         ComponentInstance compInst = new ComponentInstance();
         compInst.setRef(comp.getId());

@@ -23,6 +23,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
@@ -53,7 +55,8 @@ public class ModelConverter {
     private ModelConverter() {
     }
 
-    public static RuntimeModel convertModelToRuntimeModel(final Model model)
+    @NotNull
+    public static RuntimeModel convertModelToRuntimeModel(@NotNull final Model model)
             throws MalformedURLException, RuntimeModelException {
         final RuntimeModel runtimeModel = new RuntimeModel();
 
@@ -84,13 +87,16 @@ public class ModelConverter {
         final ComponentRepository compRepo = model.getComponentRepository();
 
         final Map<String, Component> compById = new HashMap<>();
-        for (final Component comp : compRepo.getComponent()) {
-            compById.put(comp.getId(), comp);
-        }
-
-        final Map<String, SharedLibrary> slByIdAndVersion = new HashMap<>();
-        for (final SharedLibrary sl : compRepo.getSharedLibrary()) {
-            slByIdAndVersion.put(sl.getId() + ":" + sl.getVersion(), sl);
+        final Map<RuntimeSharedLibrary.IdAndVersion, SharedLibrary> slByIdAndVersion = new HashMap<>();
+        for (final Object compOrSl : compRepo.getComponentOrSharedLibrary()) {
+            if (compOrSl instanceof Component) {
+                Component comp = (Component) compOrSl;
+                compById.put(comp.getId(), comp);
+            }
+            if (compOrSl instanceof SharedLibrary) {
+                SharedLibrary sl = (SharedLibrary) compOrSl;
+                slByIdAndVersion.put(new RuntimeSharedLibrary.IdAndVersion(sl.getId(), sl.getVersion()), sl);
+            }
         }
 
         for (final ComponentInstance compInst : contInst.getComponentInstance()) {
@@ -98,11 +104,12 @@ public class ModelConverter {
             final Component compRef = compById.get(compId);
             RuntimeComponent runtimeComp = new RuntimeComponent(compId, new URL(compRef.getUrl()));
             for (final SharedLibraryReference slRef : compRef.getSharedLibraryReference()) {
-                String idAndVersion = slRef.getRef();
-                RuntimeSharedLibrary runtimeSl = runtimeCont.getSharedLibrary(idAndVersion);
+                String id = slRef.getRefId();
+                String version = slRef.getRefVersion();
+                RuntimeSharedLibrary runtimeSl = runtimeCont.getSharedLibrary(id, version);
                 if (runtimeSl == null) {
-                    SharedLibrary sl = slByIdAndVersion.get(idAndVersion);
-                    runtimeSl = new RuntimeSharedLibrary(sl.getId(), sl.getVersion(), new URL(sl.getUrl()));
+                    SharedLibrary sl = slByIdAndVersion.get(new RuntimeSharedLibrary.IdAndVersion(id, version));
+                    runtimeSl = new RuntimeSharedLibrary(id, version, new URL(sl.getUrl()));
                     runtimeCont.addSharedLibrary(runtimeSl);
                 }
                 runtimeComp.addSharedLibrary(runtimeSl);

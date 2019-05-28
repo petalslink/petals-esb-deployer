@@ -22,26 +22,28 @@
 
    <complexType name="componentRepository">
       <sequence>
-         <element name="component" type="cr:component" minOccurs="1" maxOccurs="unbounded">
-            <annotation>
-               <documentation>
-                  The list of components of this repository.
-               </documentation>
-            </annotation>
-         </element>
-         <element name="shared-library" type="cr:sharedLibrary" minOccurs="0" maxOccurs="unbounded">
-            <annotation>
-               <documentation>
-                  The list of shared libraries of this repository.
-               </documentation>
-            </annotation>
-         </element>
+         <choice minOccurs="1" maxOccurs="unbounded">
+            <element name="component" type="cr:component" minOccurs="0" maxOccurs="1">
+               <annotation>
+                  <documentation>
+                     A component of this repository.
+                  </documentation>
+               </annotation>
+            </element>
+            <element name="shared-library" type="cr:sharedLibrary" minOccurs="0" maxOccurs="1">
+               <annotation>
+                  <documentation>
+                     A shared library of this repository.
+                  </documentation>
+               </annotation>
+            </element>
+         </choice>
       </sequence>
    </complexType>
 
    <complexType name="component">
       <sequence>
-         <element name="url" type="string" minOccurs="1" maxOccurs="1">
+         <element name="url" type="anyURI" minOccurs="1" maxOccurs="1">
             <annotation>
                <documentation>
                   The URL of the associated archive.
@@ -52,12 +54,12 @@
             maxOccurs="unbounded">
             <annotation>
                <documentation>
-                  The optional list of references to shared libraries required by the component.
+                  An optional reference to a shared library required by the component.
                </documentation>
             </annotation>
          </element>
       </sequence>
-      <attribute name="id" type="string" use="required">
+      <attribute name="id" type="NCName" use="required">
          <annotation>
             <documentation>
                The identifier of this component in the model. It must be the same than the one defined in
@@ -69,7 +71,7 @@
 
    <complexType name="sharedLibrary">
       <sequence>
-         <element name="url" type="string" minOccurs="1" maxOccurs="1">
+         <element name="url" type="anyURI" minOccurs="1" maxOccurs="1">
             <annotation>
                <documentation>
                   The URL of the associated archive.
@@ -77,39 +79,36 @@
             </annotation>
          </element>
       </sequence>
-      <attribute name="id" use="required">
+      <attribute name="id" type="NCName" use="required">
          <annotation>
             <documentation>
                The identifier of this shared library in the model. It must be the same than the one defined
                in the JBI descriptor of the shared library and the couple id and version must be unique in the model.
             </documentation>
          </annotation>
-         <simpleType>
-            <restriction base="string">
-               <pattern value="[^:]*" />
-            </restriction>
-         </simpleType>
       </attribute>
-      <attribute name="version" use="required">
+      <attribute name="version" type="string" use="required">
          <annotation>
             <documentation>
-               The version of this component in the model. It must be the same than the one defined in the
-               JBI descriptor of the component and the couple id and version must be unique in the model.
+               The version of this shared library in the model. It must be the same than the one defined in the
+               JBI descriptor of the shared library and the couple id and version must be unique in the model.
             </documentation>
          </annotation>
-         <simpleType>
-            <restriction base="string">
-               <pattern value="[^:]*" />
-            </restriction>
-         </simpleType>
       </attribute>
    </complexType>
 
    <complexType name="sharedLibraryReference">
-      <attribute name="ref" type="string" use="required">
+      <attribute name="ref-id" type="NCName" use="required">
          <annotation>
             <documentation>
-               The couple id:version of the referenced shared library.
+               The id of the referenced shared library.
+            </documentation>
+         </annotation>
+      </attribute>
+      <attribute name="ref-version" type="string" use="required">
+         <annotation>
+            <documentation>
+               The version of the referenced shared library.
             </documentation>
          </annotation>
       </attribute>

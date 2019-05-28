@@ -94,14 +94,14 @@ public class ModelConverterTest {
 
         assertEquals(1, comp.getSharedLibraries().size());
 
-        final RuntimeSharedLibrary slFromCont = cont.getSharedLibrary("id-shared-library:1.0");
+        final RuntimeSharedLibrary slFromCont = cont.getSharedLibrary("id-shared-library", "1.0");
         assertEquals("id-shared-library", slFromCont.getId());
         assertEquals("1.0", slFromCont.getVersion());
         assertEquals("file:dummy-sl-file", slFromCont.getUrl().toString());
 
         assertEquals(1, cont.getSharedLibraries().size());
 
-        final RuntimeSharedLibrary slFromComp = cont.getSharedLibrary("id-shared-library:1.0");
+        final RuntimeSharedLibrary slFromComp = cont.getSharedLibrary("id-shared-library", "1.0");
         assertEquals("id-shared-library", slFromComp.getId());
         assertEquals("1.0", slFromComp.getVersion());
         assertEquals("file:dummy-sl-file", slFromComp.getUrl().toString());

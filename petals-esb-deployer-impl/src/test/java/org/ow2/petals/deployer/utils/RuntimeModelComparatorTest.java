@@ -70,7 +70,6 @@ public class RuntimeModelComparatorTest {
         final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
 
         final RuntimeModel modelWithDifferentContainer = RuntimeModelDeployerTest.generateRuntimeModel();
-        modelWithDifferentContainer.getContainers().clear();
         final RuntimeContainer differentCont = new RuntimeContainer("different-cont", 7700, "other", "azerty",
                 "localhost");
         modelWithDifferentContainer.addContainer(differentCont);
