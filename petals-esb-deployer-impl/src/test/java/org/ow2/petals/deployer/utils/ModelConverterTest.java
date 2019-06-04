@@ -28,6 +28,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -73,4 +74,36 @@ public class ModelConverterTest {
         assertEquals("file:/artifacts/petals-bc-soap-5.0.0", comp.getUrl().toString());
     }
 
+    @Test
+    public void convertModelWithSharedLibraryToRuntimeModel() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithSharedLibrary();
+
+        final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+
+        final Collection<RuntimeContainer> containers = runtimeModel.getContainers();
+        assertEquals(1, containers.size());
+
+        final RuntimeContainer cont = containers.iterator().next();
+
+        final Collection<RuntimeComponent> components = cont.getComponents();
+        assertEquals(2, components.size());
+
+        final RuntimeComponent comp = cont.getComponent("id-comp-with-shared-library");
+        assertEquals("id-comp-with-shared-library", comp.getId());
+        assertEquals("file:dummy-comp-with-sl-file", comp.getUrl().toString());
+
+        assertEquals(1, comp.getSharedLibraries().size());
+
+        final RuntimeSharedLibrary slFromCont = cont.getSharedLibrary("id-shared-library", "1.0");
+        assertEquals("id-shared-library", slFromCont.getId());
+        assertEquals("1.0", slFromCont.getVersion());
+        assertEquals("file:dummy-sl-file", slFromCont.getUrl().toString());
+
+        assertEquals(1, cont.getSharedLibraries().size());
+
+        final RuntimeSharedLibrary slFromComp = cont.getSharedLibrary("id-shared-library", "1.0");
+        assertEquals("id-shared-library", slFromComp.getId());
+        assertEquals("1.0", slFromComp.getVersion());
+        assertEquals("file:dummy-sl-file", slFromComp.getUrl().toString());
+    }
 }

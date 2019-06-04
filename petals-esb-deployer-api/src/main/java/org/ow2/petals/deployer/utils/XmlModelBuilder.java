@@ -24,21 +24,26 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
 import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
+import org.xml.sax.SAXException;
 
 /**
+ * Utility class for parsing models.
+ * 
  * @author Alexandre Lagane - Linagora
- *
  */
 public class XmlModelBuilder {
 
@@ -56,9 +61,15 @@ public class XmlModelBuilder {
             MARSHALLER = jaxbContext.createMarshaller();
             MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             UNMARSHALLER = jaxbContext.createUnmarshaller();
-        } catch (JAXBException e) {
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            URL modelSchemaUrl = Thread.currentThread().getContextClassLoader().getResource("model.xsd");
+            UNMARSHALLER.setSchema(schemaFactory.newSchema(modelSchemaUrl));
+        } catch (JAXBException | SAXException e) {
             throw new UncheckedException(e);
         }
+    }
+
+    private XmlModelBuilder() {
     }
 
     /**
@@ -69,7 +80,8 @@ public class XmlModelBuilder {
      * @return the read model
      * @throws ModelParsingException
      */
-    public static Model readModelFromUrl(final URL url) throws ModelParsingException {
+    @NotNull
+    public static Model readModelFromUrl(@NotNull final URL url) throws ModelParsingException {
         LOG.fine("Downloadind XML model");
         File modelFile;
         try {
@@ -96,7 +108,8 @@ public class XmlModelBuilder {
      * @return file if successfully written else null
      * @throws ModelParsingException
      */
-    public static File writeModelToFile(Model model, File file) throws ModelParsingException {
+    @NotNull
+    public static File writeModelToFile(@NotNull Model model, @NotNull File file) throws ModelParsingException {
         try {
             MARSHALLER.marshal(OF.createModel(model), file);
             return file;

@@ -21,10 +21,10 @@ package org.ow2.petals.deployer.utils;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.utils.ModelDeployer;
-import org.ow2.petals.deployer.utils.XmlModelBuilder;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
 
 /**
@@ -55,19 +55,19 @@ public class ModelDeployerImpl implements ModelDeployer {
     }
 
     /**
-     * Download and deploy the model at the url. The model must be an XML model with XSD {code model.xsd} in resources
-     * directory.
+     * Download and deploy the model at the url. The model must be an XML model. Schema definition can be found in {code
+     * model.xsd} in resources directory.
      * 
      * @param url
      * @throws ModelDeploymentException
      */
-    public void deployModel(final URL url) throws ModelDeploymentException {
+    public void deployModel(@NotNull final URL url) throws ModelDeploymentException {
         final Model model = XmlModelBuilder.readModelFromUrl(url);
 
         deployModel(model);
     }
 
-    public void deployModel(Model model) throws ModelDeploymentException {
+    public void deployModel(@NotNull Model model) throws ModelDeploymentException {
         RuntimeModel runtimeModel;
         try {
             runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
@@ -79,6 +79,7 @@ public class ModelDeployerImpl implements ModelDeployer {
 
     }
 
+    @NotNull
     public static ModelDeployerImpl getInstance() {
         return instance != null ? instance : new ModelDeployerImpl();
     }

@@ -20,6 +20,8 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 
 /**
@@ -31,25 +33,17 @@ public class RuntimeServiceUnit implements Similar {
 
     private URL url;
 
-    /**
-     * 
-     * @param id
-     *            must not be {code null}
-     */
-    public RuntimeServiceUnit(final String id) {
+    public RuntimeServiceUnit(@NotNull final String id) {
+        assert id != null;
         this.id = id;
     }
 
-    /**
-     * 
-     * @param id
-     *            must not be {code null}
-     */
-    public RuntimeServiceUnit(final String id, final URL url) {
+    public RuntimeServiceUnit(@NotNull final String id, final URL url) {
         this(id);
         this.url = url;
     }
 
+    @NotNull
     public String getId() {
         return id;
     }

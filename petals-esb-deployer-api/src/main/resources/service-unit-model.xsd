@@ -39,22 +39,19 @@
 
    <complexType name="serviceUnit">
       <sequence>
-         <element name="url" type="string" minOccurs="1" maxOccurs="1">
+         <element name="url" type="anyURI" minOccurs="1" maxOccurs="1">
             <annotation>
                <documentation>
-                  The map of placeholder required by the service unit. The key of the map is the key of the
-                  placeholder, and the value of the map is the default value of the placeholder. If there is no default
-                  value, the value must be null.
+                  The URL of the associated SA archive. Multiple service units can have the same SA archive.
                </documentation>
             </annotation>
          </element>
       </sequence>
-      <attribute name="id" type="string" use="required">
+      <attribute name="id" type="NCName" use="required">
          <annotation>
             <documentation>
                Identifier of the service unit. It must be the same than the one defined in the JBI
-               descriptor on the archive and must be
-               unique in the model.
+               descriptor on the archive and must be unique in the model.
             </documentation>
          </annotation>
       </attribute>

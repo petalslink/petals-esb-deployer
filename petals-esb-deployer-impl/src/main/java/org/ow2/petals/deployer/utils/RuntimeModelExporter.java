@@ -20,10 +20,15 @@ package org.ow2.petals.deployer.utils;
 
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.admin.api.ArtifactAdministration;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.artifact.Artifact;
+import org.ow2.petals.admin.api.artifact.Component;
+import org.ow2.petals.admin.api.artifact.ServiceUnit;
+import org.ow2.petals.admin.api.artifact.SharedLibrary;
 import org.ow2.petals.admin.api.exception.ArtifactAdministrationException;
 import org.ow2.petals.admin.api.exception.ContainerAdministrationException;
 import org.ow2.petals.admin.api.exception.DuplicatedServiceException;
@@ -32,6 +37,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 
@@ -69,8 +75,9 @@ public class RuntimeModelExporter {
      * @throws ArtifactAdministrationException
      * @throws ContainerAdministrationException
      */
-    public RuntimeModel exportRuntimeModel(final String hostname, final int port, final String user,
-            final String password, final String topologyPassphrase)
+    @NotNull
+    public RuntimeModel exportRuntimeModel(@NotNull final String hostname, @NotNull final int port,
+            @NotNull final String user, @NotNull final String password, final String topologyPassphrase)
             throws RuntimeModelException, ArtifactAdministrationException, ContainerAdministrationException {
         petalsAdmin.connect(hostname, port, user, password);
 
@@ -85,17 +92,32 @@ public class RuntimeModelExporter {
             switch (artifact.getType()) {
                 case "BC":
                 case "SE":
-                    cont.addComponent(
-                            new RuntimeComponent(((org.ow2.petals.admin.api.artifact.Component) artifact).getName()));
+                    Component comp = (Component) artifact;
+                    String compName = comp.getName();
+                    RuntimeComponent runtimeComp = new RuntimeComponent(compName);
+
+                    for (final SharedLibrary sl : comp.getSharedLibraries()) {
+                        String slId = sl.getName();
+                        String slVersion = sl.getVersion();
+                        RuntimeSharedLibrary runtimeSl = cont.getSharedLibrary(slId, slVersion);
+                        if (runtimeSl == null) {
+                            runtimeSl = new RuntimeSharedLibrary(slId, slVersion);
+                            cont.addSharedLibrary(runtimeSl);
+                        }
+                        runtimeComp.addSharedLibrary(runtimeSl);
+                    }
+                    cont.addComponent(runtimeComp);
                     break;
                 case "SU":
                     cont.addServiceUnit(new RuntimeServiceUnit(
-                            ((org.ow2.petals.admin.api.artifact.ServiceUnit) artifact).getName()));
+                            ((ServiceUnit) artifact).getName()));
                     break;
                 case "SA":
                     // already get service units in "SU" case
                     break;
                 case "SL":
+                    // shared libraries are added in the "BC" and "SE" case
+                    break;
                 default:
                     throw new UnsupportedOperationException(
                             "Export model with artifact of type " + artifact.getType() + " is not implemented yet");

@@ -26,13 +26,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.FileUtils;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
+import org.ow2.petals.admin.api.artifact.Component;
 import org.ow2.petals.admin.api.artifact.Component.ComponentType;
+import org.ow2.petals.admin.api.artifact.SharedLibrary;
 import org.ow2.petals.admin.api.artifact.lifecycle.ArtifactLifecycleFactory;
 import org.ow2.petals.admin.api.artifact.lifecycle.ComponentLifecycle;
 import org.ow2.petals.admin.api.artifact.lifecycle.ServiceAssemblyLifecycle;
+import org.ow2.petals.admin.api.artifact.lifecycle.SharedLibraryLifecycle;
 import org.ow2.petals.admin.api.exception.ArtifactAdministrationException;
 import org.ow2.petals.admin.api.exception.ArtifactDeployedException;
 import org.ow2.petals.admin.api.exception.ArtifactNotDeployedException;
@@ -44,6 +49,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 import org.ow2.petals.deployer.utils.exceptions.ComponentDeploymentException;
 import org.ow2.petals.deployer.utils.exceptions.RuntimeModelDeployerException;
 import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
@@ -88,7 +94,7 @@ public class RuntimeModelDeployer {
         }
     }
 
-    public void deployRuntimeModel(final RuntimeModel model)
+    public void deployRuntimeModel(@NotNull final RuntimeModel model)
             throws ConnectionFailedException, ContainerAdministrationException, ArtifactStartedException,
             ArtifactNotDeployedException, ArtifactNotFoundException, IOException, JBIDescriptorException,
             ArtifactAdministrationException, RuntimeModelDeployerException {
@@ -104,18 +110,21 @@ public class RuntimeModelDeployer {
 
         petalsAdmin.connect(hostname, port, user, password);
 
+        final Set<String> deployedSharedLibraries = new HashSet<String>();
         final Set<String> deployedComponents = new HashSet<String>();
         final Set<String> deployedServiceUnits = new HashSet<String>();
 
         for (final RuntimeServiceUnit serviceUnit : serviceUnits) {
-            deployRuntimeServiceUnit(serviceUnit, model, deployedComponents, deployedServiceUnits);
+            deployRuntimeServiceUnit(serviceUnit, model, deployedComponents, deployedServiceUnits,
+                    deployedSharedLibraries);
         }
 
         LOG.fine("Model deployed");
     }
 
     private void deployRuntimeServiceUnit(final RuntimeServiceUnit serviceUnit, final RuntimeModel model,
-            final Set<String> deployedComponents, final Set<String> deployedServiceUnits)
+            final Set<String> deployedComponents, final Set<String> deployedServiceUnits,
+            final Set<String> deployedSharedLibraries)
             throws IOException, JBIDescriptorException, ArtifactStartedException, ArtifactNotDeployedException,
             ArtifactNotFoundException, ArtifactAdministrationException, RuntimeModelDeployerException {
         final String suId = serviceUnit.getId();
@@ -132,7 +141,7 @@ public class RuntimeModelDeployer {
                 if (!deployedComponents.contains(compName)) {
                     final RuntimeComponent component = model.getContainers().iterator().next().getComponent(compName);
                     if (component != null) {
-                        deployRuntimeComponent(component);
+                        deployRuntimeComponent(component, deployedSharedLibraries);
                         deployedComponents.add(compName);
                     } else {
                         throw new ComponentDeploymentException("Component " + compName + " (needed by service unit "
@@ -156,8 +165,17 @@ public class RuntimeModelDeployer {
         }
     }
 
-    private void deployRuntimeComponent(final RuntimeComponent component)
+    private void deployRuntimeComponent(final RuntimeComponent component, Set<String> deployedSharedLibraries)
             throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
+        for (RuntimeSharedLibrary slToDeploy : component.getSharedLibraries()) {
+            String slIdAndVersion = slToDeploy.getId() + ":" + slToDeploy.getVersion();
+
+            if (!deployedSharedLibraries.contains(slIdAndVersion)) {
+                deployRuntimeSharedLibrary(slToDeploy);
+                deployedSharedLibraries.add(slIdAndVersion);
+            }
+        }
+
         final String compId = component.getId();
         final File compFile = Files.createTempFile(compId, "zip").toFile();
         FileUtils.copyURLToFile(component.getUrl(), compFile, ModelDeployerImpl.CONNECTION_TIMEOUT,
@@ -174,13 +192,29 @@ public class RuntimeModelDeployer {
         LOG.fine("Component " + compId + " deployed and started");
     }
 
-    public ComponentType convertComponentTypeFromJbiToPetalsAdmin(
+    private void deployRuntimeSharedLibrary(final RuntimeSharedLibrary sl)
+            throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
+        final String slId = sl.getId();
+        final String slVersion = sl.getVersion();
+        final File slFile = Files.createTempFile(slId + '-' + slVersion, "zip").toFile();
+        FileUtils.copyURLToFile(sl.getUrl(), slFile, ModelDeployerImpl.CONNECTION_TIMEOUT,
+                ModelDeployerImpl.READ_TIMEOUT);
+
+        LOG.fine("Deploying shared library " + slId + ":" + slVersion);
+        final SharedLibraryLifecycle slLifeCycle = artifactLifecycleFactory
+                .createSharedLibraryLifecycle(new SharedLibrary(slId, slVersion));
+
+        slLifeCycle.deploy(slFile.toURI().toURL());
+        LOG.fine("Shared library " + slId + ":" + slVersion + " deployed and started");
+    }
+
+    public static ComponentType convertComponentTypeFromJbiToPetalsAdmin(
             final org.ow2.petals.jbi.descriptor.original.generated.ComponentType jbiType) {
         switch (jbiType) {
             case BINDING_COMPONENT:
-                return ComponentType.BC;
+                return Component.ComponentType.BC;
             case SERVICE_ENGINE:
-                return ComponentType.SE;
+                return Component.ComponentType.SE;
             default:
                 return null;
         }

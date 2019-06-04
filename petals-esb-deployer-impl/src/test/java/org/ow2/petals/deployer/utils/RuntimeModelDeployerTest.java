@@ -40,6 +40,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
+import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -93,6 +94,25 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, CONTAINER_STATE);
     }
 
+    @Test
+    public void deployRuntimeModelWithSharedLibraries() throws Exception {
+        petalsAdminApiRule.registerDomain();
+        org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        petalsAdminApiRule.registerContainer(cont);
+        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
+                artifactLifecycleFactoryMock);
+
+        final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
+        modelDeployer.deployRuntimeModel(model);
+
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(petalsAdminApiRule.getSingleton());
+        final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
+
+        assertTrue(model.isSimilarTo(exportedModel));
+    }
+
     public static RuntimeModel generateRuntimeModel() throws Exception {
         final RuntimeModel model = new RuntimeModel();
         final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
@@ -106,6 +126,32 @@ public class RuntimeModelDeployerTest {
                 ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service2-provide").toURI().toURL()));
         cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
                 ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL()));
+
+        return model;
+    }
+
+    public static RuntimeModel generateRuntimeModelWithSharedLibraries() throws Exception {
+        final RuntimeModel model = new RuntimeModel();
+        final RuntimeContainer container = new RuntimeContainer(ModelUtils.CONTAINER_NAME,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
+        model.addContainer(container);
+        container.addServiceUnit(new RuntimeServiceUnit("su-SQL",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SQL").toURI().toURL()));
+
+        final RuntimeComponent component = new RuntimeComponent("petals-bc-sql", ZipUtils
+                .createZipFromResourceDirectory("artifacts/petals-bc-sql-with-shared-libraries").toURI().toURL());
+        container.addComponent(component);
+
+        RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("petals-sl-hsql", "1.8.0.10",
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-sl-hsql-1.8.0.10").toURI().toURL());
+        container.addSharedLibrary(sl1);
+        component.addSharedLibrary(sl1);
+
+        RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("petals-sl-sqlserver-6.1.0.jre7", "1.0.0-SNAPSHOT",
+                ZipUtils.createZipFromResourceDirectory(
+                        "artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT").toURI().toURL());
+        container.addSharedLibrary(sl2);
+        component.addSharedLibrary(sl2);
 
         return model;
     }

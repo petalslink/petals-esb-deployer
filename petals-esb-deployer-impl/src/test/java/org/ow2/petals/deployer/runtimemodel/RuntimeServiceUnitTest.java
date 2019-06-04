@@ -48,7 +48,7 @@ public class RuntimeServiceUnitTest {
     }
 
     @Test
-    public void similarRuntimeComponents() throws Exception {
+    public void similarRuntimeServiceUnits() throws Exception {
         RuntimeServiceUnit su = new RuntimeServiceUnit("su", new URL("file:/su.zip"));
         RuntimeServiceUnit suWithDifferentUrl = new RuntimeServiceUnit("su", new URL("file:/other-url.zip"));
 
@@ -57,7 +57,7 @@ public class RuntimeServiceUnitTest {
     }
 
     @Test
-    public void notSimilarRuntimeComponents() throws Exception {
+    public void notSimilarRuntimeServiceUnits() throws Exception {
         RuntimeServiceUnit su = new RuntimeServiceUnit("su", new URL("file:/su.zip"));
         RuntimeServiceUnit suWithDifferentId = new RuntimeServiceUnit("differentId", new URL("file:/su.zip"));
 

@@ -20,6 +20,8 @@ package org.ow2.petals.deployer.utils;
 
 import java.net.URL;
 
+import javax.validation.constraints.NotNull;
+
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
 
@@ -29,7 +31,7 @@ import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
  * @author Alexandre Lagane - Linagora
  */
 public interface ModelDeployer {
-    
+
     /**
      * Connection timeout in milliseconds to get model or artifacts from URL.
      */
@@ -47,7 +49,7 @@ public interface ModelDeployer {
      * @param url
      * @throws ModelDeploymentException
      */
-    public void deployModel(final URL url) throws ModelDeploymentException;
+    public void deployModel(@NotNull final URL url) throws ModelDeploymentException;
 
-    public void deployModel(Model model) throws ModelDeploymentException;
+    public void deployModel(@NotNull Model model) throws ModelDeploymentException;
 }
