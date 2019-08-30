@@ -121,6 +121,15 @@
    </complexType>
 
    <complexType name="componentInstance">
+      <sequence>
+         <element name="parameter-instance" type="bm:parameterInstance" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  A parameter instance to override the default parameter value.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
       <attribute name="ref" type="NCName" use="required">
          <annotation>
             <documentation>
@@ -128,6 +137,20 @@
             </documentation>
          </annotation>
       </attribute>
+   </complexType>
+
+   <complexType name="parameterInstance">
+      <simpleContent>
+         <extension base="string">
+            <attribute name="ref" type="string" use="required">
+               <annotation>
+                  <documentation>
+                     Reference to a parameter of the parent component.
+                  </documentation>
+               </annotation>
+            </attribute>
+         </extension>
+      </simpleContent>
    </complexType>
 
    <complexType name="serviceUnitInstance">

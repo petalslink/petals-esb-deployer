@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -183,9 +184,11 @@ public class RuntimeModelDeployer {
         final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compFile);
 
         LOG.fine("Deploying component " + component.getId());
+        Properties parameters = new Properties();
+        parameters.putAll(component.getParameters());
         final ComponentLifecycle compLifecycle = artifactLifecycleFactory
                 .createComponentLifecycle(new org.ow2.petals.admin.api.artifact.Component(compId,
-                        convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType())));
+                        convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType()), parameters));
 
         compLifecycle.deploy(compFile.toURI().toURL());
         compLifecycle.start();

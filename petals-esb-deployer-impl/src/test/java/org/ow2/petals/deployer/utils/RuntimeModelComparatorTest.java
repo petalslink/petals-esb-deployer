@@ -40,9 +40,29 @@ public class RuntimeModelComparatorTest {
         assertTrue(model.isSimilarTo(similarModel));
         assertTrue(similarModel.isSimilarTo(model));
     }
+    
+    @Test
+    public void equivalentRuntimeModelsWithSharedLibraries() throws Exception {
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithSharedLibraries();
+
+        final RuntimeModel similarModel = RuntimeModelDeployerTest.generateRuntimeModelWithSharedLibraries();
+
+        assertTrue(model.isSimilarTo(similarModel));
+        assertTrue(similarModel.isSimilarTo(model));
+    }
+    
+    @Test
+    public void equivalentRuntimeModelsWithParameters() throws Exception {
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithParameters();
+
+        final RuntimeModel similarModel = RuntimeModelDeployerTest.generateRuntimeModelWithParameters();
+
+        assertTrue(model.isSimilarTo(similarModel));
+        assertTrue(similarModel.isSimilarTo(model));
+    }
 
     @Test
-    public void differentServiceUnitListsRuntimeModels() throws Exception {
+    public void runtimeModelsWithDifferentServiceUnitLists() throws Exception {
         final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
 
         final RuntimeModel modelWithDifferentServiceUnitList = RuntimeModelDeployerTest.generateRuntimeModel();
@@ -54,7 +74,7 @@ public class RuntimeModelComparatorTest {
     }
 
     @Test
-    public void differentComponentListsRuntimeModels() throws Exception {
+    public void runtimeModelsWithDifferentComponentLists() throws Exception {
         final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
 
         final RuntimeModel modelWithDifferentComponentList = RuntimeModelDeployerTest.generateRuntimeModel();
@@ -66,7 +86,7 @@ public class RuntimeModelComparatorTest {
     }
 
     @Test
-    public void differentContainersRuntimeModels() throws Exception {
+    public void runtimeModelsWithDifferentContainers() throws Exception {
         final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
 
         final RuntimeModel modelWithDifferentContainer = RuntimeModelDeployerTest.generateRuntimeModel();
@@ -76,5 +96,18 @@ public class RuntimeModelComparatorTest {
 
         assertFalse(model.isSimilarTo(modelWithDifferentContainer));
         assertFalse(modelWithDifferentContainer.isSimilarTo(model));
+    }
+
+    @Test
+    public void runtimeModelsWithDifferentParameters() throws Exception {
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithParameters();
+
+        final RuntimeModel modelWithDifferentComponentList = RuntimeModelDeployerTest
+                .generateRuntimeModelWithParameters();
+        modelWithDifferentComponentList.getContainers().iterator().next().getComponents().iterator().next()
+                .setParameterValue("param2", "other-value");
+
+        assertFalse(model.isSimilarTo(modelWithDifferentComponentList));
+        assertFalse(modelWithDifferentComponentList.isSimilarTo(model));
     }
 }

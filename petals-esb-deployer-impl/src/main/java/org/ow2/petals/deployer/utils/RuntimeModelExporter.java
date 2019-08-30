@@ -18,6 +18,7 @@
 
 package org.ow2.petals.deployer.utils;
 
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.validation.constraints.NotNull;
@@ -96,6 +97,10 @@ public class RuntimeModelExporter {
                     String compName = comp.getName();
                     RuntimeComponent runtimeComp = new RuntimeComponent(compName);
 
+                    for (Entry<Object, Object> paramEntry : comp.getParameters().entrySet()) {
+                        runtimeComp.setParameterValue((String) paramEntry.getKey(), (String) paramEntry.getValue());
+                    }
+
                     for (final SharedLibrary sl : comp.getSharedLibraries()) {
                         String slId = sl.getName();
                         String slVersion = sl.getVersion();
@@ -109,8 +114,7 @@ public class RuntimeModelExporter {
                     cont.addComponent(runtimeComp);
                     break;
                 case "SU":
-                    cont.addServiceUnit(new RuntimeServiceUnit(
-                            ((ServiceUnit) artifact).getName()));
+                    cont.addServiceUnit(new RuntimeServiceUnit(((ServiceUnit) artifact).getName()));
                     break;
                 case "SA":
                     // already get service units in "SU" case

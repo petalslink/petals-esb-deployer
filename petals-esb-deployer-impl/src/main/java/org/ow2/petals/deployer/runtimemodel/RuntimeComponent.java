@@ -38,11 +38,14 @@ public class RuntimeComponent implements Similar {
 
     private URL url;
 
+    private final Map<String, String> parameters;
+
     private final Map<RuntimeSharedLibrary.IdAndVersion, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
 
     public RuntimeComponent(@NotNull final String id) {
         assert id != null;
         this.id = id;
+        this.parameters = new HashMap<>();
     }
 
     public RuntimeComponent(@NotNull final String id, @NotNull final URL url) {
@@ -60,6 +63,26 @@ public class RuntimeComponent implements Similar {
 
     public void setUrl(final URL url) {
         this.url = url;
+    }
+
+    /**
+     * @return the parameter value if set, else null
+     */
+    public String getParameterValue(@NotNull final String name) {
+        return parameters.get(name);
+    }
+
+    public void setParameterValue(@NotNull final String name, @NotNull final String value) {
+        assert name != null && value != null;
+        parameters.put(name, value);
+    }
+
+    /**
+     * Adding or removing from the returned map does not affect the component.
+     */
+    @NotNull
+    public Map<String, String> getParameters() {
+        return Collections.unmodifiableMap(parameters);
     }
 
     /**
@@ -87,7 +110,7 @@ public class RuntimeComponent implements Similar {
     }
 
     /**
-     * Adding or removing from the returned collection does not affect component.
+     * Adding or removing from the returned collection does not affect the component.
      */
     @NotNull
     public Collection<RuntimeSharedLibrary> getSharedLibraries() {
@@ -101,7 +124,7 @@ public class RuntimeComponent implements Similar {
         }
         RuntimeComponent otherComp = (RuntimeComponent) o;
 
-        return this.getId().equals(otherComp.getId()) && compareRuntimeSharedLibraryMaps(otherComp);
+        return this.getId().equals(otherComp.getId()) && this.getParameters().equals(otherComp.getParameters()) && compareRuntimeSharedLibraryMaps(otherComp);
     }
 
     private boolean compareRuntimeSharedLibraryMaps(final RuntimeComponent otherComp) {

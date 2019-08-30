@@ -58,6 +58,13 @@
                </documentation>
             </annotation>
          </element>
+         <element name="parameter" type="cr:parameter" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  A parameter of the component.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
       <attribute name="id" type="NCName" use="required">
          <annotation>
@@ -90,8 +97,8 @@
       <attribute name="version" type="string" use="required">
          <annotation>
             <documentation>
-               The version of this shared library in the model. It must be the same than the one defined in the
-               JBI descriptor of the shared library and the couple id and version must be unique in the model.
+               The version of this shared library in the model. It must be the same than the one defined in
+               the JBI descriptor of the shared library and the couple id and version must be unique in the model.
             </documentation>
          </annotation>
       </attribute>
@@ -112,5 +119,19 @@
             </documentation>
          </annotation>
       </attribute>
+   </complexType>
+
+   <complexType name="parameter">
+      <simpleContent>
+         <extension base="string">
+            <attribute name="name" type="string" use="required">
+               <annotation>
+                  <documentation>
+                     The name of the parameter.
+                  </documentation>
+               </annotation>
+            </attribute>
+         </extension>
+      </simpleContent>
    </complexType>
 </schema>
