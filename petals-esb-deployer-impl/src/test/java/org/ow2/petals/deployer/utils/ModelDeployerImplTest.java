@@ -18,20 +18,29 @@
 
 package org.ow2.petals.deployer.utils;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
 
 public class ModelDeployerImplTest {
 
     private RuntimeModelDeployer runtimeModelDeployerMock = mock(RuntimeModelDeployer.class);
 
     private ModelDeployerImpl modelDeployer = new ModelDeployerImpl(runtimeModelDeployerMock);
+
+    @Rule
+    public final ProvideSystemProperty mavenUrlPropertyRule = new ProvideSystemProperty("java.protocol.handler.pkgs",
+            "org.ops4j.pax.url");
 
     @Test
     public void deployModelFile() throws Exception {
@@ -46,5 +55,14 @@ public class ModelDeployerImplTest {
         modelDeployer.deployModel(ModelUtils.generateTestModel());
 
         verify(runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
+    }
+
+    @Test
+    public void deployModelWithMavenUrl() throws Exception {
+        try {
+            modelDeployer.deployModel(ModelUtils.generateTestModelWithMavenUrl());
+        } catch (ModelDeploymentException e) {
+            assertFalse(e.getCause() instanceof MalformedURLException);
+        }
     }
 }

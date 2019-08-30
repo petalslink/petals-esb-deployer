@@ -143,10 +143,83 @@ public class ModelUtils {
         return model;
     }
 
+    public static Model generateTestModelWithMavenUrl() throws MalformedURLException, IOException, URISyntaxException {
+        final Model model = new Model();
+
+        /* Component Repository */
+
+        final ComponentRepository compRepo = new ComponentRepository();
+        model.setComponentRepository(compRepo);
+
+        final Component dummyMavenComp = new Component();
+        dummyMavenComp.setId("dummy-maven-comp");
+        dummyMavenComp.setUrl("mvn:dummy-maven-comp");
+        compRepo.getComponentOrSharedLibrary().add(dummyMavenComp);
+
+        /* Service Unit Model */
+
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+        model.setServiceUnitModel(suModel);
+
+        final List<ServiceUnit> serviceUnits = suModel.getServiceUnit();
+
+        final ServiceUnit dummyMavenSu = new ServiceUnit();
+        dummyMavenSu.setId("dummy-maven-su");
+        dummyMavenSu.setUrl("mvn:dummy-maven-su");
+        serviceUnits.add(dummyMavenSu);
+
+        /* Topology Model */
+
+        final TopologyModel topoModel = new TopologyModel();
+        model.setTopologyModel(topoModel);
+
+        final Topology topo = new Topology();
+        topo.setId("topo1");
+        topoModel.getTopology().add(topo);
+
+        final Container cont = new Container();
+        cont.setId(CONTAINER_NAME);
+        cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
+        cont.setDefaultJmxUser(CONTAINER_USER);
+        cont.setDefaultJmxPassword(CONTAINER_PWD);
+        topo.getContainer().add(cont);
+
+        /* Bus Model */
+
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+
+        final ProvisionedMachine machine = new ProvisionedMachine();
+        machine.setId("main");
+        machine.setHostname("localhost");
+        busModel.getMachine().add(machine);
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topo.getId());
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(cont.getId());
+        contInst.setMachineRef(machine.getId());
+        bus.getContainerInstance().add(contInst);
+
+        final ComponentInstance dummyMavenCompInst = new ComponentInstance();
+        dummyMavenCompInst.setRef(dummyMavenComp.getId());
+        contInst.getComponentInstance().add(dummyMavenCompInst);
+
+        final List<ServiceUnitInstance> suInstances = contInst.getServiceUnitInstance();
+
+        ServiceUnitInstance dummyMavenSuInst = new ServiceUnitInstance();
+        dummyMavenSuInst.setRef(dummyMavenSu.getId());
+        suInstances.add(dummyMavenSuInst);
+
+        return model;
+    }
+
     public static Model generateTestModelWithSharedLibrary()
             throws MalformedURLException, IOException, URISyntaxException {
         final Model model = generateTestModel();
-        
+
         SharedLibrary sl = new SharedLibrary();
         sl.setId("id-shared-library");
         sl.setVersion("1.0");
