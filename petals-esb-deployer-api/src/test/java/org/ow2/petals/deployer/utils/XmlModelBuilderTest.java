@@ -17,6 +17,7 @@
  */
 package org.ow2.petals.deployer.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
+import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
 import org.xml.sax.InputSource;
@@ -40,6 +42,9 @@ public class XmlModelBuilderTest {
         URL initialModelUrl = Thread.currentThread().getContextClassLoader().getResource("model.xml");
         File initialModelFile = new File(initialModelUrl.toURI());
         Model model = XmlModelBuilder.readModelFromUrl(initialModelUrl);
+        
+        assertMultilineParam(model);
+
         File marshalledModelFile = Files.createTempFile("marshalled-model", ".xml").toFile();
         XmlModelBuilder.writeModelToFile(model, marshalledModelFile);
 
@@ -57,5 +62,11 @@ public class XmlModelBuilderTest {
     public void testReadUnknownElement() throws Exception {
         URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model-with-unknown-element.xml");
         XmlModelBuilder.readModelFromUrl(modelUrl);
+    }
+
+    private void assertMultilineParam(Model model) {
+        Component comp = (Component) model.getComponentRepository().getComponentOrSharedLibrary().get(0);
+        String multilineParamValue = comp.getParameter().get(2).getValue();
+        assertEquals("line1\nline2", multilineParamValue);
     }
 }

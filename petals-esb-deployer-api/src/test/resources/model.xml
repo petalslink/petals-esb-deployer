@@ -37,6 +37,8 @@
          <ns3:url>file:/artifacts/petals-bc-soap-5.0.0</ns3:url>
          <ns3:parameter name="param1">value1</ns3:parameter>
          <ns3:parameter name="param2">value2</ns3:parameter>
+         <ns3:parameter name="multilineParam">line1
+line2</ns3:parameter>
       </ns3:component>
       <ns3:component id="petals-bc-sql">
          <ns3:url>file:/artifacts/petals-bc-sql-with-shared-libraries.zip</ns3:url>
