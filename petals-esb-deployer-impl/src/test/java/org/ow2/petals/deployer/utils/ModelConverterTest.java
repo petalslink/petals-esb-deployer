@@ -21,6 +21,8 @@ package org.ow2.petals.deployer.utils;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 import org.ow2.petals.deployer.model.xml._1.Model;
@@ -105,5 +107,31 @@ public class ModelConverterTest {
         assertEquals("id-shared-library", slFromComp.getId());
         assertEquals("1.0", slFromComp.getVersion());
         assertEquals("file:dummy-sl-file", slFromComp.getUrl().toString());
+    }
+
+    @Test
+    public void convertModelWithParametersToRuntimeModel() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithParameter();
+
+        final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+
+        final Collection<RuntimeContainer> containers = runtimeModel.getContainers();
+        assertEquals(1, containers.size());
+
+        final RuntimeContainer cont = containers.iterator().next();
+
+        final Collection<RuntimeComponent> components = cont.getComponents();
+        assertEquals(2, components.size());
+
+        final RuntimeComponent comp = cont.getComponent("id-comp-with-parameter");
+        assertEquals("id-comp-with-parameter", comp.getId());
+        assertEquals("file:dummy-comp-with-parameter", comp.getUrl().toString());
+
+        Map<String, String> parameters = comp.getParameters();
+        assertEquals(1, parameters.size());
+        Entry<String, String> param = parameters.entrySet().iterator().next();
+        assertEquals("param-with-default-value", param.getKey());
+        assertEquals("overridden-value", param.getValue());
+
     }
 }

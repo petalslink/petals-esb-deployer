@@ -113,6 +113,25 @@ public class RuntimeModelDeployerTest {
         assertTrue(model.isSimilarTo(exportedModel));
     }
 
+    @Test
+    public void deployRuntimeModelWithParameters() throws Exception {
+        petalsAdminApiRule.registerDomain();
+        org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        petalsAdminApiRule.registerContainer(cont);
+        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
+                artifactLifecycleFactoryMock);
+
+        final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
+        modelDeployer.deployRuntimeModel(model);
+
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(petalsAdminApiRule.getSingleton());
+        final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
+
+        assertTrue(model.isSimilarTo(exportedModel));
+    }
+
     public static RuntimeModel generateRuntimeModel() throws Exception {
         final RuntimeModel model = new RuntimeModel();
         final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
@@ -148,10 +167,26 @@ public class RuntimeModelDeployerTest {
         component.addSharedLibrary(sl1);
 
         RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("petals-sl-sqlserver-6.1.0.jre7", "1.0.0-SNAPSHOT",
-                ZipUtils.createZipFromResourceDirectory(
-                        "artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT").toURI().toURL());
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT")
+                        .toURI().toURL());
         container.addSharedLibrary(sl2);
         component.addSharedLibrary(sl2);
+
+        return model;
+    }
+
+    public static RuntimeModel generateRuntimeModelWithParameters() throws Exception {
+        final RuntimeModel model = new RuntimeModel();
+        final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
+        model.addContainer(cont);
+        RuntimeComponent comp = new RuntimeComponent("petals-bc-soap",
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL());
+        comp.setParameterValue("param1", "value1");
+        comp.setParameterValue("param2", "value2");
+        cont.addComponent(comp);
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL()));
 
         return model;
     }

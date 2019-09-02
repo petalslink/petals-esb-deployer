@@ -27,10 +27,12 @@ import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.ParameterInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.component_repository.xml._1.Parameter;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
@@ -237,6 +239,30 @@ public class ModelUtils {
 
         ComponentInstance compInst = new ComponentInstance();
         compInst.setRef(comp.getId());
+        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance().add(compInst);
+
+        return model;
+    }
+
+    public static Model generateTestModelWithParameter()
+            throws MalformedURLException, IOException, URISyntaxException {
+        final Model model = generateTestModel();
+
+        Component comp = new Component();
+        comp.setId("id-comp-with-parameter");
+        comp.setUrl("file:dummy-comp-with-parameter");
+        Parameter param = new Parameter();
+        param.setName("param-with-default-value");
+        param.setValue("default-value");
+        comp.getParameter().add(param);
+        model.getComponentRepository().getComponentOrSharedLibrary().add(comp);
+
+        ComponentInstance compInst = new ComponentInstance();
+        compInst.setRef(comp.getId());
+        ParameterInstance paramInst = new ParameterInstance();
+        paramInst.setRef(param.getName());
+        paramInst.setValue("overridden-value");
+        compInst.getParameterInstance().add(paramInst);
         model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance().add(compInst);
 
         return model;

@@ -28,10 +28,12 @@ import javax.validation.constraints.NotNull;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.ParameterInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.component_repository.xml._1.Parameter;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
@@ -103,6 +105,18 @@ public class ModelConverter {
             final String compId = compInst.getRef();
             final Component compRef = compById.get(compId);
             RuntimeComponent runtimeComp = new RuntimeComponent(compId, new URL(compRef.getUrl()));
+
+            for (final Parameter param : compRef.getParameter()) {
+                runtimeComp.setParameterValue(param.getName(), param.getValue());
+            }
+            for (final ParameterInstance paramInst : compInst.getParameterInstance()) {
+                String ref = paramInst.getRef();
+                if (runtimeComp.getParameterValue(ref) == null) {
+                    throw new RuntimeModelException("Parameter " + ref + " is not defined in component");
+                }
+                runtimeComp.setParameterValue(paramInst.getRef(), paramInst.getValue());
+            }
+
             for (final SharedLibraryReference slRef : compRef.getSharedLibraryReference()) {
                 String id = slRef.getRefId();
                 String version = slRef.getRefVersion();
