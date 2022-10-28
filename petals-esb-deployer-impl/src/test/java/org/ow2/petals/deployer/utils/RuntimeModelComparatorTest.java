@@ -33,9 +33,9 @@ public class RuntimeModelComparatorTest {
 
     @Test
     public void equivalentRuntimeModels() throws Exception {
-        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 
-        final RuntimeModel similarModel = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel similarModel = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 
         assertTrue(model.isSimilarTo(similarModel));
         assertTrue(similarModel.isSimilarTo(model));
@@ -63,9 +63,10 @@ public class RuntimeModelComparatorTest {
 
     @Test
     public void runtimeModelsWithDifferentServiceUnitLists() throws Exception {
-        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 
-        final RuntimeModel modelWithDifferentServiceUnitList = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel modelWithDifferentServiceUnitList = RuntimeModelDeployerTest
+                .generateRuntimeModelWithOneSUBySA();
         modelWithDifferentServiceUnitList.getContainers().iterator().next()
                 .addServiceUnit(new RuntimeServiceUnit("my-test-su", new URL("file:/artifact/my-test-su.zip")));
 
@@ -75,9 +76,10 @@ public class RuntimeModelComparatorTest {
 
     @Test
     public void runtimeModelsWithDifferentComponentLists() throws Exception {
-        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 
-        final RuntimeModel modelWithDifferentComponentList = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel modelWithDifferentComponentList = RuntimeModelDeployerTest
+                .generateRuntimeModelWithOneSUBySA();
         modelWithDifferentComponentList.getContainers().iterator().next()
                 .addComponent(new RuntimeComponent("my-test-comp", new URL("file:/artifact/my-test-comp.zip")));
 
@@ -87,9 +89,9 @@ public class RuntimeModelComparatorTest {
 
     @Test
     public void runtimeModelsWithDifferentContainers() throws Exception {
-        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 
-        final RuntimeModel modelWithDifferentContainer = RuntimeModelDeployerTest.generateRuntimeModel();
+        final RuntimeModel modelWithDifferentContainer = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
         final RuntimeContainer differentCont = new RuntimeContainer("different-cont", 7700, "other", "azerty",
                 "localhost");
         modelWithDifferentContainer.addContainer(differentCont);

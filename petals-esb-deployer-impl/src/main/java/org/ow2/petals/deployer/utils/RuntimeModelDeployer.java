@@ -18,18 +18,17 @@
 
 package org.ow2.petals.deployer.utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.io.FileUtils;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.artifact.Component;
@@ -37,7 +36,6 @@ import org.ow2.petals.admin.api.artifact.Component.ComponentType;
 import org.ow2.petals.admin.api.artifact.SharedLibrary;
 import org.ow2.petals.admin.api.artifact.lifecycle.ArtifactLifecycleFactory;
 import org.ow2.petals.admin.api.artifact.lifecycle.ComponentLifecycle;
-import org.ow2.petals.admin.api.artifact.lifecycle.ServiceAssemblyLifecycle;
 import org.ow2.petals.admin.api.artifact.lifecycle.SharedLibraryLifecycle;
 import org.ow2.petals.admin.api.exception.ArtifactAdministrationException;
 import org.ow2.petals.admin.api.exception.ArtifactDeployedException;
@@ -55,6 +53,8 @@ import org.ow2.petals.deployer.utils.exceptions.ComponentDeploymentException;
 import org.ow2.petals.deployer.utils.exceptions.RuntimeModelDeployerException;
 import org.ow2.petals.deployer.utils.exceptions.UncheckedException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
+import org.ow2.petals.jbi.descriptor.extension.JBIDescriptorExtensionBuilder;
+import org.ow2.petals.jbi.descriptor.extension.exception.NoComponentNameDeployableServiceUnitException;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 import org.ow2.petals.jbi.descriptor.original.generated.ServiceAssembly;
@@ -71,6 +71,8 @@ public class RuntimeModelDeployer {
     private final ArtifactLifecycleFactory artifactLifecycleFactory;
 
     private final JBIDescriptorBuilder jdb;
+
+    private final JBIDescriptorExtensionBuilder jdeb;
 
     public RuntimeModelDeployer() {
         this(null, null);
@@ -90,6 +92,7 @@ public class RuntimeModelDeployer {
             this.artifactLifecycleFactory = artifactLifecycleFactory != null ? artifactLifecycleFactory
                     : this.petalsAdmin.newArtifactLifecycleFactory();
             this.jdb = JBIDescriptorBuilder.getInstance();
+            this.jdeb = JBIDescriptorExtensionBuilder.getInstance();
         } catch (JBIDescriptorException e) {
             throw new UncheckedException(e);
         }
@@ -126,43 +129,107 @@ public class RuntimeModelDeployer {
     private void deployRuntimeServiceUnit(final RuntimeServiceUnit serviceUnit, final RuntimeModel model,
             final Set<String> deployedComponents, final Set<String> deployedServiceUnits,
             final Set<String> deployedSharedLibraries)
-            throws IOException, JBIDescriptorException, ArtifactStartedException, ArtifactNotDeployedException,
-            ArtifactNotFoundException, ArtifactAdministrationException, RuntimeModelDeployerException {
-        final String suId = serviceUnit.getId();
-        final File suFile = Files.createTempFile(suId, ".zip").toFile();
-        FileUtils.copyURLToFile(serviceUnit.getUrl(), suFile, ModelDeployerImpl.CONNECTION_TIMEOUT,
-                ModelDeployerImpl.READ_TIMEOUT);
-        final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(suFile);
-        final ServiceAssembly jbiSa = jbi.getServiceAssembly();
+            throws IOException, JBIDescriptorException, ArtifactAdministrationException, RuntimeModelDeployerException {
 
-        if (!deployedServiceUnits.contains(suId)) {
-            LOG.fine("Deploying service assembly");
-            for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
-                final String compName = jbiSu.getTarget().getComponentName();
-                if (!deployedComponents.contains(compName)) {
-                    final RuntimeComponent component = model.getContainers().iterator().next().getComponent(compName);
-                    if (component != null) {
-                        deployRuntimeComponent(component, deployedSharedLibraries);
-                        deployedComponents.add(compName);
-                    } else {
-                        throw new ComponentDeploymentException("Component " + compName + " (needed by service unit "
-                                + jbiSu.getIdentification().getName() + ") not found in the model");
-                    }
-                }
-            }
-            final ServiceAssemblyLifecycle saLifecycle = artifactLifecycleFactory.createServiceAssemblyLifecycle(
-                    new org.ow2.petals.admin.api.artifact.ServiceAssembly(jbiSa.getIdentification().getName()));
-            saLifecycle.deploy(suFile.toURI().toURL());
-            saLifecycle.start();
-            for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbiSa.getServiceUnit()) {
-                final String suName = jbiSu.getIdentification().getName();
-                if (!deployedServiceUnits.contains(suName)) {
-                    deployedServiceUnits.add(suName);
-                    LOG.fine("Service unit " + suName + " deployed and started");
+        if (!deployedServiceUnits.contains(serviceUnit.getId())) {
+            LOG.fine(String.format("Deploying service unit '%s' located at '%s'", serviceUnit.getId(),
+                    serviceUnit.getUrl().toString()));
+
+            final URLConnection suUrlConnection = serviceUnit.getUrl().openConnection();
+            suUrlConnection.setConnectTimeout(ModelDeployer.CONNECTION_TIMEOUT);
+            suUrlConnection.setReadTimeout(ModelDeployer.READ_TIMEOUT);
+            try (final ZipInputStream suZipInputStream = new ZipInputStream(suUrlConnection.getInputStream())) {
+                final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(suZipInputStream);
+
+                final ServiceAssembly jbiSa = jbi.getServiceAssembly();
+                if (jbiSa != null) {
+                    // Service unit embedded into a service assembly
+                    this.deployRuntimeServiceUnitProvidedIntoAServiceAssembly(jbi, serviceUnit, model,
+                            deployedComponents, deployedServiceUnits, deployedSharedLibraries);
                 } else {
-                    throw new RuntimeModelDeployerException("Service unit " + suName + " already deployed");
+                    this.deployRuntimeServiceUnitAsAutoDeployable(jbi, serviceUnit, model, deployedComponents,
+                            deployedServiceUnits, deployedSharedLibraries);
                 }
             }
+        } else {
+            LOG.fine(String.format("Service unit '%s' already deployed and started", serviceUnit.getId()));
+        }
+    }
+
+    private void deployRuntimeServiceUnitProvidedIntoAServiceAssembly(final Jbi jbi,
+            final RuntimeServiceUnit serviceUnit, final RuntimeModel model, final Set<String> deployedComponents,
+            final Set<String> deployedServiceUnits, final Set<String> deployedSharedLibraries)
+            throws IOException, JBIDescriptorException, ArtifactAdministrationException, RuntimeModelDeployerException {
+
+        assert jbi.getServiceAssembly() != null;
+
+        // Before to deploy the SA containing the requested SU, it is needed to deploy all required components
+        for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbi.getServiceAssembly()
+                .getServiceUnit()) {
+            final String targetComponentName = jbiSu.getTarget().getComponentName();
+            this.deployRuntimeComponentIfNeeded(targetComponentName, serviceUnit, model, deployedComponents,
+                    deployedSharedLibraries);
+        }
+
+        // Now, we can deploy the SA ...
+        this.petalsAdmin.newArtifactAdministration().deployAndStartArtifact(serviceUnit.getUrl(), true);
+
+        // ... and register all SUs contained in the SA as 'deployed'
+        for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit jbiSu : jbi.getServiceAssembly()
+                .getServiceUnit()) {
+            final String suName = jbiSu.getIdentification().getName();
+            if (!deployedServiceUnits.contains(suName)) {
+                deployedServiceUnits.add(suName);
+                LOG.fine(String.format("Service unit '%s' deployed and started", suName));
+            } else {
+                throw new RuntimeModelDeployerException("Service unit " + suName + " already deployed");
+            }
+        }
+    }
+
+    private void deployRuntimeServiceUnitAsAutoDeployable(final Jbi jbi, final RuntimeServiceUnit serviceUnit,
+            final RuntimeModel model, final Set<String> deployedComponents, final Set<String> deployedServiceUnits,
+            final Set<String> deployedSharedLibraries)
+            throws IOException, JBIDescriptorException, ArtifactAdministrationException, RuntimeModelDeployerException {
+
+        assert jbi.getServiceAssembly() == null;
+
+        final String targetComponentName;
+        try {
+            targetComponentName = this.jdeb.getDeployableServiceUnitTargetComponent(jbi);
+        } catch (final NoComponentNameDeployableServiceUnitException e) {
+            throw new RuntimeModelDeployerException(String.format(
+                    "Service unit '%s' does not contain target component identification", serviceUnit.getId()), e);
+        }
+
+        this.deployRuntimeComponentIfNeeded(targetComponentName, serviceUnit, model, deployedComponents,
+                deployedSharedLibraries);
+
+        this.petalsAdmin.newArtifactAdministration().deployAndStartArtifact(serviceUnit.getUrl(), true);
+        deployedServiceUnits.add(serviceUnit.getId());
+        LOG.fine(String.format("Service unit '%s' deployed and started", serviceUnit.getId()));
+
+    }
+
+    private void deployRuntimeComponentIfNeeded(final String targetComponentName, final RuntimeServiceUnit serviceUnit,
+            final RuntimeModel model, final Set<String> deployedComponents, final Set<String> deployedSharedLibraries)
+            throws IOException, JBIDescriptorException, ArtifactAdministrationException, RuntimeModelDeployerException {
+        if (!deployedComponents.contains(targetComponentName)) {
+            LOG.fine(String.format("The target component '%s' required by service unit '%s' must be deployed",
+                    targetComponentName, serviceUnit.getId(), serviceUnit.getUrl().toString()));
+            final RuntimeComponent component = model.getContainers().iterator().next()
+                    .getComponent(targetComponentName);
+            if (component != null) {
+                deployRuntimeComponent(component, deployedSharedLibraries);
+                deployedComponents.add(targetComponentName);
+            } else {
+                throw new ComponentDeploymentException(
+                        String.format("Component '%s' (needed by service unit '%s') not found in the model",
+                                targetComponentName, serviceUnit.getId()));
+            }
+        } else {
+            LOG.fine(String.format("The target component '%s' required by service unit '%s' is already deployed",
+                    targetComponentName, serviceUnit.getId(), serviceUnit.getUrl().toString()));
         }
     }
 
@@ -178,36 +245,35 @@ public class RuntimeModelDeployer {
         }
 
         final String compId = component.getId();
-        final File compFile = Files.createTempFile(compId, "zip").toFile();
-        FileUtils.copyURLToFile(component.getUrl(), compFile, ModelDeployerImpl.CONNECTION_TIMEOUT,
-                ModelDeployerImpl.READ_TIMEOUT);
-        final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compFile);
+        final URLConnection compUrlConnection = component.getUrl().openConnection();
+        compUrlConnection.setConnectTimeout(ModelDeployer.CONNECTION_TIMEOUT);
+        compUrlConnection.setReadTimeout(ModelDeployer.READ_TIMEOUT);
+        try (final ZipInputStream compZipInputStream = new ZipInputStream(compUrlConnection.getInputStream())) {
+            final Jbi jbi = jdb.buildJavaJBIDescriptorFromArchive(compZipInputStream);
 
-        LOG.fine("Deploying component " + component.getId());
-        Properties parameters = new Properties();
-        parameters.putAll(component.getParameters());
-        final ComponentLifecycle compLifecycle = artifactLifecycleFactory
-                .createComponentLifecycle(new org.ow2.petals.admin.api.artifact.Component(compId,
-                        convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType()), parameters));
+            LOG.fine("Deploying component " + component.getId());
+            Properties parameters = new Properties();
+            parameters.putAll(component.getParameters());
+            final ComponentLifecycle compLifecycle = artifactLifecycleFactory
+                    .createComponentLifecycle(new org.ow2.petals.admin.api.artifact.Component(compId,
+                            convertComponentTypeFromJbiToPetalsAdmin(jbi.getComponent().getType()), parameters));
 
-        compLifecycle.deploy(compFile.toURI().toURL());
-        compLifecycle.start();
-        LOG.fine("Component " + compId + " deployed and started");
+            compLifecycle.deploy(component.getUrl());
+            compLifecycle.start();
+            LOG.fine("Component " + compId + " deployed and started");
+        }
     }
 
     private void deployRuntimeSharedLibrary(final RuntimeSharedLibrary sl)
             throws IOException, JBIDescriptorException, ArtifactDeployedException, ArtifactAdministrationException {
         final String slId = sl.getId();
         final String slVersion = sl.getVersion();
-        final File slFile = Files.createTempFile(slId + '-' + slVersion, "zip").toFile();
-        FileUtils.copyURLToFile(sl.getUrl(), slFile, ModelDeployerImpl.CONNECTION_TIMEOUT,
-                ModelDeployerImpl.READ_TIMEOUT);
 
         LOG.fine("Deploying shared library " + slId + ":" + slVersion);
         final SharedLibraryLifecycle slLifeCycle = artifactLifecycleFactory
                 .createSharedLibraryLifecycle(new SharedLibrary(slId, slVersion));
 
-        slLifeCycle.deploy(slFile.toURI().toURL());
+        slLifeCycle.deploy(sl.getUrl());
         LOG.fine("Shared library " + slId + ":" + slVersion + " deployed and started");
     }
 

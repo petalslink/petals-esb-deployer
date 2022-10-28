@@ -28,4 +28,8 @@ public class RuntimeModelDeployerException extends Exception {
     public RuntimeModelDeployerException(final String message) {
         super(message);
     }
+
+    public RuntimeModelDeployerException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -69,18 +69,56 @@ public class RuntimeModelDeployerTest {
     }
 
     @Test
-    public void deployRuntimeModel() throws Exception {
-        petalsAdminApiRule.registerDomain();
-        org.ow2.petals.admin.topology.Container cont = createContainerSample();
-        petalsAdminApiRule.registerContainer(cont);
+    public void deployRuntimeModelWithOneSUBySA() throws Exception {
+        this.petalsAdminApiRule.registerDomain();
+        final org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        this.petalsAdminApiRule.registerContainer(cont);
         final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
                 artifactLifecycleFactoryMock);
 
-        final RuntimeModel model = generateRuntimeModel();
+        final RuntimeModel model = generateRuntimeModelWithOneSUBySA();
         modelDeployer.deployRuntimeModel(model);
 
-        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(petalsAdminApiRule.getSingleton());
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(this.petalsAdminApiRule.getSingleton());
+        final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
+
+        assertTrue(model.isSimilarTo(exportedModel));
+    }
+
+    @Test
+    public void deployRuntimeModelWithSeveralSUsIntoOneSA() throws Exception {
+        this.petalsAdminApiRule.registerDomain();
+        final org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        this.petalsAdminApiRule.registerContainer(cont);
+        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
+                artifactLifecycleFactoryMock);
+
+        final RuntimeModel model = generateRuntimeModelWithSeveralSUsIntoOneSA();
+        modelDeployer.deployRuntimeModel(model);
+
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(this.petalsAdminApiRule.getSingleton());
+        final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
+                ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
+
+        assertTrue(model.isSimilarTo(exportedModel));
+    }
+
+    @Test
+    public void deployRuntimeModelWithAutoDeployableSUs() throws Exception {
+        this.petalsAdminApiRule.registerDomain();
+        final org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        this.petalsAdminApiRule.registerContainer(cont);
+        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
+                artifactLifecycleFactoryMock);
+
+        final RuntimeModel model = generateRuntimeModelWithAutoDeployableSUs();
+        modelDeployer.deployRuntimeModel(model);
+
+        final RuntimeModelExporter modelExporter = new RuntimeModelExporter(this.petalsAdminApiRule.getSingleton());
         final RuntimeModel exportedModel = modelExporter.exportRuntimeModel(ModelUtils.CONTAINER_HOST,
                 ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, null);
 
@@ -132,7 +170,7 @@ public class RuntimeModelDeployerTest {
         assertTrue(model.isSimilarTo(exportedModel));
     }
 
-    public static RuntimeModel generateRuntimeModel() throws Exception {
+    public static RuntimeModel generateRuntimeModelWithOneSUBySA() throws Exception {
         final RuntimeModel model = new RuntimeModel();
         final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
@@ -145,6 +183,40 @@ public class RuntimeModelDeployerTest {
                 ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service2-provide").toURI().toURL()));
         cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
                 ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL()));
+
+        return model;
+    }
+
+    public static RuntimeModel generateRuntimeModelWithSeveralSUsIntoOneSA() throws Exception {
+        final RuntimeModel model = new RuntimeModel();
+        final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
+        model.addContainer(cont);
+        cont.addComponent(new RuntimeComponent("petals-bc-soap",
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
+
+        return model;
+    }
+
+    public static RuntimeModel generateRuntimeModelWithAutoDeployableSUs() throws Exception {
+        final RuntimeModel model = new RuntimeModel();
+        final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
+        model.addContainer(cont);
+        cont.addComponent(new RuntimeComponent("petals-bc-soap",
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
+                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_Service1-provide").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
+                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_Service2-provide").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
+                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_PortType-consume").toURI().toURL()));
 
         return model;
     }

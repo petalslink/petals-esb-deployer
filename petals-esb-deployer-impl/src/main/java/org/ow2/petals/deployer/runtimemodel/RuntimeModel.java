@@ -29,6 +29,14 @@ import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerExcept
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 
 /**
+ * <p>
+ * The runtime model is the model of artifacts deployed on Petals ESB nodes.
+ * </p>
+ * <p>
+ * It can be viewed as a rework of the Petals ESB deployer Model resolving all references to prepare each artifacts to
+ * be deployed easily.
+ * </p>
+ * 
  * @author Alexandre Lagane - Linagora
  */
 public class RuntimeModel implements Similar {

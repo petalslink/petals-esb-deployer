@@ -20,8 +20,9 @@ package org.ow2.petals.deployer.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
+import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import javax.validation.constraints.NotNull;
@@ -33,7 +34,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.commons.io.FileUtils;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.model.xml._1.ObjectFactory;
 import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
@@ -61,8 +61,8 @@ public class XmlModelBuilder {
             MARSHALLER = jaxbContext.createMarshaller();
             MARSHALLER.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             UNMARSHALLER = jaxbContext.createUnmarshaller();
-            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            URL modelSchemaUrl = Thread.currentThread().getContextClassLoader().getResource("model.xsd");
+            final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            final URL modelSchemaUrl = Thread.currentThread().getContextClassLoader().getResource("model.xsd");
             UNMARSHALLER.setSchema(schemaFactory.newSchema(modelSchemaUrl));
         } catch (JAXBException | SAXException e) {
             throw new UncheckedException(e);
@@ -82,18 +82,14 @@ public class XmlModelBuilder {
      */
     @NotNull
     public static Model readModelFromUrl(@NotNull final URL url) throws ModelParsingException {
-        LOG.fine("Downloadind XML model");
-        File modelFile;
         try {
-            modelFile = Files.createTempFile("model", ".xml").toFile();
-        } catch (IOException e) {
-            throw new UncheckedException(e);
-        }
-        try {
-            FileUtils.copyURLToFile(url, modelFile, ModelDeployer.CONNECTION_TIMEOUT, ModelDeployer.READ_TIMEOUT);
-
-            LOG.fine("Parsing XML model");
-            return UNMARSHALLER.unmarshal(new StreamSource(modelFile), Model.class).getValue();
+            final URLConnection urlConnection = url.openConnection();
+            urlConnection.setConnectTimeout(ModelDeployer.CONNECTION_TIMEOUT);
+            urlConnection.setReadTimeout(ModelDeployer.READ_TIMEOUT);
+            try (final InputStream urlStream = urlConnection.getInputStream()) {
+                LOG.fine("Retrieving and parsing XML model on the fly");
+                return UNMARSHALLER.unmarshal(new StreamSource(urlStream), Model.class).getValue();
+            }
         } catch (IOException | JAXBException e) {
             throw new ModelParsingException(e);
         }
