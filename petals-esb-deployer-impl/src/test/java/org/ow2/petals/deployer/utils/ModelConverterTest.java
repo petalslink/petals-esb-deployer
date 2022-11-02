@@ -19,21 +19,30 @@
 package org.ow2.petals.deployer.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
+import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
+import org.ow2.petals.deployer.model.topology.xml._1.Container;
+import org.ow2.petals.deployer.model.topology.xml._1.Topology;
+import org.ow2.petals.deployer.model.topology.xml._1.TopologyModel;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeContainer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
+import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
 
 /**
  * @author Alexandre Lagane - Linagora
+ * @author Christophe DENEUX - Linagora
  */
 public class ModelConverterTest {
 
@@ -133,5 +142,69 @@ public class ModelConverterTest {
         assertEquals("param-with-default-value", param.getKey());
         assertEquals("overridden-value", param.getValue());
 
+    }
+
+    @Test
+    public void error_componentRepositoryMissing() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        // component repository missing
+        model.setTopologyModel(new TopologyModel());
+        model.setBusModel(new BusModel());
+
+        Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals("The component repository definition is missing in the model.", exception.getMessage());
+    }
+
+    @Test
+    public void error_topologyModelMissing() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        model.setComponentRepository(new ComponentRepository());
+        // Topology model missing
+        model.setBusModel(new BusModel());
+
+        Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals("The topology model is missing in the model.", exception.getMessage());
+    }
+
+    @Test
+    public void error_topologyModelEmpty() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        model.setComponentRepository(new ComponentRepository());
+        model.setTopologyModel(new TopologyModel());
+        model.setBusModel(new BusModel());
+
+        Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals("The topology model is empty in the model.", exception.getMessage());
+    }
+
+    @Test
+    public void error_busModelMissing() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        model.setComponentRepository(new ComponentRepository());
+        final TopologyModel topologyModel = new TopologyModel();
+        final Topology topology = new Topology();
+        topologyModel.getTopology().add(topology);
+        topology.getContainer().add(new Container());
+        model.setTopologyModel(topologyModel);
+        // Bus model missing
+
+        Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals("The bus model definition is missing in the model.", exception.getMessage());
     }
 }

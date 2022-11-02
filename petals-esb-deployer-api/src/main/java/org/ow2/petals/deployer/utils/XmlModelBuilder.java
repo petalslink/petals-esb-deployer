@@ -79,6 +79,7 @@ public class XmlModelBuilder {
      * @param url
      * @return the read model
      * @throws ModelParsingException
+     *             An error occurs parsing or unmarshalling the resource given by the URL.
      */
     @NotNull
     public static Model readModelFromUrl(@NotNull final URL url) throws ModelParsingException {
@@ -90,7 +91,7 @@ public class XmlModelBuilder {
                 LOG.fine("Retrieving and parsing XML model on the fly");
                 return UNMARSHALLER.unmarshal(new StreamSource(urlStream), Model.class).getValue();
             }
-        } catch (IOException | JAXBException e) {
+        } catch (final IOException | JAXBException e) {
             throw new ModelParsingException(e);
         }
 
@@ -103,13 +104,14 @@ public class XmlModelBuilder {
      * @param file
      * @return file if successfully written else null
      * @throws ModelParsingException
+     *             An error occurs writing or marshalling the resource given by the URL.
      */
     @NotNull
     public static File writeModelToFile(@NotNull Model model, @NotNull File file) throws ModelParsingException {
         try {
             MARSHALLER.marshal(OF.createModel(model), file);
             return file;
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             throw new ModelParsingException(e);
         }
 

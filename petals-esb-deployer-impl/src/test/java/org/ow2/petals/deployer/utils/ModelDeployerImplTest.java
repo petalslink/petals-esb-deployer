@@ -30,7 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.contrib.java.lang.system.ProvideSystemProperty;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
 
 public class ModelDeployerImplTest {
 
@@ -61,7 +61,7 @@ public class ModelDeployerImplTest {
     public void deployModelWithMavenUrl() throws Exception {
         try {
             modelDeployer.deployModel(ModelUtils.generateTestModelWithMavenUrl());
-        } catch (ModelDeploymentException e) {
+        } catch (ModelDeploymentExecutionException e) {
             assertFalse(e.getCause() instanceof MalformedURLException);
         }
     }

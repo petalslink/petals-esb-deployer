@@ -49,11 +49,11 @@ public class RuntimeModel implements Similar {
      */
     public void addContainer(@NotNull final RuntimeContainer container) throws DuplicatedContainerException {
         assert container != null;
-        String id = container.getId();
-        if (containers.containsKey(id)) {
-            throw new DuplicatedContainerException("Container " + id + " is already in the list");
+        final String id = container.getId();
+        if (this.containers.containsKey(id)) {
+            throw new DuplicatedContainerException(id);
         }
-        containers.put(id, container);
+        this.containers.put(id, container);
     }
 
     /**

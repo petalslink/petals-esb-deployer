@@ -19,6 +19,9 @@
 package org.ow2.petals.deployer.utils.exceptions;
 
 /**
+ * Base class for all exception occurring during a deployment based on a model, including parsing, validation and
+ * execution phases.
+ * 
  * @author Alexandre Lagane - Linagora
  */
 public class ModelDeploymentException extends Exception {

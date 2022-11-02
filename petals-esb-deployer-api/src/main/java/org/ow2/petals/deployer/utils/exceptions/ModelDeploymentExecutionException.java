@@ -19,16 +19,19 @@
 package org.ow2.petals.deployer.utils.exceptions;
 
 /**
- * Base class for all exceptions occurring during the parsing of a deployment model, for example reading and
- * unmarshalling a XML file.
+ * Base class for all exception occurring during the deployment phase of a model.
  * 
  * @author Alexandre Lagane - Linagora
  */
-public class ModelParsingException extends ModelDeploymentException {
+public class ModelDeploymentExecutionException extends ModelDeploymentException {
 
-    private static final long serialVersionUID = 6061886715747572320L;
+    private static final long serialVersionUID = 7599724111843987402L;
 
-    public ModelParsingException(final Throwable cause) {
+    public ModelDeploymentExecutionException(final Throwable cause) {
         super(cause);
+    }
+
+    public ModelDeploymentExecutionException(final String message) {
+        super(message);
     }
 }

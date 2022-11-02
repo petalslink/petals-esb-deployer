@@ -25,8 +25,8 @@ public class DuplicatedContainerException extends RuntimeModelException {
 
     private static final long serialVersionUID = -6281782979104342739L;
 
-    public DuplicatedContainerException(final String message) {
-        super(message);
+    public DuplicatedContainerException(final String containerId) {
+        super(String.format("The container '%s' already exists", containerId));
     }
 
 }

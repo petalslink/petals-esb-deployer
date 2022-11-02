@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
 
 /**
  * The main class used for deploying XML models.
@@ -49,24 +50,19 @@ public class ModelDeployerImpl implements ModelDeployer {
      * 
      * @param runtimeModelDeployer
      */
-    protected ModelDeployerImpl(RuntimeModelDeployer runtimeModelDeployer) {
+    protected ModelDeployerImpl(final RuntimeModelDeployer runtimeModelDeployer) {
         this.runtimeModelDeployer = runtimeModelDeployer != null ? runtimeModelDeployer : new RuntimeModelDeployer();
         instance = this;
     }
 
-    /**
-     * Download and deploy the model at the url. The model must be an XML model. Schema definition can be found in {code
-     * model.xsd} in resources directory.
-     * 
-     * @param url
-     * @throws ModelDeploymentException
-     */
+    @Override
     public void deployModel(@NotNull final URL url) throws ModelDeploymentException {
         final Model model = XmlModelBuilder.readModelFromUrl(url);
 
         deployModel(model);
     }
 
+    @Override
     public void deployModel(@NotNull Model model) throws ModelDeploymentException {
         RuntimeModel runtimeModel;
         try {
@@ -74,7 +70,7 @@ public class ModelDeployerImpl implements ModelDeployer {
 
             runtimeModelDeployer.deployRuntimeModel(runtimeModel);
         } catch (Exception e) {
-            throw new ModelDeploymentException(e);
+            throw new ModelDeploymentExecutionException(e);
         }
 
     }

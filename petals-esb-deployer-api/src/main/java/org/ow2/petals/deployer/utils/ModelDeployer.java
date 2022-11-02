@@ -24,6 +24,9 @@ import javax.validation.constraints.NotNull;
 
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
+import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
+import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
+import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
 
 /**
  * The main class used for deploying XML models.
@@ -47,9 +50,24 @@ public interface ModelDeployer {
      * directory.
      * 
      * @param url
-     * @throws ModelDeploymentException
+     * @throws ModelParsingException
+     *             An error occurs parsing or unmarshalling the resource given by the URL.
+     * @throws ModelValidationException
+     *             An error occurs validating the deployment model available at the URL.
+     * @throws ModelDeploymentExecutionException
+     *             An error occurs deploying the deployment model available at the URL.
      */
     public void deployModel(@NotNull final URL url) throws ModelDeploymentException;
 
+    /**
+     * Deploy the given deployment model.
+     * 
+     * @param model
+     *            The deployment model to deploy
+     * @throws ModelValidationException
+     *             An error occurs validating the deployment model available at the URL.
+     * @throws ModelDeploymentExecutionException
+     *             An error occurs deploying the deployment model available at the URL.
+     */
     public void deployModel(@NotNull Model model) throws ModelDeploymentException;
 }
