@@ -46,8 +46,12 @@ public interface ModelDeployer {
     public static final int READ_TIMEOUT = 5000;
 
     /**
-     * Download and deploy the model at the url. The model must be an XML model with XSD {code model.xsd} in resources
-     * directory.
+     * <p>
+     * Deploy the model available at the given URL.
+     * </p>
+     * <p>
+     * Only XML resources compliant with the XSD {code model.xsd} in resources directory are supported.
+     * </p>
      * 
      * @param url
      * @throws ModelParsingException
@@ -57,7 +61,12 @@ public interface ModelDeployer {
      * @throws ModelDeploymentExecutionException
      *             An error occurs deploying the deployment model available at the URL.
      */
-    public void deployModel(@NotNull final URL url) throws ModelDeploymentException;
+    public default void deployModel(@NotNull final URL url) throws ModelDeploymentException {
+
+        final Model model = XmlModelBuilder.readModelFromUrl(url);
+
+        deployModel(model);
+    }
 
     /**
      * Deploy the given deployment model.

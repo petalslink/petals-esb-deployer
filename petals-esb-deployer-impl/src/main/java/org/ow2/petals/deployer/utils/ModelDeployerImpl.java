@@ -18,7 +18,6 @@
 
 package org.ow2.petals.deployer.utils;
 
-import java.net.URL;
 import java.util.logging.Logger;
 
 import javax.validation.constraints.NotNull;
@@ -53,13 +52,6 @@ public class ModelDeployerImpl implements ModelDeployer {
     protected ModelDeployerImpl(final RuntimeModelDeployer runtimeModelDeployer) {
         this.runtimeModelDeployer = runtimeModelDeployer != null ? runtimeModelDeployer : new RuntimeModelDeployer();
         instance = this;
-    }
-
-    @Override
-    public void deployModel(@NotNull final URL url) throws ModelDeploymentException {
-        final Model model = XmlModelBuilder.readModelFromUrl(url);
-
-        deployModel(model);
     }
 
     @Override
