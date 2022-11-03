@@ -18,15 +18,15 @@
 
 package org.ow2.petals.deployer.utils;
 
+import org.ow2.petals.admin.api.PetalsAdministration;
+
 /**
  * @author Alexandre Lagane - Linagora
  */
 public class ModelDeployerFactoryImpl extends ModelDeployerFactory {
 
-    private ModelDeployer impl = new ModelDeployerImpl();
-
     @Override
-    public ModelDeployer getModelDeployer() {
-        return impl;
+    public ModelDeployer newModelDeployer(final PetalsAdministration petalsAdmin) {
+        return new ModelDeployerImpl(new RuntimeModelDeployer(petalsAdmin));
     }
 }

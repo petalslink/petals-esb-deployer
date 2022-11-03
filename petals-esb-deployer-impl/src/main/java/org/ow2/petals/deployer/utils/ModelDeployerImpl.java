@@ -25,7 +25,6 @@ import javax.validation.constraints.NotNull;
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
-import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
 
 /**
  * The main class used for deploying XML models.
@@ -38,37 +37,17 @@ public class ModelDeployerImpl implements ModelDeployer {
 
     private final RuntimeModelDeployer runtimeModelDeployer;
 
-    private static ModelDeployerImpl instance;
-
-    public ModelDeployerImpl() {
-        this(null);
-    }
-
     /**
-     * Used only for testing purposes, to mock runtimeModelDeployer.
-     * 
      * @param runtimeModelDeployer
      */
     protected ModelDeployerImpl(final RuntimeModelDeployer runtimeModelDeployer) {
-        this.runtimeModelDeployer = runtimeModelDeployer != null ? runtimeModelDeployer : new RuntimeModelDeployer();
-        instance = this;
+        this.runtimeModelDeployer = runtimeModelDeployer;
     }
 
     @Override
-    public void deployModel(@NotNull Model model) throws ModelDeploymentException {
-        RuntimeModel runtimeModel;
-        try {
-            runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+    public void deployModel(@NotNull final Model model) throws ModelDeploymentException {
 
-            runtimeModelDeployer.deployRuntimeModel(runtimeModel);
-        } catch (Exception e) {
-            throw new ModelDeploymentExecutionException(e);
-        }
-
-    }
-
-    @NotNull
-    public static ModelDeployerImpl getInstance() {
-        return instance != null ? instance : new ModelDeployerImpl();
+        final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+        this.runtimeModelDeployer.deployRuntimeModel(runtimeModel);
     }
 }

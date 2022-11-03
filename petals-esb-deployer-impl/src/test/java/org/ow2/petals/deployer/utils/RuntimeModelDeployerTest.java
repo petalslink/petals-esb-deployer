@@ -32,7 +32,6 @@ import java.util.logging.Logger;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.ow2.petals.admin.junit.ArtifactLifecycleFactoryMock;
 import org.ow2.petals.admin.junit.PetalsAdministrationApi;
 import org.ow2.petals.admin.topology.Container.PortType;
 import org.ow2.petals.admin.topology.Container.State;
@@ -73,9 +72,7 @@ public class RuntimeModelDeployerTest {
         this.petalsAdminApiRule.registerDomain();
         final org.ow2.petals.admin.topology.Container cont = createContainerSample();
         this.petalsAdminApiRule.registerContainer(cont);
-        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
-                artifactLifecycleFactoryMock);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithOneSUBySA();
         modelDeployer.deployRuntimeModel(model);
@@ -92,9 +89,7 @@ public class RuntimeModelDeployerTest {
         this.petalsAdminApiRule.registerDomain();
         final org.ow2.petals.admin.topology.Container cont = createContainerSample();
         this.petalsAdminApiRule.registerContainer(cont);
-        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
-                artifactLifecycleFactoryMock);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithSeveralSUsIntoOneSA();
         modelDeployer.deployRuntimeModel(model);
@@ -111,9 +106,7 @@ public class RuntimeModelDeployerTest {
         this.petalsAdminApiRule.registerDomain();
         final org.ow2.petals.admin.topology.Container cont = createContainerSample();
         this.petalsAdminApiRule.registerContainer(cont);
-        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton(),
-                artifactLifecycleFactoryMock);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(this.petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithAutoDeployableSUs();
         modelDeployer.deployRuntimeModel(model);
@@ -137,9 +130,7 @@ public class RuntimeModelDeployerTest {
         petalsAdminApiRule.registerDomain();
         org.ow2.petals.admin.topology.Container cont = createContainerSample();
         petalsAdminApiRule.registerContainer(cont);
-        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
-                artifactLifecycleFactoryMock);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
         modelDeployer.deployRuntimeModel(model);
@@ -156,9 +147,7 @@ public class RuntimeModelDeployerTest {
         petalsAdminApiRule.registerDomain();
         org.ow2.petals.admin.topology.Container cont = createContainerSample();
         petalsAdminApiRule.registerContainer(cont);
-        final ArtifactLifecycleFactoryMock artifactLifecycleFactoryMock = new ArtifactLifecycleFactoryMock(cont);
-        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton(),
-                artifactLifecycleFactoryMock);
+        final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
         modelDeployer.deployRuntimeModel(model);

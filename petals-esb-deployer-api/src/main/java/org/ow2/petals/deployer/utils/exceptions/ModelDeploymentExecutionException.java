@@ -34,4 +34,8 @@ public class ModelDeploymentExecutionException extends ModelDeploymentException 
     public ModelDeploymentExecutionException(final String message) {
         super(message);
     }
+
+    public ModelDeploymentExecutionException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -20,6 +20,8 @@ package org.ow2.petals.deployer.utils;
 
 import static org.mockito.Mockito.mock;
 
+import org.ow2.petals.admin.api.PetalsAdministration;
+
 /**
  * @author Alexandre Lagane - Linagora
  */
@@ -28,7 +30,7 @@ public class ModelDeployerFactoryMock extends ModelDeployerFactory {
     public static ModelDeployer mock = mock(ModelDeployer.class);
 
     @Override
-    public ModelDeployer getModelDeployer() {
+    public ModelDeployer newModelDeployer(final PetalsAdministration petalsAdmin) {
         return mock;
     }
 

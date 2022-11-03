@@ -21,12 +21,16 @@ package org.ow2.petals.deployer.utils.exceptions;
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeModelDeployerException extends Exception {
+public class RuntimeModelDeployerException extends ModelDeploymentExecutionException {
 
     private static final long serialVersionUID = -3352449083809006549L;
 
     public RuntimeModelDeployerException(final String message) {
         super(message);
+    }
+
+    public RuntimeModelDeployerException(final Throwable cause) {
+        super(cause);
     }
 
     public RuntimeModelDeployerException(final String message, final Throwable cause) {

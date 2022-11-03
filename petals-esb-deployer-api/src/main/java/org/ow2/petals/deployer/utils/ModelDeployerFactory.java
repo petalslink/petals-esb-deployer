@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
+import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.deployer.utils.exceptions.DuplicatedServiceException;
 import org.ow2.petals.deployer.utils.exceptions.MissingServiceException;
 
@@ -106,7 +107,10 @@ public abstract class ModelDeployerFactory {
     /**
      * Create a new instance of the Petals ESB Deployer
      * 
+     * @param petalsAdmin
+     *            Petals Admin API instance to use to interact with Petals ESB nodes. If {@code null}, a new default
+     *            instance will be created and used.
      * @return a new instance of Petals ESB Deployer.
      */
-    public abstract ModelDeployer getModelDeployer();
+    public abstract ModelDeployer newModelDeployer(final PetalsAdministration petalsAdmin);
 }
