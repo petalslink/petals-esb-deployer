@@ -26,7 +26,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
+import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
+import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -206,5 +209,42 @@ public class ModelConverterTest {
         });
 
         assertEquals("The bus model definition is missing in the model.", exception.getMessage());
+    }
+
+    @Test
+    public void error_serviceUnitDefinitionMissing() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final String suId = "unexisting-su-definition";
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(suId);
+        contInst.getServiceUnitInstance().add(suInst);
+
+        Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(
+                "Service unit reference '" + suId
+                        + "' of a service unit instance has no definition in the service unit model",
+                exception.getMessage());
     }
 }

@@ -90,38 +90,25 @@ public class ModelUtils {
         serviceUnits.add(suCons);
 
         /* Topology Model */
-
-        final TopologyModel topoModel = new TopologyModel();
-        model.setTopologyModel(topoModel);
-
-        final Topology topo = new Topology();
-        topo.setId("topo1");
-        topoModel.getTopology().add(topo);
-
-        final Container cont = new Container();
-        cont.setId(CONTAINER_NAME);
-        cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
-        cont.setDefaultJmxUser(CONTAINER_USER);
-        cont.setDefaultJmxPassword(CONTAINER_PWD);
-        topo.getContainer().add(cont);
+        final String topoId = "topo1";
+        final String contId = CONTAINER_NAME;
+        model.setTopologyModel(generateTestTopologyModel(topoId, contId));
 
         /* Bus Model */
 
         final BusModel busModel = new BusModel();
         model.setBusModel(busModel);
 
-        final ProvisionedMachine machine = new ProvisionedMachine();
-        machine.setId("main");
-        machine.setHostname("localhost");
-        busModel.getMachine().add(machine);
+        final String machineId = "main";
+        busModel.getMachine().add(generateTestProvisionedMachine(machineId));
 
         final Bus bus = new Bus();
-        bus.setTopologyRef(topo.getId());
+        bus.setTopologyRef(topoId);
         busModel.getBus().add(bus);
 
         final ContainerInstance contInst = new ContainerInstance();
-        contInst.setRef(cont.getId());
-        contInst.setMachineRef(machine.getId());
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
         bus.getContainerInstance().add(contInst);
 
         final ComponentInstance bcSoapInst = new ComponentInstance();
@@ -143,6 +130,30 @@ public class ModelUtils {
         suInstances.add(suInst);
 
         return model;
+    }
+
+    public static TopologyModel generateTestTopologyModel(final String topoId, final String contId) {
+        final TopologyModel topoModel = new TopologyModel();
+
+        final Topology topo = new Topology();
+        topo.setId(topoId);
+        topoModel.getTopology().add(topo);
+
+        final Container cont = new Container();
+        cont.setId(contId);
+        cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
+        cont.setDefaultJmxUser(CONTAINER_USER);
+        cont.setDefaultJmxPassword(CONTAINER_PWD);
+        topo.getContainer().add(cont);
+
+        return topoModel;
+    }
+
+    public static ProvisionedMachine generateTestProvisionedMachine(final String machineId) {
+        final ProvisionedMachine machine = new ProvisionedMachine();
+        machine.setId(machineId);
+        machine.setHostname("localhost");
+        return machine;
     }
 
     public static Model generateTestModelWithMavenUrl() throws MalformedURLException, IOException, URISyntaxException {
@@ -171,38 +182,25 @@ public class ModelUtils {
         serviceUnits.add(dummyMavenSu);
 
         /* Topology Model */
-
-        final TopologyModel topoModel = new TopologyModel();
-        model.setTopologyModel(topoModel);
-
-        final Topology topo = new Topology();
-        topo.setId("topo1");
-        topoModel.getTopology().add(topo);
-
-        final Container cont = new Container();
-        cont.setId(CONTAINER_NAME);
-        cont.setDefaultJmxPort(CONTAINER_JMX_PORT);
-        cont.setDefaultJmxUser(CONTAINER_USER);
-        cont.setDefaultJmxPassword(CONTAINER_PWD);
-        topo.getContainer().add(cont);
+        final String topoId = "topo1";
+        final String contId = CONTAINER_NAME;
+        model.setTopologyModel(generateTestTopologyModel(topoId, contId));
 
         /* Bus Model */
 
         final BusModel busModel = new BusModel();
         model.setBusModel(busModel);
 
-        final ProvisionedMachine machine = new ProvisionedMachine();
-        machine.setId("main");
-        machine.setHostname("localhost");
-        busModel.getMachine().add(machine);
+        final String machineId = "main";
+        busModel.getMachine().add(generateTestProvisionedMachine(machineId));
 
         final Bus bus = new Bus();
-        bus.setTopologyRef(topo.getId());
+        bus.setTopologyRef(topoId);
         busModel.getBus().add(bus);
 
         final ContainerInstance contInst = new ContainerInstance();
-        contInst.setRef(cont.getId());
-        contInst.setMachineRef(machine.getId());
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
         bus.getContainerInstance().add(contInst);
 
         final ComponentInstance dummyMavenCompInst = new ComponentInstance();

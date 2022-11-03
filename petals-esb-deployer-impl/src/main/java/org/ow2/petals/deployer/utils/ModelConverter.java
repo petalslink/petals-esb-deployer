@@ -206,6 +206,11 @@ public class ModelConverter {
         for (final ServiceUnitInstance suInst : contInst.getServiceUnitInstance()) {
             final String suId = suInst.getRef();
             final ServiceUnit suRef = suById.get(suId);
+            if (suRef == null) {
+                throw new ModelValidationException(String.format(
+                        "Service unit reference '%s' of a service unit instance has no definition in the service unit model",
+                        suId));
+            }
             try {
                 runtimeCont.addServiceUnit(new RuntimeServiceUnit(suId, new URL(suRef.getUrl())));
             } catch (final MalformedURLException | DuplicatedServiceUnitException e) {
