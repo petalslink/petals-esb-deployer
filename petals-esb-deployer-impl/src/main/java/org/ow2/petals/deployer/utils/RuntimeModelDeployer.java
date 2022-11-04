@@ -33,6 +33,7 @@ import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.artifact.Component;
 import org.ow2.petals.admin.api.artifact.Component.ComponentType;
+import org.ow2.petals.admin.api.conf.ZipArchiveCustomizer;
 import org.ow2.petals.admin.api.exception.ArtifactAdministrationException;
 import org.ow2.petals.admin.api.exception.ArtifactUrlRewriterException;
 import org.ow2.petals.admin.api.exception.ContainerAdministrationException;
@@ -190,7 +191,8 @@ public class RuntimeModelDeployer {
         // Now, we can deploy the SA ...
         try {
             this.petalsAdmin.newArtifactAdministration().deployAndStartArtifact(
-                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(serviceUnit.getUrl()), false);
+                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(serviceUnit.getUrl(), ZipArchiveCustomizer.NOOP),
+                    false);
         } catch (final ArtifactAdministrationException | ArtifactUrlRewriterException e) {
             throw new RuntimeModelDeployerException(e);
         }
@@ -230,7 +232,8 @@ public class RuntimeModelDeployer {
 
         try {
             this.petalsAdmin.newArtifactAdministration().deployAndStartArtifact(
-                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(serviceUnit.getUrl()), false);
+                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(serviceUnit.getUrl(), ZipArchiveCustomizer.NOOP),
+                    false);
         } catch (final ArtifactAdministrationException | ArtifactUrlRewriterException e) {
             throw new RuntimeModelDeployerException(e);
         }
@@ -281,7 +284,9 @@ public class RuntimeModelDeployer {
 
         try {
             this.petalsAdmin.newArtifactAdministration().deployAndStartArtifact(
-                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(component.getUrl()), compParameters, false);
+                    this.petalsAdmin.getArtifactUrlRewriter().rewrite(component.getUrl(),
+                            new ComponentZipArchiveCustomizer(component)),
+                    compParameters, false);
         } catch (final ArtifactAdministrationException | ArtifactUrlRewriterException e) {
             throw new RuntimeModelDeployerException(e);
         }
@@ -297,7 +302,9 @@ public class RuntimeModelDeployer {
         try {
             LOG.fine(String.format("Deploying shared library '%s:%s' ...", slId, slVersion));
             this.petalsAdmin.newArtifactAdministration()
-                    .deployAndStartArtifact(this.petalsAdmin.getArtifactUrlRewriter().rewrite(sl.getUrl()), false);
+                    .deployAndStartArtifact(
+                            this.petalsAdmin.getArtifactUrlRewriter().rewrite(sl.getUrl(), ZipArchiveCustomizer.NOOP),
+                            false);
             LOG.fine(String.format("Shared library '%s:%s' deployed.", slId, slVersion));
         } catch (final ArtifactAdministrationException | ArtifactUrlRewriterException e) {
             throw new RuntimeModelDeployerException(e);

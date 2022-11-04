@@ -89,7 +89,7 @@ public class RuntimeComponent implements Similar {
      * @return the shared library if found, else null
      */
     public RuntimeSharedLibrary getSharedLibrary(@NotNull final String id, @NotNull final String version) {
-        return sharedLibraries.get(new RuntimeSharedLibrary.IdAndVersion(id, version));
+        return this.sharedLibraries.get(new RuntimeSharedLibrary.IdAndVersion(id, version));
     }
 
     /**
@@ -102,11 +102,11 @@ public class RuntimeComponent implements Similar {
         String id = sharedLibrary.getId();
         String version = sharedLibrary.getVersion();
         RuntimeSharedLibrary.IdAndVersion idAndVersion = new RuntimeSharedLibrary.IdAndVersion(id, version);
-        if (sharedLibraries.containsKey(idAndVersion)) {
+        if (this.sharedLibraries.containsKey(idAndVersion)) {
             throw new DuplicatedSharedLibraryException(
                     "Shared library with id " + id + " and version " + version + " is already in the list");
         }
-        sharedLibraries.put(idAndVersion, sharedLibrary);
+        this.sharedLibraries.put(idAndVersion, sharedLibrary);
     }
 
     /**
@@ -114,7 +114,7 @@ public class RuntimeComponent implements Similar {
      */
     @NotNull
     public Collection<RuntimeSharedLibrary> getSharedLibraries() {
-        return Collections.unmodifiableCollection(sharedLibraries.values());
+        return Collections.unmodifiableCollection(this.sharedLibraries.values());
     }
 
     @Override

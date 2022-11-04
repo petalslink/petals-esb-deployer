@@ -72,6 +72,7 @@ public class ZipUtils {
                 int read = fis.read(buffer, 0, buffer.length);
                 zos.write(buffer, 0, read);
             }
+            zos.closeEntry();
             fis.close();
         }
     }
