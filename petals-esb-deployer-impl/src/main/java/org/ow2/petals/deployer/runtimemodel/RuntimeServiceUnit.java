@@ -19,6 +19,9 @@
 package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -31,11 +34,14 @@ public class RuntimeServiceUnit implements Similar {
 
     private final String id;
 
+    private final Map<String, String> placholders;
+
     private URL url;
 
     public RuntimeServiceUnit(@NotNull final String id) {
         assert id != null;
         this.id = id;
+        this.placholders = new HashMap<>();
     }
 
     public RuntimeServiceUnit(@NotNull final String id, final URL url) {
@@ -45,19 +51,44 @@ public class RuntimeServiceUnit implements Similar {
 
     @NotNull
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public URL getUrl() {
-        return url;
+        return this.url;
     }
 
     public void setUrl(final URL url) {
         this.url = url;
     }
 
+    /**
+     * @return the placeholder value if set, else null
+     */
+    public String getPlaceholderValue(@NotNull final String name) {
+        return this.placholders.get(name);
+    }
+
+    public void setPlaceholderValue(@NotNull final String name, @NotNull final String value) {
+        assert name != null && value != null;
+        this.placholders.put(name, value);
+    }
+
+    /**
+     * Adding or removing from the returned map does not affect the service unit.
+     */
+    @NotNull
+    public Map<String, String> getPlaceholders() {
+        return Collections.unmodifiableMap(this.placholders);
+    }
+
     @Override
     public boolean isSimilarTo(Object o) {
-        return o instanceof RuntimeServiceUnit && this.getId().equals(((RuntimeServiceUnit) o).getId());
+        if (!(o instanceof RuntimeServiceUnit)) {
+            return false;
+        }
+        final RuntimeServiceUnit otherSu = (RuntimeServiceUnit) o;
+
+        return this.getId().equals(otherSu.getId()) && this.getPlaceholders().equals(otherSu.getPlaceholders());
     }
 }

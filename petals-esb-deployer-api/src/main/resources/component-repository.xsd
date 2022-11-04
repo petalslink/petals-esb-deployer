@@ -61,7 +61,7 @@
          <element name="parameter" type="cr:parameter" minOccurs="0" maxOccurs="unbounded">
             <annotation>
                <documentation>
-                  A parameter of the component.
+                  Default value definition of a component parameter.
                </documentation>
             </annotation>
          </element>

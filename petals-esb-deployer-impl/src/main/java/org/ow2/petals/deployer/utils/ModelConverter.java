@@ -29,6 +29,7 @@ import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ParameterInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.PlaceholderInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
@@ -36,6 +37,7 @@ import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentReposi
 import org.ow2.petals.deployer.model.component_repository.xml._1.Parameter;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
+import org.ow2.petals.deployer.model.service_unit.xml._1.Placeholder;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -66,6 +68,9 @@ public class ModelConverter {
     public static RuntimeModel convertModelToRuntimeModel(@NotNull final Model model)
             throws ModelValidationException {
 
+        final Map<String, ServiceUnit> suById = new HashMap<>();
+        convertServiceUnitModel(model, suById);
+
         final Map<String, Component> compById = new HashMap<>();
         final Map<RuntimeSharedLibrary.IdAndVersion, SharedLibrary> slByIdAndVersion = new HashMap<>();
         convertComponentAndShareLibraryRepository(model, compById, slByIdAndVersion);
@@ -80,10 +85,18 @@ public class ModelConverter {
         final List<Container> containers = topologyModel.getTopology().get(0).getContainer();
         if (!containers.isEmpty()) {
             final Container cont = containers.get(0);
-            convertContainerToRuntimeContainer(cont, model, runtimeModel, compById, slByIdAndVersion);
+            convertContainerToRuntimeContainer(cont, model, runtimeModel, compById, slByIdAndVersion, suById);
         }
 
         return runtimeModel;
+    }
+
+    private static void convertServiceUnitModel(@NotNull final Model model,
+            @NotNull final Map<String, ServiceUnit> suById) {
+        final ServiceUnitModel suModel = model.getServiceUnitModel();
+        for (final ServiceUnit su : suModel.getServiceUnit()) {
+            suById.put(su.getId(), su);
+        }
     }
 
     private static void convertComponentAndShareLibraryRepository(@NotNull final Model model,
@@ -109,7 +122,8 @@ public class ModelConverter {
 
     private static void convertContainerToRuntimeContainer(@NotNull final Container cont, @NotNull final Model model,
             @NotNull final RuntimeModel runtimeModel, @NotNull final Map<String, Component> compById,
-            @NotNull final Map<RuntimeSharedLibrary.IdAndVersion, SharedLibrary> slByIdAndVersion)
+            @NotNull final Map<RuntimeSharedLibrary.IdAndVersion, SharedLibrary> slByIdAndVersion,
+            @NotNull final Map<String, ServiceUnit> suById)
             throws ModelValidationException {
 
         final BusModel busModel = model.getBusModel();
@@ -141,7 +155,10 @@ public class ModelConverter {
                 convertComponentToRuntimeComponent(compInst, runtimeCont, compById, slByIdAndVersion);
             }
 
-            convertServiceUnitToRuntimeServiceUnit(model, contInst, runtimeCont);
+            convertServiceUnitsToRuntimeServiceUnits(contInst, runtimeCont, suById);
+
+            // TODO: Check that all component required by service unit are defined
+            // TODO: Check that only one value is defined per placeholder on each component of this container
 
         } catch (final DuplicatedContainerException e) {
             throw new ModelValidationException(e);
@@ -193,28 +210,43 @@ public class ModelConverter {
         }
     }
 
-    private static void convertServiceUnitToRuntimeServiceUnit(@NotNull final Model model,
-            @NotNull final ContainerInstance contInst, @NotNull final RuntimeContainer runtimeCont)
+    private static void convertServiceUnitsToRuntimeServiceUnits(@NotNull final ContainerInstance contInst,
+            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById)
             throws ModelValidationException {
 
-        final ServiceUnitModel suModel = model.getServiceUnitModel();
-        final Map<String, ServiceUnit> suById = new HashMap<>();
-        for (final ServiceUnit su : suModel.getServiceUnit()) {
-            suById.put(su.getId(), su);
-        }
         for (final ServiceUnitInstance suInst : contInst.getServiceUnitInstance()) {
-            final String suId = suInst.getRef();
-            final ServiceUnit suRef = suById.get(suId);
-            if (suRef == null) {
-                throw new ModelValidationException(String.format(
-                        "Service unit reference '%s' of a service unit instance has no definition in the service unit model",
-                        suId));
+            convertServiceUnitToRuntimeServiceUnit(suInst, runtimeCont, suById);
+        }
+    }
+
+    private static void convertServiceUnitToRuntimeServiceUnit(@NotNull final ServiceUnitInstance suInst,
+            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById)
+            throws ModelValidationException {
+
+        final String referencedSuId = suInst.getRef();
+        final ServiceUnit referencedSu = suById.get(referencedSuId);
+        if (referencedSu == null) {
+            throw new ModelValidationException(String.format(
+                    "Service unit reference '%s' of a service unit instance has no definition in the service unit model",
+                    referencedSuId));
+        }
+        try {
+            final RuntimeServiceUnit runtimeSu = new RuntimeServiceUnit(referencedSuId, new URL(referencedSu.getUrl()));
+
+            for (final Placeholder placeholder : referencedSu.getPlaceholder()) {
+                runtimeSu.setPlaceholderValue(placeholder.getName(), placeholder.getValue());
             }
-            try {
-                runtimeCont.addServiceUnit(new RuntimeServiceUnit(suId, new URL(suRef.getUrl())));
-            } catch (final MalformedURLException | DuplicatedServiceUnitException e) {
-                throw new ModelValidationException(e);
+            for (final PlaceholderInstance placeholderInst : suInst.getPlaceholderInstance()) {
+                final String ref = placeholderInst.getRef();
+                if (runtimeSu.getPlaceholderValue(ref) == null) {
+                    throw new ModelValidationException(
+                            String.format("Placeholder '%s' is not defined in service unit '%s'", ref, referencedSuId));
+                }
+                runtimeSu.setPlaceholderValue(placeholderInst.getRef(), placeholderInst.getValue());
             }
+            runtimeCont.addServiceUnit(runtimeSu);
+        } catch (final MalformedURLException | DuplicatedServiceUnitException e) {
+            throw new ModelValidationException(e);
         }
     }
 }

@@ -251,4 +251,20 @@ public class RuntimeModelDeployerTest {
 
         return model;
     }
+
+    public static RuntimeModel generateRuntimeModelWithPlaceholders() throws Exception {
+        final RuntimeModel model = new RuntimeModel();
+        final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
+                ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
+        model.addContainer(cont);
+        cont.addComponent(new RuntimeComponent("petals-bc-soap",
+                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
+        final RuntimeServiceUnit su = new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
+                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL());
+        su.setPlaceholderValue("param1", "value1");
+        su.setPlaceholderValue("param2", "value2");
+        cont.addServiceUnit(su);
+
+        return model;
+    }
 }

@@ -148,6 +148,43 @@ public class ModelConverterTest {
     }
 
     @Test
+    public void convertModelWithPlaceholdersToRuntimeModel() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithPlaceholder();
+
+        final RuntimeModel runtimeModel = ModelConverter.convertModelToRuntimeModel(model);
+
+        final Collection<RuntimeContainer> containers = runtimeModel.getContainers();
+        assertEquals(1, containers.size());
+
+        final RuntimeContainer cont = containers.iterator().next();
+
+        final Collection<RuntimeServiceUnit> serviceunits = cont.getServiceUnits();
+        assertEquals(4, serviceunits.size());
+
+        final RuntimeServiceUnit su = cont.getServiceUnit("id-su-with-placeholder");
+        assertEquals("id-su-with-placeholder", su.getId());
+        assertEquals("file:dummy-su-with-placeholder", su.getUrl().toString());
+
+        Map<String, String> placeholders = su.getPlaceholders();
+        assertEquals(1, placeholders.size());
+        Entry<String, String> placeholder = placeholders.entrySet().iterator().next();
+        assertEquals("placeholder-with-default-value", placeholder.getKey());
+        assertEquals("overridden-value", placeholder.getValue());
+    }
+
+    @Test
+    public void error_missingPlacholder() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithMissingPlaceholder();
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals("Placeholder 'unexisting-placeholder' is not defined in service unit 'id-su-with-placeholder'",
+                exception.getMessage());
+    }
+
+    @Test
     public void error_componentRepositoryMissing() throws Exception {
         final Model model = new Model();
         model.setServiceUnitModel(new ServiceUnitModel());
@@ -155,7 +192,7 @@ public class ModelConverterTest {
         model.setTopologyModel(new TopologyModel());
         model.setBusModel(new BusModel());
 
-        Exception exception = assertThrows(ModelValidationException.class, () -> {
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 
@@ -170,7 +207,7 @@ public class ModelConverterTest {
         // Topology model missing
         model.setBusModel(new BusModel());
 
-        Exception exception = assertThrows(ModelValidationException.class, () -> {
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 
@@ -185,7 +222,7 @@ public class ModelConverterTest {
         model.setTopologyModel(new TopologyModel());
         model.setBusModel(new BusModel());
 
-        Exception exception = assertThrows(ModelValidationException.class, () -> {
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 
@@ -204,7 +241,7 @@ public class ModelConverterTest {
         model.setTopologyModel(topologyModel);
         // Bus model missing
 
-        Exception exception = assertThrows(ModelValidationException.class, () -> {
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 
@@ -238,7 +275,7 @@ public class ModelConverterTest {
         suInst.setRef(suId);
         contInst.getServiceUnitInstance().add(suInst);
 
-        Exception exception = assertThrows(ModelValidationException.class, () -> {
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 

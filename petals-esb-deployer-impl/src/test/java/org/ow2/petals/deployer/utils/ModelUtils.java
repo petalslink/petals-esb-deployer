@@ -28,6 +28,7 @@ import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ParameterInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.PlaceholderInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ProvisionedMachine;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
@@ -35,6 +36,7 @@ import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentReposi
 import org.ow2.petals.deployer.model.component_repository.xml._1.Parameter;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
 import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibraryReference;
+import org.ow2.petals.deployer.model.service_unit.xml._1.Placeholder;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -262,6 +264,50 @@ public class ModelUtils {
         paramInst.setValue("overridden-value");
         compInst.getParameterInstance().add(paramInst);
         model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance().add(compInst);
+
+        return model;
+    }
+
+    public static Model generateTestModelWithPlaceholder()
+            throws MalformedURLException, IOException, URISyntaxException {
+        final Model model = generateTestModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("id-su-with-placeholder");
+        su.setUrl("file:dummy-su-with-placeholder");
+        final Placeholder placeholder = new Placeholder();
+        placeholder.setName("placeholder-with-default-value");
+        placeholder.setValue("default-value");
+        su.getPlaceholder().add(placeholder);
+        model.getServiceUnitModel().getServiceUnit().add(su);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        final PlaceholderInstance placeholderInst = new PlaceholderInstance();
+        placeholderInst.setRef(placeholder.getName());
+        placeholderInst.setValue("overridden-value");
+        suInst.getPlaceholderInstance().add(placeholderInst);
+        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getServiceUnitInstance().add(suInst);
+
+        return model;
+    }
+
+    public static Model generateTestModelWithMissingPlaceholder()
+            throws MalformedURLException, IOException, URISyntaxException {
+        final Model model = generateTestModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("id-su-with-placeholder");
+        su.setUrl("file:dummy-su-with-placeholder");
+        model.getServiceUnitModel().getServiceUnit().add(su);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        final PlaceholderInstance placeholderInst = new PlaceholderInstance();
+        placeholderInst.setRef("unexisting-placeholder");
+        placeholderInst.setValue("overridden-value");
+        suInst.getPlaceholderInstance().add(placeholderInst);
+        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getServiceUnitInstance().add(suInst);
 
         return model;
     }

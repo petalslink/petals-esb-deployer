@@ -62,6 +62,16 @@ public class RuntimeModelComparatorTest {
     }
 
     @Test
+    public void equivalentRuntimeModelsWithPlaceholders() throws Exception {
+        final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithPlaceholders();
+
+        final RuntimeModel similarModel = RuntimeModelDeployerTest.generateRuntimeModelWithPlaceholders();
+
+        assertTrue(model.isSimilarTo(similarModel));
+        assertTrue(similarModel.isSimilarTo(model));
+    }
+
+    @Test
     public void runtimeModelsWithDifferentServiceUnitLists() throws Exception {
         final RuntimeModel model = RuntimeModelDeployerTest.generateRuntimeModelWithOneSUBySA();
 

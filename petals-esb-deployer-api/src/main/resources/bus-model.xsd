@@ -16,9 +16,12 @@
  along with this program/library; If not, see http://www.gnu.org/licenses/
  for the GNU Lesser General Public License version 2.1.
 -->
-<schema targetNamespace="http://petals.ow2.org/deployer/model/bus/xml/1.0" version="1.0"
-   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0"
-   xmlns:cr="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" elementFormDefault="qualified">
+<schema version="1.0"
+   xmlns="http://www.w3.org/2001/XMLSchema"
+   xmlns:bm="http://petals.ow2.org/deployer/model/bus/xml/1.0"
+
+   targetNamespace="http://petals.ow2.org/deployer/model/bus/xml/1.0"
+   elementFormDefault="qualified">
 
    <import namespace="http://petals.ow2.org/deployer/model/component-repository/xml/1.0"
       schemaLocation="component-repository.xsd" />
@@ -145,7 +148,8 @@
             <attribute name="ref" type="string" use="required">
                <annotation>
                   <documentation>
-                     Reference to a parameter of the parent component.
+                     Reference to a parameter of the component. If no value is given here, the default value
+                     defined at component definition level will be used.
                   </documentation>
                </annotation>
             </attribute>
@@ -154,6 +158,15 @@
    </complexType>
 
    <complexType name="serviceUnitInstance">
+      <sequence>
+         <element name="placeholder-instance" type="bm:placeholderInstance" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  A placeholder instance to override a default placeholder value.
+               </documentation>
+            </annotation>
+         </element>
+      </sequence>
       <attribute name="ref" type="NCName" use="required">
          <annotation>
             <documentation>
@@ -161,6 +174,21 @@
             </documentation>
          </annotation>
       </attribute>
+   </complexType>
+
+   <complexType name="placeholderInstance">
+      <simpleContent>
+         <extension base="string">
+            <attribute name="ref" type="string" use="required">
+               <annotation>
+                  <documentation>
+                     Reference to a placeholder of the service unit. If no value is given here, the default value
+                     defined at service unit definition level will be used.
+                  </documentation>
+               </annotation>
+            </attribute>
+         </extension>
+      </simpleContent>
    </complexType>
 
    <complexType name="provisionedMachine">

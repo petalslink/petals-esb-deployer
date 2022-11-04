@@ -16,8 +16,11 @@
  along with this program/library; If not, see http://www.gnu.org/licenses/
  for the GNU Lesser General Public License version 2.1.
 -->
-<schema targetNamespace="http://petals.ow2.org/deployer/model/service-unit/xml/1.0" version="1.0"
-   xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sum="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
+<schema version="1.0"
+   xmlns="http://www.w3.org/2001/XMLSchema"
+   xmlns:sum="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
+
+   targetNamespace="http://petals.ow2.org/deployer/model/service-unit/xml/1.0"
    elementFormDefault="qualified">
 
    <complexType name="serviceUnitModel">
@@ -46,6 +49,13 @@
                </documentation>
             </annotation>
          </element>
+         <element name="placeholder" type="sum:placeholder" minOccurs="0" maxOccurs="unbounded">
+            <annotation>
+               <documentation>
+                  Default value definition of a placeholder required by the service unit.
+               </documentation>
+            </annotation>
+         </element>
       </sequence>
       <attribute name="id" type="NCName" use="required">
          <annotation>
@@ -55,5 +65,19 @@
             </documentation>
          </annotation>
       </attribute>
+   </complexType>
+
+   <complexType name="placeholder">
+      <simpleContent>
+         <extension base="string">
+            <attribute name="name" type="string" use="required">
+               <annotation>
+                  <documentation>
+                     The name of the placeholder.
+                  </documentation>
+               </annotation>
+            </attribute>
+         </extension>
+      </simpleContent>
    </complexType>
 </schema>
