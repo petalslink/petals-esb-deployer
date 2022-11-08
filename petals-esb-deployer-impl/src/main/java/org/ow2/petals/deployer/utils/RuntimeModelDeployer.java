@@ -18,14 +18,11 @@
 
 package org.ow2.petals.deployer.utils;
 
-import java.io.IOException;
-import java.net.URLConnection;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
-import java.util.zip.ZipInputStream;
 
 import javax.validation.constraints.NotNull;
 
@@ -149,23 +146,19 @@ public class RuntimeModelDeployer {
                     serviceUnit.getUrl().toString()));
 
             try {
-                final URLConnection suUrlConnection = serviceUnit.getUrl().openConnection();
-                suUrlConnection.setConnectTimeout(ModelDeployer.CONNECTION_TIMEOUT);
-                suUrlConnection.setReadTimeout(ModelDeployer.READ_TIMEOUT);
-                try (final ZipInputStream suZipInputStream = new ZipInputStream(suUrlConnection.getInputStream())) {
-                    final Jbi jbi = this.jdb.buildJavaJBIDescriptorFromArchive(suZipInputStream);
+                final Jbi jbi = this.jdb.buildJavaJBIDescriptorFromArchive(serviceUnit.getUrl(),
+                        ModelDeployer.CONNECTION_TIMEOUT, ModelDeployer.READ_TIMEOUT);
 
-                    final ServiceAssembly jbiSa = jbi.getServiceAssembly();
-                    if (jbiSa != null) {
-                        // Service unit embedded into a service assembly
-                        this.deployRuntimeServiceUnitProvidedIntoAServiceAssembly(jbi, serviceUnit, model,
-                                deployedComponents, deployedServiceUnits, deployedSharedLibraries);
-                    } else {
-                        this.deployRuntimeServiceUnitAsAutoDeployable(jbi, serviceUnit, model, deployedComponents,
-                                deployedServiceUnits, deployedSharedLibraries);
-                    }
+                final ServiceAssembly jbiSa = jbi.getServiceAssembly();
+                if (jbiSa != null) {
+                    // Service unit embedded into a service assembly
+                    this.deployRuntimeServiceUnitProvidedIntoAServiceAssembly(jbi, serviceUnit, model,
+                            deployedComponents, deployedServiceUnits, deployedSharedLibraries);
+                } else {
+                    this.deployRuntimeServiceUnitAsAutoDeployable(jbi, serviceUnit, model, deployedComponents,
+                            deployedServiceUnits, deployedSharedLibraries);
                 }
-            } catch (final IOException | JBIDescriptorException e) {
+            } catch (final JBIDescriptorException e) {
                 throw new RuntimeModelDeployerException(e);
             }
         } else {
