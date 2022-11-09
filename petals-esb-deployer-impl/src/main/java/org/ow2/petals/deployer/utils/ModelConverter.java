@@ -19,9 +19,11 @@ package org.ow2.petals.deployer.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.validation.constraints.NotNull;
 
@@ -81,8 +83,7 @@ public class ModelConverter {
      *             A model validation rule is violated
      */
     @NotNull
-    public static RuntimeModel convertModelToRuntimeModel(@NotNull final Model model)
-            throws ModelValidationException {
+    public static RuntimeModel convertModelToRuntimeModel(@NotNull final Model model) throws ModelValidationException {
 
         final Map<String, ServiceUnit> suById = new HashMap<>();
         convertServiceUnitModel(model, suById);
@@ -126,12 +127,23 @@ public class ModelConverter {
 
         for (final Object compOrSl : compRepo.getComponentOrSharedLibrary()) {
             if (compOrSl instanceof Component) {
-                Component comp = (Component) compOrSl;
-                compById.put(comp.getId(), comp);
+                final Component comp = (Component) compOrSl;
+                if (!compById.containsKey(comp.getId())) {
+                    compById.put(comp.getId(), comp);
+                } else {
+                    throw new ModelValidationException(String
+                            .format("Duplicated component definition '%s' in the component repository", comp.getId()));
+                }
             }
             if (compOrSl instanceof SharedLibrary) {
-                SharedLibrary sl = (SharedLibrary) compOrSl;
-                slByIdAndVersion.put(new RuntimeSharedLibrary.IdAndVersion(sl.getId(), sl.getVersion()), sl);
+                final SharedLibrary sl = (SharedLibrary) compOrSl;
+                if (!slByIdAndVersion.containsKey(new RuntimeSharedLibrary.IdAndVersion(sl.getId(), sl.getVersion()))) {
+                    slByIdAndVersion.put(new RuntimeSharedLibrary.IdAndVersion(sl.getId(), sl.getVersion()), sl);
+                } else {
+                    throw new ModelValidationException(String.format(
+                            "Duplicated shared library definition '%s' with version '%s' in the component repository",
+                            sl.getId(), sl.getVersion()));
+                }
             }
         }
     }
@@ -139,8 +151,7 @@ public class ModelConverter {
     private static void convertContainerToRuntimeContainer(@NotNull final Container cont, @NotNull final Model model,
             @NotNull final RuntimeModel runtimeModel, @NotNull final Map<String, Component> compById,
             @NotNull final Map<RuntimeSharedLibrary.IdAndVersion, SharedLibrary> slByIdAndVersion,
-            @NotNull final Map<String, ServiceUnit> suById)
-            throws ModelValidationException {
+            @NotNull final Map<String, ServiceUnit> suById) throws ModelValidationException {
 
         final BusModel busModel = model.getBusModel();
         if (busModel == null) {
@@ -164,16 +175,18 @@ public class ModelConverter {
         }
 
         try {
-            final RuntimeContainer runtimeCont = new RuntimeContainer(contId, contPort, contUser, contPassword, hostname);
+            final RuntimeContainer runtimeCont = new RuntimeContainer(contId, contPort, contUser, contPassword,
+                    hostname);
             runtimeModel.addContainer(runtimeCont);
-    
+
             for (final ComponentInstance compInst : contInst.getComponentInstance()) {
                 convertComponentToRuntimeComponent(compInst, runtimeCont, compById, slByIdAndVersion);
             }
 
-            convertServiceUnitsToRuntimeServiceUnits(contInst, runtimeCont, suById);
+            final Map<String, List<RuntimeServiceUnit>> suByComp = new HashMap<>();
+            convertServiceUnitsToRuntimeServiceUnits(contInst, runtimeCont, suById, suByComp);
 
-            checkRuntimeContainerGlobalConfiguration(runtimeCont);
+            checkRuntimeContainerGlobalConfiguration(runtimeCont, suByComp);
 
         } catch (final DuplicatedContainerException e) {
             throw new ModelValidationException(e);
@@ -221,24 +234,29 @@ public class ModelConverter {
             }
 
             checkRuntimeComponentGlobalConfiguration(runtimeComp);
-            runtimeCont.addComponent(runtimeComp);
-        } catch (final MalformedURLException | DuplicatedSharedLibraryException | DuplicatedComponentException e) {
+            try {
+                runtimeCont.addComponent(runtimeComp);
+            } catch (final DuplicatedComponentException e) {
+                throw new ModelValidationException(
+                        String.format("Duplicated component instance referring to '%s'", runtimeComp.getId()));
+            }
+        } catch (final MalformedURLException | DuplicatedSharedLibraryException e) {
             throw new ModelValidationException(e);
         }
     }
 
     private static void convertServiceUnitsToRuntimeServiceUnits(@NotNull final ContainerInstance contInst,
-            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById)
-            throws ModelValidationException {
+            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById,
+            final Map<String, List<RuntimeServiceUnit>> suByComp) throws ModelValidationException {
 
         for (final ServiceUnitInstance suInst : contInst.getServiceUnitInstance()) {
-            convertServiceUnitToRuntimeServiceUnit(suInst, runtimeCont, suById);
+            convertServiceUnitToRuntimeServiceUnit(suInst, runtimeCont, suById, suByComp);
         }
     }
 
     private static void convertServiceUnitToRuntimeServiceUnit(@NotNull final ServiceUnitInstance suInst,
-            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById)
-            throws ModelValidationException {
+            @NotNull final RuntimeContainer runtimeCont, @NotNull final Map<String, ServiceUnit> suById,
+            final Map<String, List<RuntimeServiceUnit>> suByComp) throws ModelValidationException {
 
         final String referencedSuId = suInst.getRef();
         final ServiceUnit referencedSu = suById.get(referencedSuId);
@@ -250,18 +268,36 @@ public class ModelConverter {
         try {
             final RuntimeServiceUnit runtimeSu = new RuntimeServiceUnit(referencedSuId, new URL(referencedSu.getUrl()));
 
+            final List<String> placeholderOfReferencedSu = new ArrayList<>();
             for (final Placeholder placeholder : referencedSu.getPlaceholder()) {
+                if (!placeholderOfReferencedSu.contains(placeholder.getName())) {
+                    placeholderOfReferencedSu.add(placeholder.getName());
+                } else {
+                    throw new ModelValidationException(
+                            String.format("Placeholder '%s' is duplicated in service unit definition '%s'",
+                                    placeholder.getName(), referencedSuId));
+                }
                 runtimeSu.setPlaceholderValue(placeholder.getName(), placeholder.getValue());
             }
+
+            final List<String> placeholderOfSuInst = new ArrayList<>();
             for (final PlaceholderInstance placeholderInst : suInst.getPlaceholderInstance()) {
                 final String ref = placeholderInst.getRef();
+                if (!placeholderOfSuInst.contains(ref)) {
+                    placeholderOfSuInst.add(ref);
+                } else {
+                    throw new ModelValidationException(String.format(
+                            "Placeholder '%s' is duplicated in service unit instance referring to service unit definition '%s'",
+                            ref, referencedSuId));
+                }
+
                 if (runtimeSu.getPlaceholderValue(ref) == null) {
                     throw new ModelValidationException(
                             String.format("Placeholder '%s' is not defined in service unit '%s'", ref, referencedSuId));
                 }
-                runtimeSu.setPlaceholderValue(placeholderInst.getRef(), placeholderInst.getValue());
+                runtimeSu.setPlaceholderValue(ref, placeholderInst.getValue());
             }
-            checkRuntimeServiceUnitGlobalConfiguration(runtimeSu, runtimeCont);
+            checkRuntimeServiceUnitGlobalConfiguration(runtimeSu, runtimeCont, suByComp);
             runtimeCont.addServiceUnit(runtimeSu);
         } catch (final MalformedURLException | DuplicatedServiceUnitException e) {
             throw new ModelValidationException(e);
@@ -283,12 +319,12 @@ public class ModelConverter {
     private static void checkRuntimeComponentGlobalConfiguration(final RuntimeComponent runtimeComp)
             throws ModelValidationException {
 
-            // The ZIP archive must be a JBI component ZIP archive
-            if (runtimeComp.getJbiDescriptor().getComponent() == null) {
-                throw new ModelValidationException(
-                        String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive",
-                                runtimeComp.getUrl().toString()));
-            }
+        // The ZIP archive must be a JBI component ZIP archive
+        if (runtimeComp.getJbiDescriptor().getComponent() == null) {
+            throw new ModelValidationException(
+                    String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive",
+                            runtimeComp.getUrl().toString()));
+        }
     }
 
     /**
@@ -310,7 +346,7 @@ public class ModelConverter {
      *             A model validation rule is violated.
      */
     private static void checkRuntimeServiceUnitGlobalConfiguration(final RuntimeServiceUnit runtimeServiceUnit,
-            final RuntimeContainer runtimeCont)
+            final RuntimeContainer runtimeCont, final Map<String, List<RuntimeServiceUnit>> suByComp)
             throws ModelValidationException {
 
         boolean isAutodeployableSu = false;
@@ -328,7 +364,7 @@ public class ModelConverter {
                     String.format("The ZIP archive located at '%s' is not a JBI service unit ZIP archive",
                             runtimeServiceUnit.getUrl().toString()));
         }
-        
+
         // The service unit id in the model must match the service unit identifier in ZIP archive
         String targetComponent = null;
         try {
@@ -346,7 +382,8 @@ public class ModelConverter {
             } else {
                 // Service unit provided through a service assembly
                 boolean serviceUnitFound = false;
-                for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit serviceUnit : runtimeServiceUnit.getJbiDescriptor().getServiceAssembly().getServiceUnit()) {
+                for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit serviceUnit : runtimeServiceUnit
+                        .getJbiDescriptor().getServiceAssembly().getServiceUnit()) {
                     if (runtimeServiceUnit.getId().equals(serviceUnit.getIdentification().getName())) {
                         serviceUnitFound = true;
                         targetComponent = serviceUnit.getTarget().getComponentName();
@@ -378,7 +415,7 @@ public class ModelConverter {
             assert runtimeComp.getJbiDescriptor().getComponent() != null;
             assert runtimeComp.getJbiDescriptor().getComponent().getIdentification() != null;
             assert runtimeComp.getJbiDescriptor().getComponent().getIdentification().getName() != null;
-            
+
             if (targetComponent.equals(runtimeComp.getJbiDescriptor().getComponent().getIdentification().getName())) {
                 targetCompFound = true;
                 break;
@@ -390,6 +427,12 @@ public class ModelConverter {
                     runtimeServiceUnit.getId(), runtimeServiceUnit.getUrl().toString(), runtimeCont.getId()));
         }
 
+        // Add the current SU to the list of SU by component for next validations
+        final List<RuntimeServiceUnit> suList = suByComp.computeIfAbsent(targetComponent, comp -> {
+            return new ArrayList<>();
+        });
+        suList.add(runtimeServiceUnit);
+
     }
 
     /**
@@ -397,11 +440,34 @@ public class ModelConverter {
      * Check the runtime container configuration is global point of view:
      * </p>
      * <ul>
-     * <li>TODO: Check that all component required by service unit are defined</li>
-     * <li>TODO: Check that only one value is defined per placeholder on each component of this container</li>
+     * <li>Check that placeholders have only one value defined for each component of this container.</li>
      * </ul>
+     * 
+     * @param runtimeCont
+     *            The runtime container on which the runtime service will run
+     * @throws ModelValidationException
+     *             A model validation rule is violated.
      */
-    private static void checkRuntimeContainerGlobalConfiguration(final RuntimeContainer runtimeCont) {
-        // TODO
+    private static void checkRuntimeContainerGlobalConfiguration(final RuntimeContainer runtimeCont,
+            final Map<String, List<RuntimeServiceUnit>> suByComp) throws ModelValidationException {
+        // Placeholders must have only one value defined for each component
+        for (final RuntimeComponent comp : runtimeCont.getComponents()) {
+            final Map<String, String> compPlaceholders = new HashMap<>();
+            final List<RuntimeServiceUnit> sus = suByComp.get(comp.getId());
+            if (sus != null) {
+                for (final RuntimeServiceUnit su : sus) {
+                    for (final Entry<String, String> placeholder : su.getPlaceholders().entrySet()) {
+                        final String compPlaceholderValue = compPlaceholders.get(placeholder.getKey());
+                        if (compPlaceholderValue == null) {
+                            compPlaceholders.put(placeholder.getKey(), placeholder.getValue());
+                        } else if (!compPlaceholderValue.equals(placeholder.getValue())) {
+                            throw new ModelValidationException(String.format(
+                                    "The placeholder '%s' has several different values for the component '%s' on container '%s'",
+                                    placeholder.getKey(), comp.getId(), runtimeCont.getId()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -30,9 +30,12 @@ import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
+import org.ow2.petals.deployer.model.bus.xml._1.PlaceholderInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
 import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.component_repository.xml._1.SharedLibrary;
+import org.ow2.petals.deployer.model.service_unit.xml._1.Placeholder;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
@@ -200,6 +203,145 @@ public class ModelConverterTest {
 
     /**
      * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition defines several placeholder with the same identifier.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of placeholder duplication.
+     * </p>
+     */
+    @Test
+    public void error_duplicatedPlacholder() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithPlaceholder();
+
+        final ServiceUnit su = model.getServiceUnitModel().getServiceUnit().get(0);
+        assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
+        final Placeholder placeholder = new Placeholder();
+        placeholder.setName("placeholder-with-default-value");
+        placeholder.setValue("my-value");
+        su.getPlaceholder().add(placeholder);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format("Placeholder '%s' is duplicated in service unit definition '%s'",
+                placeholder.getName(), su.getId()), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a component,</li>
+     * <li>several service unit running on the given component,</li>
+     * <li>service units defines the same placeholder with different values.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because the placeholder has different value for the same component.
+     * </p>
+     */
+    @Test
+    public void error_placeholderWithDifferentValue() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithPlaceholder();
+
+        final ServiceUnit su = model.getServiceUnitModel().getServiceUnit().get(1);
+        assertEquals("su-SOAP-Hello_Service2-provide", su.getId());
+        final Placeholder placeholder = new Placeholder();
+        placeholder.setName("placeholder-with-default-value");
+        placeholder.setValue("default-value");
+        su.getPlaceholder().add(placeholder);
+
+        final ServiceUnitInstance suInst = model.getBusModel().getBus().get(0).getContainerInstance().get(0)
+                .getServiceUnitInstance().get(1);
+        assertEquals("su-SOAP-Hello_Service2-provide", suInst.getRef());
+        final PlaceholderInstance placeholderInst = new PlaceholderInstance();
+        placeholderInst.setRef(placeholder.getName());
+        placeholderInst.setValue("another value");
+        suInst.getPlaceholderInstance().add(placeholderInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "The placeholder '%s' has several different values for the component '%s' on container '%s'",
+                placeholder.getName(), "petals-bc-soap", "sample-0"), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a component,</li>
+     * <li>several service unit running on the given component,</li>
+     * <li>service units defines the same placeholder with the same values.</li>
+     * </ul>
+     * <p>
+     * Expected results: No error.
+     * </p>
+     */
+    @Test
+    public void error_placeholderWithSameValue() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithPlaceholder();
+
+        final ServiceUnit su = model.getServiceUnitModel().getServiceUnit().get(1);
+        assertEquals("su-SOAP-Hello_Service2-provide", su.getId());
+        final Placeholder placeholder = new Placeholder();
+        placeholder.setName("placeholder-with-default-value");
+        placeholder.setValue("default-value");
+        su.getPlaceholder().add(placeholder);
+
+        final ServiceUnitInstance suInst = model.getBusModel().getBus().get(0).getContainerInstance().get(0)
+                .getServiceUnitInstance().get(1);
+        assertEquals("su-SOAP-Hello_Service2-provide", suInst.getRef());
+        final PlaceholderInstance placeholderInst = new PlaceholderInstance();
+        placeholderInst.setRef(placeholder.getName());
+        placeholderInst.setValue("overridden-value");
+        suInst.getPlaceholderInstance().add(placeholderInst);
+
+        ModelConverter.convertModelToRuntimeModel(model);
+
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit instance defines several placeholder instances referring a same placeholder definition.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of placeholder duplication.
+     * </p>
+     */
+    @Test
+    public void error_duplicatedPlacholderInstance() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithPlaceholder();
+
+        final ServiceUnitInstance suInst = model.getBusModel().getBus().get(0).getContainerInstance().get(0)
+                .getServiceUnitInstance().get(0);
+        assertEquals("su-SOAP-Hello_Service1-provide", suInst.getRef());
+        final PlaceholderInstance placeholderInst = new PlaceholderInstance();
+        placeholderInst.setRef("placeholder-with-default-value");
+        placeholderInst.setValue("my-value");
+        suInst.getPlaceholderInstance().add(placeholderInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "Placeholder '%s' is duplicated in service unit instance referring to service unit definition '%s'",
+                placeholderInst.getRef(), suInst.getRef()), exception.getMessage());
+    }
+
+    /**
+     * <p>
      * Try to convert a model where the component repository part is missing.
      * </p>
      * <p>
@@ -347,6 +489,62 @@ public class ModelConverterTest {
      * Try to convert a model containing:
      * </p>
      * <ul>
+     * <li>a component definition is duplicated in the component repository.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the component duplication.
+     * </p>
+     */
+    @Test
+    public void error_duplicatedComponent() throws Exception {
+        final Model model = ModelUtils.generateTestModel();
+
+        final Component comp = new Component();
+        comp.setId("petals-bc-soap");
+        comp.setUrl(ModelUtils.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL().toString());
+        model.getComponentRepository().getComponentOrSharedLibrary().add(comp);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format("Duplicated component definition '%s' in the component repository", comp.getId()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a component instance is duplicated in the container model.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the component duplication.
+     * </p>
+     */
+    @Test
+    public void error_duplicatedComponentInstance() throws Exception {
+        final Model model = ModelUtils.generateTestModel();
+
+        final ComponentInstance duplicatedCompInst = new ComponentInstance();
+        duplicatedCompInst.setRef("petals-bc-soap");
+        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance()
+                .add(duplicatedCompInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format("Duplicated component instance referring to '%s'", duplicatedCompInst.getRef()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
      * <li>a component definition with an URL locating a ZIP archive that is not a JBI component archive.</li>
      * </ul>
      * <p>
@@ -394,6 +592,36 @@ public class ModelConverterTest {
         assertEquals(
                 String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive", bcSoap.getUrl()),
                 exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a shared library definition is duplicated in the component repository.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the shared library duplication.
+     * </p>
+     */
+    @Test
+    public void error_duplicatedSharedLibrary() throws Exception {
+        final Model model = ModelUtils.generateTestModelWithSharedLibrary();
+
+        final SharedLibrary sl = new SharedLibrary();
+        sl.setId("petals-sl-hsql-1.8.0.10");
+        sl.setVersion("1.0");
+        sl.setUrl(ModelUtils.class.getResource("/artifacts/petals-sl-hsql-1.8.0.10.zip").toURI().toURL().toString());
+        model.getComponentRepository().getComponentOrSharedLibrary().add(sl);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "Duplicated shared library definition '%s' with version '1.0' in the component repository", sl.getId(),
+                sl.getVersion()), exception.getMessage());
     }
 
     /**
