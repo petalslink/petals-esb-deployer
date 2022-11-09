@@ -23,6 +23,11 @@ import java.net.URL;
 import javax.validation.constraints.NotNull;
 
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
+import org.ow2.petals.deployer.utils.ModelDeployer;
+import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
+import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
+import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
+import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -34,6 +39,10 @@ public class RuntimeSharedLibrary implements Similar {
     private final String version;
 
     private URL url;
+
+    private transient Jbi jbiDescriptor = null;
+
+    private transient Object jbiDescriptorLock = new Object();
 
     public RuntimeSharedLibrary(@NotNull final String id, @NotNull final String version) {
         assert id != null;
@@ -63,6 +72,22 @@ public class RuntimeSharedLibrary implements Similar {
 
     public void setUrl(final URL url) {
         this.url = url;
+    }
+
+    public Jbi getJbiDescriptor() throws ModelValidationException {
+        synchronized (this.jbiDescriptorLock) {
+            if (this.jbiDescriptor == null) {
+                try {
+                    this.jbiDescriptor = JBIDescriptorBuilder.getInstance().buildJavaJBIDescriptorFromArchive(this.url,
+                            ModelDeployer.CONNECTION_TIMEOUT, ModelDeployer.READ_TIMEOUT);
+                } catch (final JBIDescriptorException e) {
+                    throw new ModelValidationException(String.format(
+                            "Unable to build the JBI descriptor of the shared library '%s' whith version '%s' from the ZIP archive located at '%s'",
+                            this.id, this.version, this.url), e);
+                }
+            }
+            return this.jbiDescriptor;
+        }
     }
 
     @Override

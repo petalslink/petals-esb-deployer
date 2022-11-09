@@ -441,6 +441,35 @@ public class ModelConverterTest {
      * Try to convert a model containing:
      * </p>
      * <ul>
+     * <li>a shared library definition with an URL locating a ZIP archive that is not a JBI shared library archive.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid ZIP archive.
+     * </p>
+     */
+    @Test
+    public void error_notSharedLibraryArchive() throws Exception {
+
+        final Model model = ModelUtils.generateTestModelWithSharedLibrary();
+
+        final SharedLibrary sl = (SharedLibrary) model.getComponentRepository().getComponentOrSharedLibrary().get(1);
+        assertEquals("petals-sl-hsql-1.8.0.10", sl.getId());
+        sl.setUrl(ModelUtils.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL().toString());
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(
+                String.format("The ZIP archive located at '%s' is not a JBI shared library ZIP archive", sl.getUrl()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
      * <li>a component instance referring to an unexisting component.</li>
      * </ul>
      * <p>

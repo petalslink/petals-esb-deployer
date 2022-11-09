@@ -230,6 +230,7 @@ public class ModelConverter {
                     runtimeSl = new RuntimeSharedLibrary(id, version, new URL(sl.getUrl()));
                     runtimeCont.addSharedLibrary(runtimeSl);
                 }
+                checkRuntimeSharedLibraryGlobalConfiguration(runtimeSl);
                 runtimeComp.addSharedLibrary(runtimeSl);
             }
 
@@ -324,6 +325,28 @@ public class ModelConverter {
             throw new ModelValidationException(
                     String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive",
                             runtimeComp.getUrl().toString()));
+        }
+    }
+
+    /**
+     * <p>
+     * Check the shared library configuration in a global point of view:
+     * </p>
+     * <ul>
+     * <li>The ZIP archive given by the URL must be a JBI shared library ZIP archive.</li>
+     * </ul>
+     * 
+     * @throws ModelValidationException
+     *             A model validation rule is violated.
+     */
+    private static void checkRuntimeSharedLibraryGlobalConfiguration(final RuntimeSharedLibrary runtimeSl)
+            throws ModelValidationException {
+
+        // The ZIP archive must be a JBI shared library ZIP archive
+        if (runtimeSl.getJbiDescriptor().getSharedLibrary() == null) {
+            throw new ModelValidationException(
+                    String.format("The ZIP archive located at '%s' is not a JBI shared library ZIP archive",
+                            runtimeSl.getUrl().toString()));
         }
     }
 
