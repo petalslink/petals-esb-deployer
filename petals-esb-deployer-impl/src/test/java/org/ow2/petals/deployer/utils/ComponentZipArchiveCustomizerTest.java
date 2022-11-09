@@ -39,7 +39,8 @@ public class ComponentZipArchiveCustomizerTest {
     public void customize() throws Exception {
 
         final RuntimeComponent runtimeComponent = new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL());
+                ComponentZipArchiveCustomizerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI()
+                        .toURL());
 
         final String slId = "my-sl-id";
         final String slVersion = "my-sl-version";

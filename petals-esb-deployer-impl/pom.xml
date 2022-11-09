@@ -76,9 +76,21 @@
          <artifactId>system-rules</artifactId>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-simple</artifactId>
+         <version>${slf4j.version}</version>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <build>
+      <testResources>
+         <testResource>
+            <directory>src/test/resources</directory>
+            <filtering>true</filtering>
+         </testResource>
+      </testResources>
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -88,11 +100,22 @@
                   <id>analyze</id>
                   <configuration>
                      <usedDependencies>
+                        <!-- Required at runtime -->
                         <usedDependency>org.ops4j.pax.url:pax-url-aether</usedDependency>
+                        <!-- Required at unit test runtime -->
+                        <usedDependency>org.slf4j:slf4j-simple</usedDependency>
                      </usedDependencies>
                   </configuration>
                </execution>
             </executions>
+         </plugin>
+         <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <configuration>
+               <nonFilteredFileExtensions>
+                  <nonFilteredFileExtension>zip</nonFilteredFileExtension>
+               </nonFilteredFileExtensions>
+            </configuration>
          </plugin>
       </plugins>
    </build>

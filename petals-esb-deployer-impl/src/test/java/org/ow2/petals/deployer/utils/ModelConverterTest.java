@@ -28,9 +28,12 @@ import java.util.Map.Entry;
 import org.junit.Test;
 import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
+import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ServiceUnitInstance;
+import org.ow2.petals.deployer.model.component_repository.xml._1.Component;
 import org.ow2.petals.deployer.model.component_repository.xml._1.ComponentRepository;
+import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnit;
 import org.ow2.petals.deployer.model.service_unit.xml._1.ServiceUnitModel;
 import org.ow2.petals.deployer.model.topology.xml._1.Container;
 import org.ow2.petals.deployer.model.topology.xml._1.Topology;
@@ -70,22 +73,26 @@ public class ModelConverterTest {
 
         RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service1-provide");
         assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
-        assertEquals("file:/artifacts/sa-SOAP-Hello_Service1-provide", su.getUrl().toString());
+        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service1-provide.zip").toString(),
+                su.getUrl().toString());
 
         su = cont.getServiceUnit("su-SOAP-Hello_Service2-provide");
         assertEquals("su-SOAP-Hello_Service2-provide", su.getId());
-        assertEquals("file:/artifacts/sa-SOAP-Hello_Service2-provide", su.getUrl().toString());
+        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service2-provide.zip").toString(),
+                su.getUrl().toString());
 
         su = cont.getServiceUnit("su-SOAP-Hello_PortType-consume");
         assertEquals("su-SOAP-Hello_PortType-consume", su.getId());
-        assertEquals("file:/artifacts/sa-SOAP-Hello_PortType-consume", su.getUrl().toString());
+        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toString(),
+                su.getUrl().toString());
 
         final Collection<RuntimeComponent> components = cont.getComponents();
         assertEquals(1, components.size());
 
         final RuntimeComponent comp = cont.getComponent("petals-bc-soap");
         assertEquals("petals-bc-soap", comp.getId());
-        assertEquals("file:/artifacts/petals-bc-soap-5.0.0", comp.getUrl().toString());
+        assertEquals(ModelConverterTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toString(),
+                comp.getUrl().toString());
     }
 
     @Test
@@ -102,23 +109,18 @@ public class ModelConverterTest {
         final Collection<RuntimeComponent> components = cont.getComponents();
         assertEquals(2, components.size());
 
-        final RuntimeComponent comp = cont.getComponent("id-comp-with-shared-library");
-        assertEquals("id-comp-with-shared-library", comp.getId());
-        assertEquals("file:dummy-comp-with-sl-file", comp.getUrl().toString());
+        final RuntimeComponent comp = cont.getComponent("petals-bc-sql-with-shared-libraries");
+        assertEquals("petals-bc-sql-with-shared-libraries", comp.getId());
+        assertEquals(ModelUtils.class.getResource("/artifacts/petals-bc-sql-with-shared-libraries.zip").toURI().toURL()
+                .toString(), comp.getUrl().toString());
 
         assertEquals(1, comp.getSharedLibraries().size());
 
-        final RuntimeSharedLibrary slFromCont = cont.getSharedLibrary("id-shared-library", "1.0");
-        assertEquals("id-shared-library", slFromCont.getId());
+        final RuntimeSharedLibrary slFromCont = cont.getSharedLibrary("petals-sl-hsql-1.8.0.10", "1.0");
+        assertEquals("petals-sl-hsql-1.8.0.10", slFromCont.getId());
         assertEquals("1.0", slFromCont.getVersion());
-        assertEquals("file:dummy-sl-file", slFromCont.getUrl().toString());
-
-        assertEquals(1, cont.getSharedLibraries().size());
-
-        final RuntimeSharedLibrary slFromComp = cont.getSharedLibrary("id-shared-library", "1.0");
-        assertEquals("id-shared-library", slFromComp.getId());
-        assertEquals("1.0", slFromComp.getVersion());
-        assertEquals("file:dummy-sl-file", slFromComp.getUrl().toString());
+        assertEquals(ModelUtils.class.getResource("/artifacts/petals-sl-hsql-1.8.0.10.zip").toURI().toURL().toString(),
+                slFromCont.getUrl().toString());
     }
 
     @Test
@@ -133,11 +135,13 @@ public class ModelConverterTest {
         final RuntimeContainer cont = containers.iterator().next();
 
         final Collection<RuntimeComponent> components = cont.getComponents();
-        assertEquals(2, components.size());
+        assertEquals(1, components.size());
 
-        final RuntimeComponent comp = cont.getComponent("id-comp-with-parameter");
-        assertEquals("id-comp-with-parameter", comp.getId());
-        assertEquals("file:dummy-comp-with-parameter", comp.getUrl().toString());
+        final RuntimeComponent comp = cont.getComponent("petals-bc-soap");
+        assertEquals("petals-bc-soap", comp.getId());
+        assertEquals(
+                ModelConverterTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL().toString(),
+                comp.getUrl().toString());
 
         Map<String, String> parameters = comp.getParameters();
         assertEquals(1, parameters.size());
@@ -159,19 +163,29 @@ public class ModelConverterTest {
         final RuntimeContainer cont = containers.iterator().next();
 
         final Collection<RuntimeServiceUnit> serviceunits = cont.getServiceUnits();
-        assertEquals(4, serviceunits.size());
+        assertEquals(3, serviceunits.size());
 
-        final RuntimeServiceUnit su = cont.getServiceUnit("id-su-with-placeholder");
-        assertEquals("id-su-with-placeholder", su.getId());
-        assertEquals("file:dummy-su-with-placeholder", su.getUrl().toString());
+        final RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service1-provide");
+        assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
 
-        Map<String, String> placeholders = su.getPlaceholders();
+        final Map<String, String> placeholders = su.getPlaceholders();
         assertEquals(1, placeholders.size());
-        Entry<String, String> placeholder = placeholders.entrySet().iterator().next();
+        final Entry<String, String> placeholder = placeholders.entrySet().iterator().next();
         assertEquals("placeholder-with-default-value", placeholder.getKey());
         assertEquals("overridden-value", placeholder.getValue());
     }
 
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit instance defines a placeholder instance referring an unexisting placeholder definition.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of unexisting placeholder definition.
+     * </p>
+     */
     @Test
     public void error_missingPlacholder() throws Exception {
         final Model model = ModelUtils.generateTestModelWithMissingPlaceholder();
@@ -184,6 +198,14 @@ public class ModelConverterTest {
                 exception.getMessage());
     }
 
+    /**
+     * <p>
+     * Try to convert a model where the component repository part is missing.
+     * </p>
+     * <p>
+     * Expected results: an error is thrown because of the missing component repository.
+     * </p>
+     */
     @Test
     public void error_componentRepositoryMissing() throws Exception {
         final Model model = new Model();
@@ -199,6 +221,14 @@ public class ModelConverterTest {
         assertEquals("The component repository definition is missing in the model.", exception.getMessage());
     }
 
+    /**
+     * <p>
+     * Try to convert a model where the topology model part is missing.
+     * </p>
+     * <p>
+     * Expected results: an error is thrown because of the missing topology model.
+     * </p>
+     */
     @Test
     public void error_topologyModelMissing() throws Exception {
         final Model model = new Model();
@@ -214,6 +244,14 @@ public class ModelConverterTest {
         assertEquals("The topology model is missing in the model.", exception.getMessage());
     }
 
+    /**
+     * <p>
+     * Try to convert a model where the topology model part is empty.
+     * </p>
+     * <p>
+     * Expected results: an error is thrown because of the empty topology model.
+     * </p>
+     */
     @Test
     public void error_topologyModelEmpty() throws Exception {
         final Model model = new Model();
@@ -229,6 +267,14 @@ public class ModelConverterTest {
         assertEquals("The topology model is empty in the model.", exception.getMessage());
     }
 
+    /**
+     * <p>
+     * Try to convert a model where the bus model part is missing.
+     * </p>
+     * <p>
+     * Expected results: an error is thrown because of the missing bus model.
+     * </p>
+     */
     @Test
     public void error_busModelMissing() throws Exception {
         final Model model = new Model();
@@ -248,6 +294,119 @@ public class ModelConverterTest {
         assertEquals("The bus model definition is missing in the model.", exception.getMessage());
     }
 
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a component instance referring to an unexisting component.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the unexisting component definition.
+     * </p>
+     */
+    @Test
+    public void error_componentMissing() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        model.setComponentRepository(new ComponentRepository());
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel("my-topo", "my-cont"));
+
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ComponentInstance compInst = new ComponentInstance();
+        compInst.setRef("unexisting-comp");
+        contInst.getComponentInstance().add(compInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "Component reference '%s' of a component instance has no definition in the component repository of the model",
+                "unexisting-comp"), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a component definition with an URL locating a ZIP archive that is not a JBI component archive.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid ZIP archive.
+     * </p>
+     */
+    @Test
+    public void error_notComponentArchive() throws Exception {
+        final Model model = new Model();
+        model.setServiceUnitModel(new ServiceUnitModel());
+        final ComponentRepository compRepo = new ComponentRepository();
+        model.setComponentRepository(compRepo);
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel("my-topo", "my-cont"));
+
+        final Component bcSoap = new Component();
+        bcSoap.setId("petals-bc-soap");
+        bcSoap.setUrl(ModelUtils.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL().toString());
+        compRepo.getComponentOrSharedLibrary().add(bcSoap);
+
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ComponentInstance compInst = new ComponentInstance();
+        compInst.setRef(bcSoap.getId());
+        contInst.getComponentInstance().add(compInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(
+                String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive", bcSoap.getUrl()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit instance referring to an unexisting service unit.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the unexisting service unit definition.
+     * </p>
+     */
     @Test
     public void error_serviceUnitDefinitionMissing() throws Exception {
         final Model model = new Model();
@@ -283,5 +442,328 @@ public class ModelConverterTest {
                 "Service unit reference '" + suId
                         + "' of a service unit instance has no definition in the service unit model",
                 exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP archive that is not a JBI service assembly archive.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid ZIP archive.
+     * </p>
+     */
+    @Test
+    public void error_notServiceUnitArchiveAsServiceAssembly() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("my-su");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL().toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(
+                String.format("The ZIP archive located at '%s' is not a JBI service unit ZIP archive", su.getUrl()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP archive that is a JBI service unit archive but not
+     * autodeployable.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid ZIP archive.
+     * </p>
+     */
+    @Test
+    public void error_notServiceUnitArchiveAsAutodeployable() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("my-su");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/su-SOAP-Hello_PortType-consume.zip").toURI().toURL()
+                .toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(
+                String.format("The ZIP archive located at '%s' is not a JBI service unit ZIP archive", su.getUrl()),
+                exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP service assembly archive,</li>
+     * <li>no service unit with the given identifier exists in the ZIP archive.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid service unit identifier.
+     * </p>
+     */
+    @Test
+    public void error_invalidServiceUnitIdAsServiceAssembly() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("my-su");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL().toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format("The service unit '%s' is not defined in the given ZIP archive '%s'", su.getId(),
+                su.getUrl()), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP audeployable service unit archive,</li>
+     * <li>the service unit identifier of the ZIP archive does not match the service unit identifier of the model.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the invalid service unit identifier.
+     * </p>
+     */
+    @Test
+    public void error_invalidServiceUnitIdAsAutodeployable() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("my-su");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/su-SOAP-Hello_Service1-provide.zip").toURI().toURL()
+                .toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(String.format("The service unit '%s' is not defined in the given ZIP archive '%s'",
+                su.getId(), su.getUrl())), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP service assembly archive,</li>
+     * <li>the service unit target component is not referenced by the current container to be deployed.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the missing component required by the service unit.
+     * </p>
+     */
+    @Test
+    public void error_unexistingTargetComponentAsServiceAssembly() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("su-SQL");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL().toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "The target component of the service unit '%s' located at '%s' is not defined to be deployed on container '%s'",
+                su.getId(), su.getUrl(), contId), exception.getMessage());
+    }
+
+    /**
+     * <p>
+     * Try to convert a model containing:
+     * </p>
+     * <ul>
+     * <li>a service unit definition with an URL locating a ZIP audeployable service unit archive,</li>
+     * <li>the service unit target component is not referenced by the current container to be deployed.</li>
+     * </ul>
+     * <p>
+     * Expected results: an error is thrown because of the missing component required by the service unit.
+     * </p>
+     */
+    @Test
+    public void error_unexistingTargetComponentAsAutodeployable() throws Exception {
+        final Model model = new Model();
+        final ServiceUnitModel suModel = new ServiceUnitModel();
+
+        final ServiceUnit su = new ServiceUnit();
+        su.setId("su-SQL");
+        su.setUrl(ModelUtils.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL().toString());
+        suModel.getServiceUnit().add(su);
+
+        model.setServiceUnitModel(suModel);
+        model.setComponentRepository(new ComponentRepository());
+        final String topoId = "my-topo";
+        final String contId = "my-cont";
+        model.setTopologyModel(ModelUtils.generateTestTopologyModel(topoId, contId));
+        final BusModel busModel = new BusModel();
+        model.setBusModel(busModel);
+        final String machineId = "my-machine";
+        busModel.getMachine().add(ModelUtils.generateTestProvisionedMachine(machineId));
+
+        final Bus bus = new Bus();
+        bus.setTopologyRef(topoId);
+        busModel.getBus().add(bus);
+
+        final ContainerInstance contInst = new ContainerInstance();
+        contInst.setRef(contId);
+        contInst.setMachineRef(machineId);
+        bus.getContainerInstance().add(contInst);
+
+        final ServiceUnitInstance suInst = new ServiceUnitInstance();
+        suInst.setRef(su.getId());
+        contInst.getServiceUnitInstance().add(suInst);
+
+        final Exception exception = assertThrows(ModelValidationException.class, () -> {
+            ModelConverter.convertModelToRuntimeModel(model);
+        });
+
+        assertEquals(String.format(
+                "The target component of the service unit '%s' located at '%s' is not defined to be deployed on container '%s'",
+                su.getId(), su.getUrl(), contId), exception.getMessage());
     }
 }

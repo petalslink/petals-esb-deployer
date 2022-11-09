@@ -53,9 +53,11 @@ import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerExcept
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
+import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
+import org.ow2.petals.jbi.descriptor.extension.JBIDescriptorExtensionBuilder;
 
 /**
- * This is an utility class and should not be instanciated.
+ * This is an utility class and should not be instantiated.
  * 
  * @author Alexandre Lagane - Linagora
  */
@@ -64,6 +66,20 @@ public class ModelConverter {
     private ModelConverter() {
     }
 
+    /**
+     * <p>
+     * Convert a {@link Model} into {@link RuntimeModel} to prepare its deployment.
+     * </p>
+     * <p>
+     * During conversion, validation rules are checked to prevent errors during deployment.
+     * </p>
+     * 
+     * @param model
+     *            The {@link Model} to convert
+     * @return The model converted into {@link RuntimeModel}
+     * @throws ModelValidationException
+     *             A model validation rule is violated
+     */
     @NotNull
     public static RuntimeModel convertModelToRuntimeModel(@NotNull final Model model)
             throws ModelValidationException {
@@ -157,8 +173,7 @@ public class ModelConverter {
 
             convertServiceUnitsToRuntimeServiceUnits(contInst, runtimeCont, suById);
 
-            // TODO: Check that all component required by service unit are defined
-            // TODO: Check that only one value is defined per placeholder on each component of this container
+            checkRuntimeContainerGlobalConfiguration(runtimeCont);
 
         } catch (final DuplicatedContainerException e) {
             throw new ModelValidationException(e);
@@ -204,6 +219,8 @@ public class ModelConverter {
                 }
                 runtimeComp.addSharedLibrary(runtimeSl);
             }
+
+            checkRuntimeComponentGlobalConfiguration(runtimeComp);
             runtimeCont.addComponent(runtimeComp);
         } catch (final MalformedURLException | DuplicatedSharedLibraryException | DuplicatedComponentException e) {
             throw new ModelValidationException(e);
@@ -244,9 +261,147 @@ public class ModelConverter {
                 }
                 runtimeSu.setPlaceholderValue(placeholderInst.getRef(), placeholderInst.getValue());
             }
+            checkRuntimeServiceUnitGlobalConfiguration(runtimeSu, runtimeCont);
             runtimeCont.addServiceUnit(runtimeSu);
         } catch (final MalformedURLException | DuplicatedServiceUnitException e) {
             throw new ModelValidationException(e);
         }
+    }
+
+    /**
+     * <p>
+     * Check the runtime component configuration in a global point of view:
+     * </p>
+     * <ul>
+     * <li>The ZIP archive given by the URL must be a JBI component ZIP archive,</li>
+     * <li>TODO: Check that all parameters given are defined at JBI component ZIP archive level.</li>
+     * </ul>
+     * 
+     * @throws ModelValidationException
+     *             A model validation rule is violated.
+     */
+    private static void checkRuntimeComponentGlobalConfiguration(final RuntimeComponent runtimeComp)
+            throws ModelValidationException {
+
+            // The ZIP archive must be a JBI component ZIP archive
+            if (runtimeComp.getJbiDescriptor().getComponent() == null) {
+                throw new ModelValidationException(
+                        String.format("The ZIP archive located at '%s' is not a JBI component ZIP archive",
+                                runtimeComp.getUrl().toString()));
+            }
+    }
+
+    /**
+     * <p>
+     * Check the runtime service unit configuration in a global point of view:
+     * </p>
+     * <ul>
+     * <li>The ZIP archive given by the URL must be a JBI service assembly ZIP archive or a auto-deployable JBI service
+     * unit ZIP archive,</li>
+     * <li>The service unit id in the model must match the service unit identifier in ZIP archive,</li>
+     * <li>The target component must exist in the model definition of the container running the service unit.</li>
+     * </ul>
+     * 
+     * @param runtimeServiceUnit
+     *            The runtime service unit to validate
+     * @param runtimeCont
+     *            The runtime container on which the runtime service will run
+     * @throws ModelValidationException
+     *             A model validation rule is violated.
+     */
+    private static void checkRuntimeServiceUnitGlobalConfiguration(final RuntimeServiceUnit runtimeServiceUnit,
+            final RuntimeContainer runtimeCont)
+            throws ModelValidationException {
+
+        boolean isAutodeployableSu = false;
+        try {
+            JBIDescriptorExtensionBuilder.getInstance()
+                    .getDeployableServiceUnitIndentification(runtimeServiceUnit.getJbiDescriptor());
+            isAutodeployableSu = true;
+        } catch (final JBIDescriptorException e) {
+            isAutodeployableSu = false;
+        }
+
+        // The ZIP archive must be a JBI service assembly ZIP archive or a auto-deployable JBI service unit ZIP archive
+        if (runtimeServiceUnit.getJbiDescriptor().getServiceAssembly() == null && !isAutodeployableSu) {
+            throw new ModelValidationException(
+                    String.format("The ZIP archive located at '%s' is not a JBI service unit ZIP archive",
+                            runtimeServiceUnit.getUrl().toString()));
+        }
+        
+        // The service unit id in the model must match the service unit identifier in ZIP archive
+        String targetComponent = null;
+        try {
+            if (isAutodeployableSu) {
+                // Service unit provided through a auto-deploayble service unit
+                if (runtimeServiceUnit.getId().equals(JBIDescriptorExtensionBuilder.getInstance()
+                        .getDeployableServiceUnitIndentification(runtimeServiceUnit.getJbiDescriptor()).getName())) {
+                    targetComponent = JBIDescriptorExtensionBuilder.getInstance()
+                            .getDeployableServiceUnitTargetComponent(runtimeServiceUnit.getJbiDescriptor());
+                } else {
+                    throw new ModelValidationException(
+                            String.format("The service unit '%s' is not defined in the given ZIP archive '%s'",
+                                    runtimeServiceUnit.getId(), runtimeServiceUnit.getUrl().toString()));
+                }
+            } else {
+                // Service unit provided through a service assembly
+                boolean serviceUnitFound = false;
+                for (final org.ow2.petals.jbi.descriptor.original.generated.ServiceUnit serviceUnit : runtimeServiceUnit.getJbiDescriptor().getServiceAssembly().getServiceUnit()) {
+                    if (runtimeServiceUnit.getId().equals(serviceUnit.getIdentification().getName())) {
+                        serviceUnitFound = true;
+                        targetComponent = serviceUnit.getTarget().getComponentName();
+                        break;
+                    }
+                }
+                if (!serviceUnitFound) {
+                    throw new ModelValidationException(
+                            String.format("The service unit '%s' is not defined in the given ZIP archive '%s'",
+                                    runtimeServiceUnit.getId(), runtimeServiceUnit.getUrl().toString()));
+                }
+            }
+        } catch (final JBIDescriptorException e) {
+            throw new ModelValidationException(String.format(
+                    "Unexpected error because it should have happened sooner checking if the service unit '%s' is auto-deployable.",
+                    runtimeServiceUnit.getId()));
+        }
+
+        if (targetComponent == null) {
+            // This error should not occur because the target component should be set previously
+            throw new ModelValidationException(String.format(
+                    "The target component of the service unit '%s' located at '%s' is not identified in ZIP archive",
+                    runtimeServiceUnit.getId(), runtimeServiceUnit.getUrl().toString()));
+        }
+
+        // The target component exists in the model definition of the container running the service unit
+        boolean targetCompFound = false;
+        for (final RuntimeComponent runtimeComp : runtimeCont.getComponents()) {
+            assert runtimeComp.getJbiDescriptor().getComponent() != null;
+            assert runtimeComp.getJbiDescriptor().getComponent().getIdentification() != null;
+            assert runtimeComp.getJbiDescriptor().getComponent().getIdentification().getName() != null;
+            
+            if (targetComponent.equals(runtimeComp.getJbiDescriptor().getComponent().getIdentification().getName())) {
+                targetCompFound = true;
+                break;
+            }
+        }
+        if (!targetCompFound) {
+            throw new ModelValidationException(String.format(
+                    "The target component of the service unit '%s' located at '%s' is not defined to be deployed on container '%s'",
+                    runtimeServiceUnit.getId(), runtimeServiceUnit.getUrl().toString(), runtimeCont.getId()));
+        }
+
+    }
+
+    /**
+     * <p>
+     * Check the runtime container configuration is global point of view:
+     * </p>
+     * <ul>
+     * <li>TODO: Check that all component required by service unit are defined</li>
+     * <li>TODO: Check that only one value is defined per placeholder on each component of this container</li>
+     * </ul>
+     */
+    private static void checkRuntimeContainerGlobalConfiguration(final RuntimeContainer runtimeCont) {
+        // TODO
     }
 }

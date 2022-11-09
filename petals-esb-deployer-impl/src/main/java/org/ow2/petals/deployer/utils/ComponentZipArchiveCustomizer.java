@@ -53,8 +53,9 @@ public class ComponentZipArchiveCustomizer implements ZipArchiveCustomizer {
         try {
             ZipEntry zipEntry;
             while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-                zipOutputStream.putNextEntry(zipEntry);
                 if (zipEntry.getName().equals(JBIDescriptorBuilder.JBI_DESCRIPTOR_RESOURCE_IN_ARCHIVE)) {
+                    zipOutputStream.putNextEntry(new ZipEntry(zipEntry.getName()));
+
                     // Hack to avoid to close the input stream at XML parser level (see note about
                     // JBIDescriptorBuilder.buildJavaJBIDescriptor())
                     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -64,6 +65,7 @@ public class ComponentZipArchiveCustomizer implements ZipArchiveCustomizer {
                     this.updateJBIDescriptor(compJbi);
                     JBIDescriptorBuilder.getInstance().writeXMLJBIdescriptor(compJbi, zipOutputStream);
                 } else {
+                    zipOutputStream.putNextEntry(new ZipEntry(zipEntry));
                     IOUtils.copy(zipInputStream, zipOutputStream);
                 }
                 zipInputStream.closeEntry();

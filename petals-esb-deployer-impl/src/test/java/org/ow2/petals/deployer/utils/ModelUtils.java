@@ -18,6 +18,10 @@
 
 package org.ow2.petals.deployer.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -66,7 +70,7 @@ public class ModelUtils {
 
         final Component bcSoap = new Component();
         bcSoap.setId("petals-bc-soap");
-        bcSoap.setUrl("file:/artifacts/petals-bc-soap-5.0.0");
+        bcSoap.setUrl(ModelUtils.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL().toString());
         compRepo.getComponentOrSharedLibrary().add(bcSoap);
 
         /* Service Unit Model */
@@ -78,17 +82,20 @@ public class ModelUtils {
 
         final ServiceUnit suProv1 = new ServiceUnit();
         suProv1.setId("su-SOAP-Hello_Service1-provide");
-        suProv1.setUrl("file:/artifacts/sa-SOAP-Hello_Service1-provide");
+        suProv1.setUrl(ModelUtils.class.getResource("/artifacts/sa-SOAP-Hello_Service1-provide.zip").toURI().toURL()
+                .toString());
         serviceUnits.add(suProv1);
 
         final ServiceUnit suProv2 = new ServiceUnit();
         suProv2.setId("su-SOAP-Hello_Service2-provide");
-        suProv2.setUrl("file:/artifacts/sa-SOAP-Hello_Service2-provide");
+        suProv2.setUrl(ModelUtils.class.getResource("/artifacts/sa-SOAP-Hello_Service2-provide.zip").toURI().toURL()
+                .toString());
         serviceUnits.add(suProv2);
 
         final ServiceUnit suCons = new ServiceUnit();
         suCons.setId("su-SOAP-Hello_PortType-consume");
-        suCons.setUrl("file:/artifacts/sa-SOAP-Hello_PortType-consume");
+        suCons.setUrl(ModelUtils.class.getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toURI().toURL()
+                .toString());
         serviceUnits.add(suCons);
 
         /* Topology Model */
@@ -166,10 +173,10 @@ public class ModelUtils {
         final ComponentRepository compRepo = new ComponentRepository();
         model.setComponentRepository(compRepo);
 
-        final Component dummyMavenComp = new Component();
-        dummyMavenComp.setId("dummy-maven-comp");
-        dummyMavenComp.setUrl("mvn:dummy-maven-comp");
-        compRepo.getComponentOrSharedLibrary().add(dummyMavenComp);
+        final Component mavenComp = new Component();
+        mavenComp.setId("petals-bc-rest");
+        mavenComp.setUrl("mvn:org.ow2.petals/petals-bc-rest/2.0.0/zip");
+        compRepo.getComponentOrSharedLibrary().add(mavenComp);
 
         /* Service Unit Model */
 
@@ -178,10 +185,10 @@ public class ModelUtils {
 
         final List<ServiceUnit> serviceUnits = suModel.getServiceUnit();
 
-        final ServiceUnit dummyMavenSu = new ServiceUnit();
-        dummyMavenSu.setId("dummy-maven-su");
-        dummyMavenSu.setUrl("mvn:dummy-maven-su");
-        serviceUnits.add(dummyMavenSu);
+        final ServiceUnit mavenSu = new ServiceUnit();
+        mavenSu.setId("su-rest-edm-provide-1.3.0-1.0.0");
+        mavenSu.setUrl("mvn:org.ow2.petals.samples.rest.edm/sa-proxy-rest-edm/1.3.0-1.0.0/zip");
+        serviceUnits.add(mavenSu);
 
         /* Topology Model */
         final String topoId = "topo1";
@@ -205,15 +212,15 @@ public class ModelUtils {
         contInst.setMachineRef(machineId);
         bus.getContainerInstance().add(contInst);
 
-        final ComponentInstance dummyMavenCompInst = new ComponentInstance();
-        dummyMavenCompInst.setRef(dummyMavenComp.getId());
-        contInst.getComponentInstance().add(dummyMavenCompInst);
+        final ComponentInstance mavenCompInst = new ComponentInstance();
+        mavenCompInst.setRef(mavenComp.getId());
+        contInst.getComponentInstance().add(mavenCompInst);
 
         final List<ServiceUnitInstance> suInstances = contInst.getServiceUnitInstance();
 
-        ServiceUnitInstance dummyMavenSuInst = new ServiceUnitInstance();
-        dummyMavenSuInst.setRef(dummyMavenSu.getId());
-        suInstances.add(dummyMavenSuInst);
+        final ServiceUnitInstance mavenSuInst = new ServiceUnitInstance();
+        mavenSuInst.setRef(mavenSu.getId());
+        suInstances.add(mavenSuInst);
 
         return model;
     }
@@ -222,16 +229,17 @@ public class ModelUtils {
             throws MalformedURLException, IOException, URISyntaxException {
         final Model model = generateTestModel();
 
-        SharedLibrary sl = new SharedLibrary();
-        sl.setId("id-shared-library");
+        final SharedLibrary sl = new SharedLibrary();
+        sl.setId("petals-sl-hsql-1.8.0.10");
         sl.setVersion("1.0");
-        sl.setUrl("file:dummy-sl-file");
+        sl.setUrl(ModelUtils.class.getResource("/artifacts/petals-sl-hsql-1.8.0.10.zip").toURI().toURL().toString());
         model.getComponentRepository().getComponentOrSharedLibrary().add(sl);
 
-        Component comp = new Component();
-        comp.setId("id-comp-with-shared-library");
-        comp.setUrl("file:dummy-comp-with-sl-file");
-        SharedLibraryReference slRef = new SharedLibraryReference();
+        final Component comp = new Component();
+        comp.setId("petals-bc-sql-with-shared-libraries");
+        comp.setUrl(ModelUtils.class.getResource("/artifacts/petals-bc-sql-with-shared-libraries.zip").toURI().toURL()
+                .toString());
+        final SharedLibraryReference slRef = new SharedLibraryReference();
         slRef.setRefId(sl.getId());
         slRef.setRefVersion(sl.getVersion());
         comp.getSharedLibraryReference().add(slRef);
@@ -244,26 +252,25 @@ public class ModelUtils {
         return model;
     }
 
-    public static Model generateTestModelWithParameter()
-            throws MalformedURLException, IOException, URISyntaxException {
+    public static Model generateTestModelWithParameter() throws MalformedURLException, IOException, URISyntaxException {
         final Model model = generateTestModel();
 
-        Component comp = new Component();
-        comp.setId("id-comp-with-parameter");
-        comp.setUrl("file:dummy-comp-with-parameter");
-        Parameter param = new Parameter();
+        final Object compObj = model.getComponentRepository().getComponentOrSharedLibrary().get(0);
+        assertNotNull(compObj);
+        assertTrue(compObj instanceof Component);
+        final Component comp = (Component) compObj;
+        final Parameter param = new Parameter();
         param.setName("param-with-default-value");
         param.setValue("default-value");
         comp.getParameter().add(param);
-        model.getComponentRepository().getComponentOrSharedLibrary().add(comp);
 
-        ComponentInstance compInst = new ComponentInstance();
-        compInst.setRef(comp.getId());
+        final ComponentInstance compInst = model.getBusModel().getBus().get(0).getContainerInstance().get(0)
+                .getComponentInstance().get(0);
+        assertNotNull(compInst);
         ParameterInstance paramInst = new ParameterInstance();
         paramInst.setRef(param.getName());
         paramInst.setValue("overridden-value");
         compInst.getParameterInstance().add(paramInst);
-        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getComponentInstance().add(compInst);
 
         return model;
     }
@@ -272,22 +279,20 @@ public class ModelUtils {
             throws MalformedURLException, IOException, URISyntaxException {
         final Model model = generateTestModel();
 
-        final ServiceUnit su = new ServiceUnit();
-        su.setId("id-su-with-placeholder");
-        su.setUrl("file:dummy-su-with-placeholder");
+        final ServiceUnit su = model.getServiceUnitModel().getServiceUnit().get(0);
+        assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
         final Placeholder placeholder = new Placeholder();
         placeholder.setName("placeholder-with-default-value");
         placeholder.setValue("default-value");
         su.getPlaceholder().add(placeholder);
-        model.getServiceUnitModel().getServiceUnit().add(su);
 
-        final ServiceUnitInstance suInst = new ServiceUnitInstance();
-        suInst.setRef(su.getId());
+        final ServiceUnitInstance suInst = model.getBusModel().getBus().get(0).getContainerInstance().get(0)
+                .getServiceUnitInstance().get(0);
+        assertEquals("su-SOAP-Hello_Service1-provide", suInst.getRef());
         final PlaceholderInstance placeholderInst = new PlaceholderInstance();
         placeholderInst.setRef(placeholder.getName());
         placeholderInst.setValue("overridden-value");
         suInst.getPlaceholderInstance().add(placeholderInst);
-        model.getBusModel().getBus().get(0).getContainerInstance().get(0).getServiceUnitInstance().add(suInst);
 
         return model;
     }

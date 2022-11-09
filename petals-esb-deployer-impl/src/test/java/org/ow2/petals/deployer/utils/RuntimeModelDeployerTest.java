@@ -44,7 +44,7 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 /**
  * @author Alexandre Lagane - Linagora
  */
-public class RuntimeModelDeployerTest {
+public class RuntimeModelDeployerTest extends ModelUtils {
 
     final public static State CONTAINER_STATE = State.REACHABLE;
 
@@ -165,13 +165,13 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service1-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_Service2-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL()));
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-Hello_Service1-provide.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-Hello_Service2-provide.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toURI().toURL()));
 
         return model;
     }
@@ -182,13 +182,13 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-hello-services-provide").toURI().toURL()));
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-hello-services-provide.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-hello-services-provide.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-hello-services-provide.zip").toURI().toURL()));
 
         return model;
     }
@@ -199,13 +199,11 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_Service1-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide",
-                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_Service2-provide").toURI().toURL()));
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
-                ZipUtils.createZipFromResourceDirectory("artifacts/su-SOAP-Hello_PortType-consume").toURI().toURL()));
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service1-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/su-SOAP-Hello_Service1-provide.zip").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_Service2-provide", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/su-SOAP-Hello_Service2-provide.zip").toURI().toURL()));
 
         return model;
     }
@@ -216,20 +214,20 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_JMX_PORT, ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(container);
         container.addServiceUnit(new RuntimeServiceUnit("su-SQL",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SQL").toURI().toURL()));
+                RuntimeModelDeployerTest.class.getResource("/artifacts/sa-SQL.zip").toURI().toURL()));
 
-        final RuntimeComponent component = new RuntimeComponent("petals-bc-sql", ZipUtils
-                .createZipFromResourceDirectory("artifacts/petals-bc-sql-with-shared-libraries").toURI().toURL());
+        final RuntimeComponent component = new RuntimeComponent("petals-bc-sql", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/petals-bc-sql-with-shared-libraries.zip").toURI().toURL());
         container.addComponent(component);
 
         RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("petals-sl-hsql", "1.8.0.10",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-sl-hsql-1.8.0.10").toURI().toURL());
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-sl-hsql-1.8.0.10.zip").toURI().toURL());
         container.addSharedLibrary(sl1);
         component.addSharedLibrary(sl1);
 
         RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("petals-sl-sqlserver-6.1.0.jre7", "1.0.0-SNAPSHOT",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT")
-                        .toURI().toURL());
+                RuntimeModelDeployerTest.class
+                        .getResource("/artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT.zip").toURI().toURL());
         container.addSharedLibrary(sl2);
         component.addSharedLibrary(sl2);
 
@@ -242,12 +240,12 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
         RuntimeComponent comp = new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL());
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL());
         comp.setParameterValue("param1", "value1");
         comp.setParameterValue("param2", "value2");
         cont.addComponent(comp);
-        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL()));
+        cont.addServiceUnit(new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume", RuntimeModelDeployerTest.class
+                .getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toURI().toURL()));
 
         return model;
     }
@@ -258,9 +256,10 @@ public class RuntimeModelDeployerTest {
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
         cont.addComponent(new RuntimeComponent("petals-bc-soap",
-                ZipUtils.createZipFromResourceDirectory("artifacts/petals-bc-soap-5.0.0").toURI().toURL()));
+                RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL()));
         final RuntimeServiceUnit su = new RuntimeServiceUnit("su-SOAP-Hello_PortType-consume",
-                ZipUtils.createZipFromResourceDirectory("artifacts/sa-SOAP-Hello_PortType-consume").toURI().toURL());
+                RuntimeModelDeployerTest.class.getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toURI()
+                        .toURL());
         su.setPlaceholderValue("param1", "value1");
         su.setPlaceholderValue("param2", "value2");
         cont.addServiceUnit(su);

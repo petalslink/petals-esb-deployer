@@ -28,6 +28,11 @@ import javax.validation.constraints.NotNull;
 
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
+import org.ow2.petals.deployer.utils.ModelDeployer;
+import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
+import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
+import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
+import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -41,6 +46,10 @@ public class RuntimeComponent implements Similar {
     private final Map<String, String> parameters;
 
     private final Map<RuntimeSharedLibrary.IdAndVersion, RuntimeSharedLibrary> sharedLibraries = new HashMap<>();
+
+    private transient Jbi jbiDescriptor = null;
+
+    private transient Object jbiDescriptorLock = new Object();
 
     public RuntimeComponent(@NotNull final String id) {
         assert id != null;
@@ -115,6 +124,22 @@ public class RuntimeComponent implements Similar {
     @NotNull
     public Collection<RuntimeSharedLibrary> getSharedLibraries() {
         return Collections.unmodifiableCollection(this.sharedLibraries.values());
+    }
+
+    public Jbi getJbiDescriptor() throws ModelValidationException {
+        synchronized (this.jbiDescriptorLock) {
+            if (this.jbiDescriptor == null) {
+                try {
+                    this.jbiDescriptor = JBIDescriptorBuilder.getInstance().buildJavaJBIDescriptorFromArchive(this.url,
+                            ModelDeployer.CONNECTION_TIMEOUT, ModelDeployer.READ_TIMEOUT);
+                } catch (final JBIDescriptorException e) {
+                    throw new ModelValidationException(String.format(
+                            "Unable to build the JBI descriptor of the component '%s' from the ZIP archive located at '%s'",
+                            this.id, this.url), e);
+                }
+            }
+            return this.jbiDescriptor;
+        }
     }
 
     @Override

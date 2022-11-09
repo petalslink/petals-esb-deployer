@@ -19,18 +19,18 @@
 <ns2:model xmlns="http://petals.ow2.org/deployer/model/service-unit/xml/1.0" xmlns:ns2="http://petals.ow2.org/deployer/model/xml/1.0" xmlns:ns3="http://petals.ow2.org/deployer/model/component-repository/xml/1.0" xmlns:ns4="http://petals.ow2.org/deployer/model/topology/xml/1.0" xmlns:ns5="http://petals.ow2.org/deployer/model/bus/xml/1.0">
     <ns2:service-unit-model>
         <service-unit id="su-SOAP-Hello_Service1-provide">
-            <url>file:/artifacts/sa-SOAP-Hello_Service1-provide</url>
+            <url>file://${project.build.directory}/test-classes/artifacts/sa-SOAP-Hello_Service1-provide.zip</url>
         </service-unit>
         <service-unit id="su-SOAP-Hello_Service2-provide">
-            <url>file:/artifacts/sa-SOAP-Hello_Service2-provide</url>
+            <url>file://${project.build.directory}/test-classes/artifacts/sa-SOAP-Hello_Service2-provide.zip</url>
         </service-unit>
         <service-unit id="su-SOAP-Hello_PortType-consume">
-            <url>file:/artifacts/sa-SOAP-Hello_PortType-consume</url>
+            <url>file://${project.build.directory}/test-classes/artifacts/sa-SOAP-Hello_PortType-consume.zip</url>
         </service-unit>
     </ns2:service-unit-model>
     <ns2:component-repository>
         <ns3:component id="petals-bc-soap">
-            <ns3:url>file:/artifacts/petals-bc-soap-5.0.0</ns3:url>
+            <ns3:url>file://${project.build.directory}/test-classes/artifacts/petals-bc-soap-5.0.0.zip</ns3:url>
         </ns3:component>
     </ns2:component-repository>
     <ns2:topology-model>

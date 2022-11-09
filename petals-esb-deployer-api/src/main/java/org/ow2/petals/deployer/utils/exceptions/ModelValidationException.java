@@ -35,4 +35,8 @@ public class ModelValidationException extends ModelDeploymentException {
     public ModelValidationException(final Throwable cause) {
         super(cause);
     }
+
+    public ModelValidationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 }
