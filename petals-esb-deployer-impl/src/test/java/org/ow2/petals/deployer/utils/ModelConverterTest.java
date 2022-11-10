@@ -912,8 +912,8 @@ public class ModelConverterTest {
             ModelConverter.convertModelToRuntimeModel(model);
         });
 
-        assertEquals(String.format(String.format("The service unit '%s' is not defined in the given ZIP archive '%s'",
-                su.getId(), su.getUrl())), exception.getMessage());
+        assertEquals(String.format("The service unit '%s' is not defined in the given ZIP archive '%s'", su.getId(),
+                su.getUrl()), exception.getMessage());
     }
 
     /**
