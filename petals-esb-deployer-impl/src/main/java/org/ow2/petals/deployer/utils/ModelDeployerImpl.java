@@ -20,11 +20,11 @@ package org.ow2.petals.deployer.utils;
 
 import java.util.logging.Logger;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The main class used for deploying XML models.

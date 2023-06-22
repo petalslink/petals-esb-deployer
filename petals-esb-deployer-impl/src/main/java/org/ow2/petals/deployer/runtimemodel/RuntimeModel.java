@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * <p>

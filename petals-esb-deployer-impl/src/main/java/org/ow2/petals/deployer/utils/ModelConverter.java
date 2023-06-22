@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
 import org.ow2.petals.deployer.model.bus.xml._1.ContainerInstance;
@@ -57,6 +55,8 @@ import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryEx
 import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 import org.ow2.petals.jbi.descriptor.extension.JBIDescriptorExtensionBuilder;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * This is an utility class and should not be instantiated.

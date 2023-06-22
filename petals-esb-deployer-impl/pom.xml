@@ -64,7 +64,20 @@
          <artifactId>pax-url-aether</artifactId>
          <version>2.6.14</version>
          <scope>test</scope>
+         <exclusions>
+			 <exclusion>
+				 <!-- Since Java 11, we prefer jakarta.annotation:jakarta.annotation-api -->
+				 <groupId>javax.annotation</groupId>
+				 <artifactId>javax.annotation-api</artifactId>
+			 </exclusion>
+		 </exclusions>
       </dependency>
+      <dependency>
+		  <!-- In replacement of javax.annotation:javax.annotation-api required by org.ops4j.pax.url:pax-url-aether used in unit tests -->
+		  <groupId>jakarta.annotation</groupId>
+		  <artifactId>jakarta.annotation-api</artifactId>
+		  <scope>test</scope>
+	  </dependency>
       <dependency>
          <groupId>org.mockito</groupId>
          <artifactId>mockito-core</artifactId>
@@ -99,10 +112,10 @@
                   <id>analyze</id>
                   <configuration>
                      <usedDependencies>
-                        <!-- Required at runtime -->
-                        <usedDependency>org.ops4j.pax.url:pax-url-aether</usedDependency>
                         <!-- Required at unit test runtime -->
+                        <usedDependency>org.ops4j.pax.url:pax-url-aether</usedDependency>
                         <usedDependency>org.slf4j:slf4j-simple</usedDependency>
+                        <usedDependency>jakarta.annotation:jakarta.annotation-api</usedDependency>
                      </usedDependencies>
                   </configuration>
                </execution>

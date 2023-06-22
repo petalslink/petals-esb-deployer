@@ -23,12 +23,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Alexandre Lagane - Linagora

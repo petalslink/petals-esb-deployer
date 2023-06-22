@@ -24,8 +24,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedSharedLibraryException;
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 import org.ow2.petals.deployer.utils.ModelDeployer;
@@ -33,6 +31,8 @@ import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Alexandre Lagane - Linagora

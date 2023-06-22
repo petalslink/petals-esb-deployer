@@ -24,8 +24,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
 import org.ow2.petals.admin.api.artifact.Component;
@@ -50,6 +48,8 @@ import org.ow2.petals.jbi.descriptor.extension.exception.NoComponentNameDeployab
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
 import org.ow2.petals.jbi.descriptor.original.generated.ServiceAssembly;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Alexandre Lagane - Linagora

@@ -21,8 +21,6 @@ package org.ow2.petals.deployer.utils;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.admin.api.ArtifactAdministration;
 import org.ow2.petals.admin.api.PetalsAdministration;
 import org.ow2.petals.admin.api.PetalsAdministrationFactory;
@@ -41,6 +39,8 @@ import org.ow2.petals.deployer.runtimemodel.RuntimeServiceUnit;
 import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;
 import org.ow2.petals.deployer.runtimemodel.exceptions.RuntimeModelException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Alexandre Lagane - Linagora

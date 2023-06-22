@@ -20,14 +20,14 @@ package org.ow2.petals.deployer.runtimemodel;
 
 import java.net.URL;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.runtimemodel.interfaces.Similar;
 import org.ow2.petals.deployer.utils.ModelDeployer;
 import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
 import org.ow2.petals.jbi.descriptor.JBIDescriptorException;
 import org.ow2.petals.jbi.descriptor.original.JBIDescriptorBuilder;
 import org.ow2.petals.jbi.descriptor.original.generated.Jbi;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author Alexandre Lagane - Linagora

@@ -20,13 +20,13 @@ package org.ow2.petals.deployer.utils;
 
 import java.net.URL;
 
-import javax.validation.constraints.NotNull;
-
 import org.ow2.petals.deployer.model.xml._1.Model;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentException;
 import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
 import org.ow2.petals.deployer.utils.exceptions.ModelParsingException;
 import org.ow2.petals.deployer.utils.exceptions.ModelValidationException;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * The main class used for deploying XML models.
