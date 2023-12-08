@@ -18,9 +18,10 @@
 
 package org.ow2.petals.deployer.utils;
 
-import static org.junit.Assert.assertEquals;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -28,11 +29,13 @@ import org.junit.Test;
 public class ModelDeployerFactoryMockTest extends ModelDeployerFactoryMock {
 
     @Test
-    public void test() {
-        String factoryClassName = ModelDeployerFactory.class.getName();
-        String factoryMockClassName = ModelDeployerFactoryMock.class.getName();
+    public void test() throws Exception {
+        final String factoryClassName = ModelDeployerFactory.class.getName();
+        final String factoryMockClassName = ModelDeployerFactoryMock.class.getName();
 
-        System.setProperty(factoryClassName, factoryMockClassName);
-        assertEquals(factoryMockClassName, ModelDeployerFactory.getInstance().getClass().getName());
+        restoreSystemProperties(() -> {
+            System.setProperty(factoryClassName, factoryMockClassName);
+            assertEquals(factoryMockClassName, ModelDeployerFactory.getInstance().getClass().getName());
+        });
     }
 }

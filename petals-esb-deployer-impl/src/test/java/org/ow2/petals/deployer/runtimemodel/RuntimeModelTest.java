@@ -18,19 +18,19 @@
 
 package org.ow2.petals.deployer.runtimemodel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedContainerException;
 
 /**
@@ -40,63 +40,57 @@ public class RuntimeModelTest {
 
     @Test
     public void runtimeModelGetters() throws Exception {
-        RuntimeModel model = new RuntimeModel();
-        Collection<RuntimeContainer> containers = model.getContainers();
+        final RuntimeModel model = new RuntimeModel();
+        final Collection<RuntimeContainer> containers = model.getContainers();
 
         assertEquals(0, containers.size());
         assertNull(model.getContainer("cont1"));
         assertNull(model.getContainer("cont2"));
 
-        RuntimeContainer mockCont1 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont1 = mock(RuntimeContainer.class);
         when(mockCont1.getId()).thenReturn("cont1");
         model.addContainer(mockCont1);
 
-        containers = model.getContainers();
-
-        assertEquals(1, containers.size());
+        assertEquals(1, model.getContainers().size());
         assertSame(mockCont1, model.getContainer("cont1"));
         assertNull(model.getContainer("cont2"));
 
-        RuntimeContainer mockCont2 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont2 = mock(RuntimeContainer.class);
         when(mockCont2.getId()).thenReturn("cont2");
         model.addContainer(mockCont2);
 
-        containers = model.getContainers();
-
-        assertEquals(2, containers.size());
+        assertEquals(2, model.getContainers().size());
         assertSame(mockCont1, model.getContainer("cont1"));
         assertSame(mockCont2, model.getContainer("cont2"));
     }
 
     @Test
     public void runtimeModelDuplicatedContainerException() throws Exception {
-        RuntimeModel model = new RuntimeModel();
+        final RuntimeModel model = new RuntimeModel();
 
-        RuntimeContainer mockCont = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont = mock(RuntimeContainer.class);
         when(mockCont.getId()).thenReturn("cont");
         model.addContainer(mockCont);
 
-        RuntimeContainer mockContWithSameId = mock(RuntimeContainer.class);
+        final RuntimeContainer mockContWithSameId = mock(RuntimeContainer.class);
         when(mockContWithSameId.getId()).thenReturn("cont");
-        try {
+        assertThrows(DuplicatedContainerException.class, () -> {
             model.addContainer(mockContWithSameId);
-            fail("Should have caught DuplicatedContainerException");
-        } catch (DuplicatedContainerException e) {
-        }
+        }, "Should have caught DuplicatedContainerException");
     }
 
     @Test
     public void similarRuntimeModels() throws Exception {
-        RuntimeModel model1 = new RuntimeModel();
-        RuntimeModel model2 = new RuntimeModel();
+        final RuntimeModel model1 = new RuntimeModel();
+        final RuntimeModel model2 = new RuntimeModel();
 
         assertTrue(model1.isSimilarTo(model2));
         assertTrue(model2.isSimilarTo(model1));
 
-        RuntimeContainer mockCont1Model1 = mock(RuntimeContainer.class);
-        RuntimeContainer mockCont2Model1 = mock(RuntimeContainer.class);
-        RuntimeContainer mockCont1Model2 = mock(RuntimeContainer.class);
-        RuntimeContainer mockCont2Model2 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont1Model1 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont2Model1 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont1Model2 = mock(RuntimeContainer.class);
+        final RuntimeContainer mockCont2Model2 = mock(RuntimeContainer.class);
 
         when(mockCont1Model1.getId()).thenReturn("cont1");
         when(mockCont1Model1.isSimilarTo(any())).thenReturn(false);

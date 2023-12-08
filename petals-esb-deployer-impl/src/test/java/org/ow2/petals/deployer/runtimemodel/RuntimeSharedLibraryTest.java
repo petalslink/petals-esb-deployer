@@ -17,14 +17,14 @@
  */
 package org.ow2.petals.deployer.runtimemodel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URL;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Alexandre Lagane - Linagora
@@ -33,26 +33,26 @@ public class RuntimeSharedLibraryTest {
 
     @Test
     public void runtimeSharedLibraryGetters() throws Exception {
-        URL url = new URL("file:/sl.zip");
+        final URL url = new URL("file:/sl.zip");
 
-        RuntimeSharedLibrary sl = new RuntimeSharedLibrary("sl-id", "1.0");
-        assertEquals("sl-id", sl.getId());
-        assertEquals("1.0", sl.getVersion());
-        assertNull(sl.getUrl());
+        final RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("sl-id", "1.0");
+        assertEquals("sl-id", sl1.getId());
+        assertEquals("1.0", sl1.getVersion());
+        assertNull(sl1.getUrl());
 
-        sl.setUrl(url);
-        assertEquals(url, sl.getUrl());
+        sl1.setUrl(url);
+        assertEquals(url, sl1.getUrl());
 
-        sl = new RuntimeSharedLibrary("sl-id", "1.0", url);
-        assertEquals("sl-id", sl.getId());
-        assertEquals("1.0", sl.getVersion());
-        assertEquals(url, sl.getUrl());
+        final RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("sl-id", "1.0", url);
+        assertEquals("sl-id", sl2.getId());
+        assertEquals("1.0", sl2.getVersion());
+        assertEquals(url, sl2.getUrl());
     }
 
     @Test
     public void similarRuntimeSharedLibraries() throws Exception {
-        RuntimeSharedLibrary sl = new RuntimeSharedLibrary("sl-id", "1.0", new URL("file:/sl.zip"));
-        RuntimeSharedLibrary slWithDifferentUrl = new RuntimeSharedLibrary("sl-id", "1.0",
+        final RuntimeSharedLibrary sl = new RuntimeSharedLibrary("sl-id", "1.0", new URL("file:/sl.zip"));
+        final RuntimeSharedLibrary slWithDifferentUrl = new RuntimeSharedLibrary("sl-id", "1.0",
                 new URL("file:/other-url.zip"));
 
         assertTrue(sl.isSimilarTo(slWithDifferentUrl));
@@ -61,16 +61,17 @@ public class RuntimeSharedLibraryTest {
 
     @Test
     public void notSimilarRuntimeSharedLibraries() throws Exception {
-        RuntimeSharedLibrary sl = new RuntimeSharedLibrary("sl-id", "1.0", new URL("file:/sl.zip"));
-        RuntimeSharedLibrary suWithDifferentId = new RuntimeSharedLibrary("other-id", "1.0", new URL("file:/sl.zip"));
+        final RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("sl-id", "1.0", new URL("file:/sl.zip"));
+        final RuntimeSharedLibrary suWithDifferentId = new RuntimeSharedLibrary("other-id", "1.0",
+                new URL("file:/sl.zip"));
 
-        assertFalse(sl.isSimilarTo(suWithDifferentId));
-        assertFalse(suWithDifferentId.isSimilarTo(sl));
+        assertFalse(sl1.isSimilarTo(suWithDifferentId));
+        assertFalse(suWithDifferentId.isSimilarTo(sl1));
 
-        sl = new RuntimeSharedLibrary("sl-id", "1.0", new URL("file:/sl.zip"));
-        suWithDifferentId = new RuntimeSharedLibrary("sl-id", "2.0", new URL("file:/sl.zip"));
+        final RuntimeSharedLibrary suWithDifferentVersion = new RuntimeSharedLibrary("sl-id", "2.0",
+                new URL("file:/sl.zip"));
 
-        assertFalse(sl.isSimilarTo(suWithDifferentId));
-        assertFalse(suWithDifferentId.isSimilarTo(sl));
+        assertFalse(sl1.isSimilarTo(suWithDifferentVersion));
+        assertFalse(suWithDifferentVersion.isSimilarTo(sl1));
     }
 }

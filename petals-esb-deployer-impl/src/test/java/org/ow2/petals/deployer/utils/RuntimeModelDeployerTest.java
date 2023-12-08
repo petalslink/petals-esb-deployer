@@ -18,7 +18,7 @@
 
 package org.ow2.petals.deployer.utils;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,10 +29,10 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.ow2.petals.admin.junit.PetalsAdministrationApi;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.ow2.petals.admin.junit.extensions.PetalsAdministrationExtension;
+import org.ow2.petals.admin.junit.extensions.api.PetalsAdministrationApi;
 import org.ow2.petals.admin.topology.Container.PortType;
 import org.ow2.petals.admin.topology.Container.State;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
@@ -48,10 +48,10 @@ public class RuntimeModelDeployerTest extends ModelUtils {
 
     final public static State CONTAINER_STATE = State.REACHABLE;
 
-    @Rule
-    public PetalsAdministrationApi petalsAdminApiRule = new PetalsAdministrationApi();
+    @PetalsAdministrationExtension
+    public PetalsAdministrationApi petalsAdminApiRule;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupLogger() throws Exception {
         final Logger deployerLogger = Logger.getLogger(RuntimeModelDeployer.class.getName());
         deployerLogger.setLevel(Level.FINER);
@@ -127,9 +127,9 @@ public class RuntimeModelDeployerTest extends ModelUtils {
 
     @Test
     public void deployRuntimeModelWithSharedLibraries() throws Exception {
-        petalsAdminApiRule.registerDomain();
-        org.ow2.petals.admin.topology.Container cont = createContainerSample();
-        petalsAdminApiRule.registerContainer(cont);
+        this.petalsAdminApiRule.registerDomain();
+        final org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        this.petalsAdminApiRule.registerContainer(cont);
         final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
@@ -144,9 +144,9 @@ public class RuntimeModelDeployerTest extends ModelUtils {
 
     @Test
     public void deployRuntimeModelWithParameters() throws Exception {
-        petalsAdminApiRule.registerDomain();
-        org.ow2.petals.admin.topology.Container cont = createContainerSample();
-        petalsAdminApiRule.registerContainer(cont);
+        this.petalsAdminApiRule.registerDomain();
+        final org.ow2.petals.admin.topology.Container cont = createContainerSample();
+        this.petalsAdminApiRule.registerContainer(cont);
         final RuntimeModelDeployer modelDeployer = new RuntimeModelDeployer(petalsAdminApiRule.getSingleton());
 
         final RuntimeModel model = generateRuntimeModelWithSharedLibraries();
@@ -220,12 +220,12 @@ public class RuntimeModelDeployerTest extends ModelUtils {
                 .getResource("/artifacts/petals-bc-sql-with-shared-libraries.zip").toURI().toURL());
         container.addComponent(component);
 
-        RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("petals-sl-hsql", "1.8.0.10",
+        final RuntimeSharedLibrary sl1 = new RuntimeSharedLibrary("petals-sl-hsql", "1.8.0.10",
                 RuntimeModelDeployerTest.class.getResource("/artifacts/petals-sl-hsql-1.8.0.10.zip").toURI().toURL());
         container.addSharedLibrary(sl1);
         component.addSharedLibrary(sl1);
 
-        RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("petals-sl-sqlserver-6.1.0.jre7", "1.0.0-SNAPSHOT",
+        final RuntimeSharedLibrary sl2 = new RuntimeSharedLibrary("petals-sl-sqlserver-6.1.0.jre7", "1.0.0-SNAPSHOT",
                 RuntimeModelDeployerTest.class
                         .getResource("/artifacts/petals-sl-sqlserver-6.1.0.jre7-1.0.0-SNAPSHOT.zip").toURI().toURL());
         container.addSharedLibrary(sl2);
@@ -239,7 +239,7 @@ public class RuntimeModelDeployerTest extends ModelUtils {
         final RuntimeContainer cont = new RuntimeContainer(ModelUtils.CONTAINER_NAME, ModelUtils.CONTAINER_JMX_PORT,
                 ModelUtils.CONTAINER_USER, ModelUtils.CONTAINER_PWD, "localhost");
         model.addContainer(cont);
-        RuntimeComponent comp = new RuntimeComponent("petals-bc-soap",
+        final RuntimeComponent comp = new RuntimeComponent("petals-bc-soap",
                 RuntimeModelDeployerTest.class.getResource("/artifacts/petals-bc-soap-5.0.0.zip").toURI().toURL());
         comp.setParameterValue("param1", "value1");
         comp.setParameterValue("param2", "value2");

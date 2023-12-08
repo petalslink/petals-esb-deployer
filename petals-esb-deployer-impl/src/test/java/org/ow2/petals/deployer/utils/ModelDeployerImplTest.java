@@ -18,51 +18,51 @@
 
 package org.ow2.petals.deployer.utils;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
+import static com.github.stefanbirkner.systemlambda.SystemLambda.restoreSystemProperties;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.ProvideSystemProperty;
+import org.junit.jupiter.api.Test;
 import org.ow2.petals.deployer.runtimemodel.RuntimeModel;
-import org.ow2.petals.deployer.utils.exceptions.ModelDeploymentExecutionException;
 
 public class ModelDeployerImplTest {
 
-    private RuntimeModelDeployer runtimeModelDeployerMock = mock(RuntimeModelDeployer.class);
+    private final RuntimeModelDeployer runtimeModelDeployerMock = mock(RuntimeModelDeployer.class);
 
-    private ModelDeployerImpl modelDeployer = new ModelDeployerImpl(runtimeModelDeployerMock);
+    private ModelDeployerImpl modelDeployer = new ModelDeployerImpl(this.runtimeModelDeployerMock);
 
-    @Rule
-    public final ProvideSystemProperty mavenUrlPropertyRule = new ProvideSystemProperty("java.protocol.handler.pkgs",
-            "org.ops4j.pax.url");
+    /*
+     * restoreSystemProperties(() -> { // Register the PAX URL handler System.setProperty("java.protocol.handler.pkgs",
+     * "org.ops4j.pax.url");
+     */
 
     @Test
     public void deployModelFile() throws Exception {
-        URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model.xml").toURI().toURL();
-        modelDeployer.deployModel(modelUrl);
+        final URL modelUrl = Thread.currentThread().getContextClassLoader().getResource("model.xml").toURI().toURL();
+        this.modelDeployer.deployModel(modelUrl);
 
-        verify(runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
+        verify(this.runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
     }
 
     @Test
     public void deployModel() throws Exception {
-        modelDeployer.deployModel(ModelUtils.generateTestModel());
+        this.modelDeployer.deployModel(ModelUtils.generateTestModel());
 
-        verify(runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
+        verify(this.runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
     }
 
     @Test
     public void deployModelWithMavenUrl() throws Exception {
-        try {
-            modelDeployer.deployModel(ModelUtils.generateTestModelWithMavenUrl());
-        } catch (ModelDeploymentExecutionException e) {
-            assertFalse(e.getCause() instanceof MalformedURLException);
-        }
+        restoreSystemProperties(() -> {
+            // Register the PAX URL handler
+            System.setProperty("java.protocol.handler.pkgs", "org.ops4j.pax.url");
+
+            this.modelDeployer.deployModel(ModelUtils.generateTestModelWithMavenUrl());
+
+            verify(this.runtimeModelDeployerMock).deployRuntimeModel(any(RuntimeModel.class));
+        });
     }
 }

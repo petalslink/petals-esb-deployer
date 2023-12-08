@@ -18,19 +18,19 @@
 
 package org.ow2.petals.deployer.runtimemodel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedComponentException;
 import org.ow2.petals.deployer.runtimemodel.exceptions.DuplicatedServiceUnitException;
 
@@ -41,7 +41,7 @@ public class RuntimeContainerTest {
 
     @Test
     public void runtimeContainerGetters() throws Exception {
-        RuntimeContainer cont = new RuntimeContainer("cont", 7700, "user", "password", "localhost");
+        final RuntimeContainer cont = new RuntimeContainer("cont", 7700, "user", "password", "localhost");
 
         assertEquals("cont", cont.getId());
         assertEquals(7700, cont.getPort());
@@ -52,55 +52,47 @@ public class RuntimeContainerTest {
         cont.setHostname("192.168.1.42");
         assertEquals("192.168.1.42", cont.getHostname());
 
-        Collection<RuntimeComponent> components = cont.getComponents();
+        final Collection<RuntimeComponent> initialComponents = cont.getComponents();
 
-        assertEquals(0, components.size());
+        assertEquals(0, initialComponents.size());
         assertNull(cont.getComponent("comp1"));
         assertNull(cont.getComponent("comp2"));
 
-        RuntimeComponent mockComp1 = mock(RuntimeComponent.class);
+        final RuntimeComponent mockComp1 = mock(RuntimeComponent.class);
         when(mockComp1.getId()).thenReturn("comp1");
         cont.addComponent(mockComp1);
 
-        components = cont.getComponents();
-
-        assertEquals(1, components.size());
+        assertEquals(1, cont.getComponents().size());
         assertSame(mockComp1, cont.getComponent("comp1"));
         assertNull(cont.getComponent("comp2"));
 
-        RuntimeComponent mockComp2 = mock(RuntimeComponent.class);
+        final RuntimeComponent mockComp2 = mock(RuntimeComponent.class);
         when(mockComp2.getId()).thenReturn("comp2");
         cont.addComponent(mockComp2);
 
-        components = cont.getComponents();
-
-        assertEquals(2, components.size());
+        assertEquals(2, cont.getComponents().size());
         assertSame(mockComp1, cont.getComponent("comp1"));
         assertSame(mockComp2, cont.getComponent("comp2"));
 
-        Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
+        final Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
 
         assertEquals(0, serviceUnits.size());
         assertNull(cont.getServiceUnit("su1"));
         assertNull(cont.getServiceUnit("su2"));
 
-        RuntimeServiceUnit mockSu1 = mock(RuntimeServiceUnit.class);
+        final RuntimeServiceUnit mockSu1 = mock(RuntimeServiceUnit.class);
         when(mockSu1.getId()).thenReturn("su1");
         cont.addServiceUnit(mockSu1);
 
-        serviceUnits = cont.getServiceUnits();
-
-        assertEquals(1, serviceUnits.size());
+        assertEquals(1, cont.getServiceUnits().size());
         assertSame(mockSu1, cont.getServiceUnit("su1"));
         assertNull(cont.getServiceUnit("su2"));
 
-        RuntimeServiceUnit mockSu2 = mock(RuntimeServiceUnit.class);
+        final RuntimeServiceUnit mockSu2 = mock(RuntimeServiceUnit.class);
         when(mockSu2.getId()).thenReturn("su2");
         cont.addServiceUnit(mockSu2);
 
-        serviceUnits = cont.getServiceUnits();
-
-        assertEquals(2, serviceUnits.size());
+        assertEquals(2, cont.getServiceUnits().size());
         assertSame(mockSu1, cont.getServiceUnit("su1"));
         assertSame(mockSu2, cont.getServiceUnit("su2"));
     }
@@ -115,11 +107,9 @@ public class RuntimeContainerTest {
 
         RuntimeComponent mockCompWithSameId = mock(RuntimeComponent.class);
         when(mockCompWithSameId.getId()).thenReturn("comp");
-        try {
+        assertThrows(DuplicatedComponentException.class, () -> {
             cont.addComponent(mockCompWithSameId);
-            fail("Should have caught DuplicatedComponentException");
-        } catch (DuplicatedComponentException e) {
-        }
+        }, "Should have caught DuplicatedComponentException");
     }
 
     @Test
@@ -132,11 +122,9 @@ public class RuntimeContainerTest {
 
         RuntimeServiceUnit mockSuWithSameId = mock(RuntimeServiceUnit.class);
         when(mockSuWithSameId.getId()).thenReturn("su");
-        try {
+        assertThrows(DuplicatedServiceUnitException.class, () -> {
             cont.addServiceUnit(mockSuWithSameId);
-            fail("Should have caught DuplicatedServiceUnitException");
-        } catch (DuplicatedServiceUnitException e) {
-        }
+        }, "Should have caught DuplicatedServiceUnitException");
     }
 
     @Test

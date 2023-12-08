@@ -17,15 +17,15 @@
  */
 package org.ow2.petals.deployer.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipInputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ow2.petals.admin.api.conf.ZipArchiveCustomizer;
 import org.ow2.petals.deployer.runtimemodel.RuntimeComponent;
 import org.ow2.petals.deployer.runtimemodel.RuntimeSharedLibrary;

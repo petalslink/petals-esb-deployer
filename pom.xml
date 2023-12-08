@@ -23,6 +23,7 @@
       <artifactId>petals-client-tools-parent</artifactId>
       <groupId>org.ow2.petals</groupId>
       <version>1.3.0-SNAPSHOT</version>
+      <relativePath />
    </parent>
 
    <name>Petals ESB Deployer</name>
@@ -51,14 +52,6 @@
          </dependency>
       </dependencies>
    </dependencyManagement>
-
-   <dependencies>
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <scope>test</scope>
-      </dependency>
-   </dependencies>
 
    <build>
       <defaultGoal>install</defaultGoal>

@@ -18,14 +18,14 @@
 
 package org.ow2.petals.deployer.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.ow2.petals.deployer.model.bus.xml._1.Bus;
 import org.ow2.petals.deployer.model.bus.xml._1.BusModel;
 import org.ow2.petals.deployer.model.bus.xml._1.ComponentInstance;
@@ -74,20 +74,29 @@ public class ModelConverterTest {
         final Collection<RuntimeServiceUnit> serviceUnits = cont.getServiceUnits();
         assertEquals(3, serviceUnits.size());
 
-        RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service1-provide");
-        assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
-        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service1-provide.zip").toString(),
-                su.getUrl().toString());
+        {
+            final RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service1-provide");
+            assertEquals("su-SOAP-Hello_Service1-provide", su.getId());
+            assertEquals(
+                    ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service1-provide.zip").toString(),
+                    su.getUrl().toString());
+        }
 
-        su = cont.getServiceUnit("su-SOAP-Hello_Service2-provide");
-        assertEquals("su-SOAP-Hello_Service2-provide", su.getId());
-        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service2-provide.zip").toString(),
-                su.getUrl().toString());
+        {
+            final RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_Service2-provide");
+            assertEquals("su-SOAP-Hello_Service2-provide", su.getId());
+            assertEquals(
+                    ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_Service2-provide.zip").toString(),
+                    su.getUrl().toString());
+        }
 
-        su = cont.getServiceUnit("su-SOAP-Hello_PortType-consume");
-        assertEquals("su-SOAP-Hello_PortType-consume", su.getId());
-        assertEquals(ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toString(),
-                su.getUrl().toString());
+        {
+            final RuntimeServiceUnit su = cont.getServiceUnit("su-SOAP-Hello_PortType-consume");
+            assertEquals("su-SOAP-Hello_PortType-consume", su.getId());
+            assertEquals(
+                    ModelConverterTest.class.getResource("/artifacts/sa-SOAP-Hello_PortType-consume.zip").toString(),
+                    su.getUrl().toString());
+        }
 
         final Collection<RuntimeComponent> components = cont.getComponents();
         assertEquals(1, components.size());
