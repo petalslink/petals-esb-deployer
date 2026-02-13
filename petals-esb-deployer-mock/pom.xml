@@ -23,7 +23,7 @@
       <groupId>org.ow2.petals</groupId>
       <artifactId>petals-esb-deployer</artifactId>
       <relativePath>../pom.xml</relativePath>
-      <version>0.0.2-SNAPSHOT</version>
+      <version>0.0.2</version>
    </parent>
 
    <name>Petals ESB Deployer - Mock</name>
@@ -54,6 +54,6 @@
       <connection>scm:git:https://github.com/petalslink/petals-esb-deployer</connection>
       <developerConnection>scm:git:https://github.com/petalslink/petals-esb-deployer</developerConnection>
       <url>https://github.com/petalslink/petals-esb-deployer</url>
-     <tag>HEAD</tag>
+     <tag>petals-esb-deployer-0.0.2</tag>
   </scm>
 </project>
